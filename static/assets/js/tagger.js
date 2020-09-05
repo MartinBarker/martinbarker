@@ -335,7 +335,21 @@ function copyToClipboard(elementID) {
 //discogstagger file submit generate tags
 async function generateDiscogsFileTags(songs){
     return new Promise(function (resolve, reject) {
-        console.log('generateDiscogsFileTags() songs = ', songs)
+        $.ajax({
+            url: "getFileMetadataTags",
+            type: 'POST',
+            data:{
+                songs: 'songs',
+            },
+            success: function (resp) {
+                console.log('/generateDiscogsFileTags() resp=', resp)
+                resolve(resp)
+            },
+            error: function (error) { 
+                resolve("error")
+            }
+        })
+        /*
         var jsonResults = {
             'tags': {
                 'releaseArtist': ['a'], 
@@ -345,6 +359,7 @@ async function generateDiscogsFileTags(songs){
             }
         };
         resolve(jsonResults)
+        */
     })
 }
 
