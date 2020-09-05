@@ -25,9 +25,12 @@ $(document).ready(function () {
     async function handleDrop(e) {
         let dt = e.dataTransfer
         let files = dt.files
-        let filesArr = Array.from(files)
+        //generate and display timestamped tracklist data
         let taggerData = await getFileTaggerData(files)
         displayData(taggerData)
+        //generate and display metadata tags
+        let discogsTaggerData = await generateDiscogsFileTags(files) 
+        displayMetadataTags(discogsTaggerData)
     }
 
     //function to make sure hitting 'enter' key submits input box
@@ -75,8 +78,14 @@ $(document).ready(function () {
     $("#file").change(async function (e) {
         var file = e.currentTarget.files[0];
         var songs = e.currentTarget.files;
+        //generate and display tracklisted timstamp
         let taggerData = await getFileTaggerData(songs)
         displayData(taggerData)
+        //generate and display metadata tags
+        let discogsTaggerData = await generateDiscogsFileTags(songs) 
+        displayMetadataTags(discogsTaggerData)
+
+        
     });
 
     //convert files to tagger data
@@ -115,6 +124,47 @@ $(document).ready(function () {
 let globalTaggerData = null;
 let tagsJsonGlobal = null;
 let tagsJsonDisplay = null;
+
+async function displayMetadataTags(tags){
+    //reset table slider values
+    document.getElementById('releaseArtistsSlider').value = 100;
+    document.getElementById('releaseArtistsSliderValue').innerHTML = `100%`;
+    document.getElementById('releaseInfoSlider').value = 100;
+    document.getElementById('releaseInfoSliderValue').innerHTML = `100%`;
+    document.getElementById('tracklistSlider').value = 100;
+    document.getElementById('tracklistSliderValue').innerHTML = `100%`;
+    document.getElementById('combinationsSlider').value = 100;
+    document.getElementById('combinationsSliderValue').innerHTML = `100%`;
+    
+    //store as global variables
+    tagsJsonGlobal = tags;
+    tagsJsonDisplay = tags;
+
+    //set textbox palceholder to equal nothing
+    document.getElementById("tagsBox").placeholder = "";
+
+    //convert tags json object to comma seperated string var
+    var tagsAll = getAllTags(tags);
+
+    //get all checkbox and slider values
+    var releaseArtistsCheckboxValue = $('.releaseArtistsCheckbox:checked').val();
+    var releaseArtistsSliderValue = $('.releaseArtistsSlider').val();
+
+    var releaseInfoCheckboxValue = $('.releaseInfoCheckbox:checked').val();
+    var releaseInfoSliderValue = $('.releaseInfoSlider').val();
+
+    var tracklistCheckboxValue = $('.tracklistCheckbox:checked').val();
+    var tracklistSliderValue = $('.tracklistSlider').val();
+
+    var combinationsCheckboxValue = $('.combinationsCheckbox:checked').val();
+    var combinationsSliderValue = $('.combinationsSlider').val();
+
+    //update display box based on checkbox and slider values
+    updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, releaseInfoCheckboxValue, releaseInfoSliderValue, tracklistCheckboxValue, tracklistSliderValue, combinationsCheckboxValue, combinationsSliderValue);
+
+    //set tags
+    document.getElementById("tagsBox").value = tagsAll;
+}
 
 //display tagger data on the page
 async function displayData(input) {
@@ -223,7 +273,7 @@ async function submitDiscogsURL(input) {
     //get data from discogs API
     let discogsData = await getDiscogsData(discogsListingType, discogsListingCode)
     //generate discogs tags
-    generateDiscogsTags(discogsData)
+    generateDiscogsURLTags(discogsData)
 
     //get tracklist from discogsData
     let discogsTracklist = discogsData.tracklist
@@ -282,18 +332,24 @@ function copyToClipboard(elementID) {
 
 }
 
-//discogstagger: init
-async function generateDiscogsTags(discogsReleaseData) {
-    //reset table slider values
-    document.getElementById('releaseArtistsSlider').value = 100;
-    document.getElementById('releaseArtistsSliderValue').innerHTML = `100%`;
-    document.getElementById('releaseInfoSlider').value = 100;
-    document.getElementById('releaseInfoSliderValue').innerHTML = `100%`;
-    document.getElementById('tracklistSlider').value = 100;
-    document.getElementById('tracklistSliderValue').innerHTML = `100%`;
-    document.getElementById('combinationsSlider').value = 100;
-    document.getElementById('combinationsSliderValue').innerHTML = `100%`;
+//discogstagger file submit generate tags
+async function generateDiscogsFileTags(songs){
+    return new Promise(function (resolve, reject) {
+        console.log('generateDiscogsFileTags() songs = ', songs)
+        var jsonResults = {
+            'tags': {
+                'releaseArtist': ['a'], 
+                'releaseInfo': ['b'],
+                'tracklist': ['c'],
+                'combinations': ['d']
+            }
+        };
+        resolve(jsonResults)
+    })
+}
 
+//discogstagger url submit generate tags
+async function generateDiscogsURLTags(discogsReleaseData) {
     //get releaseArtist tags
     let releaseArtistTags = await getArtistTags(discogsReleaseData)
 
@@ -316,34 +372,7 @@ async function generateDiscogsTags(discogsReleaseData) {
         }
     };
 
-    //store as global variables
-    tagsJsonGlobal = jsonResults;
-    tagsJsonDisplay = jsonResults;
-
-    //set textbox palceholder to equal nothing
-    document.getElementById("tagsBox").placeholder = "";
-
-    //convert tags json object to comma seperated string var
-    var tagsAll = getAllTags(jsonResults);
-
-    //get all checkbox and slider values
-    var releaseArtistsCheckboxValue = $('.releaseArtistsCheckbox:checked').val();
-    var releaseArtistsSliderValue = $('.releaseArtistsSlider').val();
-
-    var releaseInfoCheckboxValue = $('.releaseInfoCheckbox:checked').val();
-    var releaseInfoSliderValue = $('.releaseInfoSlider').val();
-
-    var tracklistCheckboxValue = $('.tracklistCheckbox:checked').val();
-    var tracklistSliderValue = $('.tracklistSlider').val();
-
-    var combinationsCheckboxValue = $('.combinationsCheckbox:checked').val();
-    var combinationsSliderValue = $('.combinationsSlider').val();
-
-    //update display box based on checkbox and slider values
-    updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, releaseInfoCheckboxValue, releaseInfoSliderValue, tracklistCheckboxValue, tracklistSliderValue, combinationsCheckboxValue, combinationsSliderValue);
-
-    //set tags
-    document.getElementById("tagsBox").value = tagsAll;
+    displayMetadataTags(jsonResults)
 }
 
 //discogstagger: generate comma seperated tags from a json object
