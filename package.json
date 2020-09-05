@@ -1,0 +1,28 @@
+{
+  "name": "martinbarker.me",
+  "version": "1.0.0",
+  "description": "personal website",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "docker build -t alien35/node-web-app .",
+    "startd": "docker run -p 49160:8080 -d alien35/node-web-app",
+    "open": "open http://localhost:49160",
+    "s": "nodemon server.js -e js,handlebars"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-handlebars": "^4.0.4",
+    "fluent-ffmpeg": "^2.1.2",
+    "handlebars": "^4.7.6",
+    "mongo": "^0.1.0",
+    "mongodb": "^3.6.0",
+    "mongoose": "^5.10.0",
+    "node-vibrant": "^3.1.5",
+    "nodemon": "^2.0.4"
+  }
+}

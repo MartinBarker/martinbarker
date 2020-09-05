@@ -1,0 +1,13 @@
+<div class="container-fluid" style='color: {{textColor5}}'>
+    Posted:{{postDate}}
+
+    Description: {{postDescription}}
+
+    Content: <div id='postContent'></div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        document.getElementById('postContent').innerHTML = `{{{postContent}}}`
+    })
+</script>
