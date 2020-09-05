@@ -71,6 +71,7 @@ app.get('/posts/:id', async (req, res) => {
 
 //home route
 app.get('/', async function (req, res) {
+  console.log('route / ')
   //get mainTemplate data
   let mainTemplateData = await getMainTemplateData(req.params.id)
   //const post = await Post.findById(req.params.id)
@@ -122,6 +123,7 @@ app.get('/', async function (req, res) {
 
 //tagger route
 app.get('/tagger', async function (req, res) {
+  console.log('route /tagger ')
   //get mainTemplate data
   let mainTemplateData = await getMainTemplateData(req.params.id)
   
@@ -172,25 +174,6 @@ app.get('/tagger', async function (req, res) {
     DarkMuted: mainTemplateData.colorData.DarkMuted, 
   });
 })
-
-//discogstagger routes
-app.get('/discogstagger', async function(req, res){
-  let colorData = await getColorData()
-  res.render('discogstagger', {
-    layout : 'newHomeindex',
-    pageTitle: 'discogstagger.site',
-    projectsTab:'active',
-    icon: '/static/assets/img/discogstagger.png',
-    //color Data
-    Vibrant: colorData.colors['Vibrant'],
-    LightVibrant: colorData.colors['LightVibrant'],
-    DarkVibrant: colorData.colors['DarkVibrant'],
-    Muted: colorData.colors['Muted'],
-    LightMuted: colorData.colors['LightMuted'],
-    DarkMuted: colorData.colors['DarkMuted'],
-    imgPath: colorData.imgPath,
-  });
-});
 
 //api route to return pageColors
 app.post('/getColors', async function (req, res) {
