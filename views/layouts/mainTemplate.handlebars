@@ -415,7 +415,11 @@ font-size: 1.1rem;
             </li>
             <!-- projects dropdown -->
             <li>
-                <a href="#projectsSubmenu" data-toggle="collapse" class="dropdown-toggle ">Projects</a>
+                <a href="#projectsSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle
+                {{#ifEquals projects 'active'}}
+                    opened-tab
+                {{/ifEquals}} 
+                ">Projects</a>
                 
                 <ul class="collapse list-unstyled 
                 {{#ifEquals projects 'active'}}
@@ -460,7 +464,6 @@ font-size: 1.1rem;
             </li>
             <!-- blog dropdown -->
             <li>
-                
                 <a href="#blogSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle
                     {{#ifEquals blog 'active'}}
                         opened-tab
