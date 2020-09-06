@@ -506,30 +506,30 @@ async function getReleaseInfoTags(discogsReleaseData) {
         let releaseInfoTags = []
         //year
         if (discogsReleaseData.year) {
-            releaseInfoTags.push(discogsReleaseData.year)
+            releaseInfoTags.push(removeNumberParenthesis(discogsReleaseData.year))
         }
         //title
         if (discogsReleaseData.title) {
-            releaseInfoTags.push(discogsReleaseData.title)
+            releaseInfoTags.push(removeNumberParenthesis(discogsReleaseData.title))
         }
         //country
         if (discogsReleaseData.country) {
-            releaseInfoTags.push(discogsReleaseData.country)
+            releaseInfoTags.push(removeNumberParenthesis(discogsReleaseData.country))
         }
         //genres
         if (discogsReleaseData.genres) {
-            releaseInfoTags = releaseInfoTags.concat(discogsReleaseData.genres)
+            releaseInfoTags = releaseInfoTags.concat(removeNumberParenthesis(discogsReleaseData.genres))
         }
         //styles
         if (discogsReleaseData.styles) {
-            releaseInfoTags = releaseInfoTags.concat(discogsReleaseData.styles)
+            releaseInfoTags = releaseInfoTags.concat(removeNumberParenthesis(discogsReleaseData.styles))
         }
         //formats
         if (discogsReleaseData.formats) {
             for (var g = 0; g < discogsReleaseData.formats.length; g++) {
                 //descriptions
                 if (discogsReleaseData.formats[g].descriptions) {
-                    releaseInfoTags = releaseInfoTags.concat(discogsReleaseData.formats[g].descriptions)
+                    releaseInfoTags = releaseInfoTags.concat(removeNumberParenthesis(discogsReleaseData.formats[g].descriptions))
                 }
                 //name
                 if (discogsReleaseData.formats[g].name) {
@@ -541,7 +541,7 @@ async function getReleaseInfoTags(discogsReleaseData) {
         if (discogsReleaseData.labels) {
             for (var h = 0; h < discogsReleaseData.labels.length; h++) {
                 if (discogsReleaseData.labels[h].name) {
-                    releaseInfoTags.push(discogsReleaseData.labels[h].name)
+                    releaseInfoTags.push(removeNumberParenthesis(discogsReleaseData.labels[h].name))
                 }
             }
         }
@@ -549,7 +549,7 @@ async function getReleaseInfoTags(discogsReleaseData) {
         if (discogsReleaseData.companies) {
             for (var h = 0; h < discogsReleaseData.companies.length; h++) {
                 if (discogsReleaseData.companies[h].name) {
-                    releaseInfoTags.push(discogsReleaseData.companies[h].name)
+                    releaseInfoTags.push(removeNumberParenthesis(discogsReleaseData.companies[h].name))
                 }
             }
         }
