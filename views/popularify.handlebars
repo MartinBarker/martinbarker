@@ -1,0 +1,24 @@
+<script type="text/javascript" src="/static/assets/js/popularify.js"></script>
+<script src="https://unpkg.com/moment"></script>
+
+<!-- page main content -->
+<div class="container-fluid" style='color: {{textColor5}}'>
+
+    <div style="margin-top:-30px;">
+
+        <!-- Header Text -->
+        <h5 class="widgettitle">Popularify description/img
+        </h5>
+        <hr>
+
+        <!-- Discogs Input Form -->
+        <div class="form-group">
+            <label>
+                <h5>Input a spotify artist's URI::</h5>
+            </label>
+            <input size="12" type="text" placeholder='spotify:artist:5fAix5NwfNgHQqYRrHIPxo' name="url" id="urlInput">
+            <button style="cursor: pointer;" id='popularifySubmitButton' name="data" type="button" onclick="popularifySubmit(document.getElementById('popularifySubmitButton').value)">Submit</button>
+        </div>
+
+    </div>
+</div>
