@@ -121,6 +121,11 @@ app.get('/', async function (req, res) {
   });
 })
 
+//projects route
+app.get('/projects', async function(req, res){
+  res.redirect('/');
+})
+
 //tagger route
 app.get('/tagger', async function (req, res) {
   console.log('route /tagger ')
