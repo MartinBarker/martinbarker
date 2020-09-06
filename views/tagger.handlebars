@@ -21,7 +21,6 @@
         </div>
 
         <!-- File Input Selection -->
-
         <div id="drop-area">
             <form class="my-form">
                 <h5>Upload multiple files with the file dialog or by dragging and dropping files here.</h5>
@@ -135,8 +134,8 @@
                             <tr>
                                 <th style="text-align:center; width: 6%;"><input type="checkbox" id='selectAll' checked>
                                 </th>
-                                <th style="text-align:center; width: 25%;">Tags Type</th>
-                                <th style="text-align:center; width: 46%;">Tags</th>
+                                <th style="text-align:center; width: 14%;">Tags Type</th>
+                                <th style="text-align:center; width: 20%;">Tags</th>
                             </tr>
 
                             <!-- Artists -->
@@ -145,15 +144,13 @@
                                     <input type="checkbox" class="releaseArtistsCheckbox" id="releaseArtistsCheckbox"
                                         checked="" onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:center;">Release Artist(s)</td>
+                                <td style="text-align:left;">Artist(s)</td>
                                 <td>
-                                    <div style="text-align:center;">
+                                    <div style="text-align:left;">
                                         <input type="range" class="releaseArtistsSlider" id="releaseArtistsSlider"
                                             min="0" max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-left' id="releaseArtistsSliderValue">100%
-                                        </div>
-                                        <div class='float-right' id='releaseArtistsNumber'>0 chars
-                                        </div>
+                                        <div class='float-right' id="releaseArtistsSliderValue">100%</div>
+                                        <div class='float-right' id='releaseArtistsNumber'>0 chars</div>
                                     </div>
                                 </td>
                             </tr>
@@ -164,12 +161,12 @@
                                     <input type="checkbox" class="releaseInfoCheckbox" id="releaseInfoCheckbox"
                                         checked="" onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:center;">Release Info</td>
+                                <td style="text-align:left;">Album</td>
                                 <td>
-                                    <div style="text-align:center;">
+                                    <div style="text-align:left;">
                                         <input type="range" class="releaseInfoSlider" id="releaseInfoSlider" min="0"
                                             max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-left' id="releaseInfoSliderValue">100%</div>
+                                        <div class='float-right' id="releaseInfoSliderValue">100%</div>
                                         <div class='float-right' id='releaseInfoNumber'>0 chars</div>
                                     </div>
                                 </td>
@@ -182,12 +179,12 @@
                                     <input type="checkbox" class="tracklistCheckbox" id="tracklistCheckbox" checked=""
                                         onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:center;">Tracklist</td>
+                                <td style="text-align:left;">Tracklist</td>
                                 <td>
-                                    <div style="text-align:center;">
+                                    <div style="text-align:left;">
                                         <input type="range" class="tracklistSlider" id="tracklistSlider" min="0"
                                             max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-left' id="tracklistSliderValue">100%</div>
+                                        <div class='float-right' id="tracklistSliderValue">100%</div>
                                         <div class='float-right' id='tracklistNumber'>0 chars</div>
                                     </div>
                                 </td>
@@ -200,12 +197,12 @@
                                     <input type="checkbox" class="combinationsCheckbox" id="combinationsCheckbox"
                                         checked="" onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:center;">Combinations</td>
+                                <td style="text-align:left;">Combinations</td>
                                 <td>
-                                    <div style="text-align:center;">
+                                    <div style="text-align:left;">
                                         <input type="range" class="combinationsSlider" id="combinationsSlider" min="0"
                                             max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-left' id="combinationsSliderValue">100%</div>
+                                        <div class='float-right' id="combinationsSliderValue">100%</div>
                                         <div class='float-right' id='combinationsNumber'>0 chars</div>
                                     </div>
                                 </td>
