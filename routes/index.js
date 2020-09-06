@@ -188,10 +188,10 @@ app.post('/getFileMetadataTags', async function (req, res) {
   console.log("/getFileMetadataTags req.body=",req.body)
   var jsonResults = {
     'tags': {
-        'releaseArtist': ['a1'], 
-        'releaseInfo': ['b1'],
-        'tracklist': ['c1'],
-        'combinations': ['d1']
+        'releaseArtist': [''], 
+        'releaseInfo': [''],
+        'tracklist': [''],
+        'combinations': ['']
     }
   };
   res.send(jsonResults)

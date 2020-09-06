@@ -342,24 +342,12 @@ async function generateDiscogsFileTags(songs){
                 songs: 'songs',
             },
             success: function (resp) {
-                console.log('/generateDiscogsFileTags() resp=', resp)
                 resolve(resp)
             },
             error: function (error) { 
                 resolve("error")
             }
         })
-        /*
-        var jsonResults = {
-            'tags': {
-                'releaseArtist': ['a'], 
-                'releaseInfo': ['b'],
-                'tracklist': ['c'],
-                'combinations': ['d']
-            }
-        };
-        resolve(jsonResults)
-        */
     })
 }
 
