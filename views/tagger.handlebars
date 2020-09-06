@@ -21,11 +21,58 @@
         </div>
 
         <!-- File Input Selection -->
-        <label>
-            <h5>Files: </h5>
-        </label> <input style="cursor: pointer;" type="file" id="file" multiple="multiple" />
-        <audio id="audio"></audio>
 
+        <div id="drop-area">
+            <form class="my-form">
+                <h5>Upload multiple files with the file dialog or by dragging and dropping files here.</h5>
+                <br>
+                <input style="cursor: pointer;" type="file" id="file" multiple="multiple" />
+            </form>
+        </div>
+
+        <style>
+            #drop-area {
+            /* border: 2px dashed #ccc; */
+            border-radius: 20px;
+            width: 480px;
+            padding: 20px;
+            } 
+            /*
+            #drop-area.highlight {
+            border-color: purple;
+            } 
+            */
+            p {
+            margin-top: 0;
+            }
+            .my-form {
+            margin-bottom: 10px;
+            }
+            #gallery {
+            margin-top: 10px;
+            }
+            #gallery img {
+            width: 150px;
+            margin-bottom: 10px;
+            margin-right: 10px;
+            vertical-align: middle;
+            }
+            .button {
+            display: inline-block;
+            padding: 10px;
+            background: #ccc;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            }
+            .button:hover {
+            background: #ddd;
+            }
+            #fileElem {
+            display: none;
+            }
+
+        </style>
         <!-- tagger output -->
         <hr>
         <h3>Timestamped Tracklist:</h3>
@@ -195,3 +242,27 @@
     {{!-- --}}
     </div>
 </div>
+
+<script>
+    $(document).ready(function(){
+        //call function to set drag and drop colors
+        setDragAndDropColors()
+        function setDragAndDropColors(){
+            var sheet = document.createElement('style')
+            let innerHTMLHoverColorStyle = `
+                #drop-area.highlight {
+                    border-color: {{LightVibrant}};
+                }
+
+                
+                #drop-area {
+                    border: 2px dashed {{textColor5}};
+                    } 
+
+                
+                `;
+            sheet.innerHTML = innerHTMLHoverColorStyle 
+            document.head.appendChild(sheet);
+        }
+    })
+</script>

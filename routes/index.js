@@ -183,6 +183,20 @@ app.post('/getColors', async function (req, res) {
   res.send(colorData)
 });
 
+//api audio file metadata tags
+app.post('/getFileMetadataTags', async function (req, res) {
+  console.log("/getFileMetadataTags req.body=",req.body)
+  var jsonResults = {
+    'tags': {
+        'releaseArtist': [], 
+        'releaseInfo': [],
+        'tracklist': [],
+        'combinations': []
+    }
+  };
+  res.send(jsonResults)
+});
+
 async function getMainTemplateData(activeTabId){
   return new Promise(async function (resolve, reject) {
     //get color data based on a random image from /static/assets/aesthetic-images
