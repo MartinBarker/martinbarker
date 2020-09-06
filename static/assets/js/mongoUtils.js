@@ -1,5 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
-const url = "mongodb+srv://dbUser:dbUserPassword@cluster0.qotrh.gcp.mongodb.net/node-blog?retryWrites=true&w=majority";
+const url = `mongodb+srv://dbUser:${process.env.mongodbpword}@cluster0.qotrh.gcp.mongodb.net/node-blog?retryWrites=true&w=majority`;
 
 var _db;
 
@@ -13,7 +13,7 @@ module.exports = {
   },
 
   getDb: function() {
-    console.log('process.env.mongodbpword = ', process.env.mongodbpword)
+    //console.log('process.env.mongodbpword = ', process.env.mongodbpword)
     return _db;
   }
 };
