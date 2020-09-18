@@ -393,10 +393,6 @@ font-size: 1.1rem;
             transform: rotate(180deg); 
             }
 
-            .opened-tab:after{
-                transform: rotate(180deg); 
-            }
-
             /*for animation*/ 
             .dropdown-toggle:after { 
             transition: 0.4s; 
@@ -415,11 +411,15 @@ font-size: 1.1rem;
             </li>
             <!-- projects dropdown -->
             <li>
-                <a href="#projectsSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle
+                <a href="#projectsSubmenu" data-toggle="collapse" class="dropdown-toggle"
                 {{#ifEquals projects 'active'}}
-                    opened-tab
+                   aria-expanded="true"
                 {{/ifEquals}} 
-                ">Projects</a>
+
+                {{#ifEquals projects null}}
+                   aria-expanded="false"
+                {{/ifEquals}} 
+                >Projects</a>
                 
                 <ul class="collapse list-unstyled 
                 {{#ifEquals projects 'active'}}
@@ -464,11 +464,16 @@ font-size: 1.1rem;
             </li>
             <!-- blog dropdown -->
             <li>
-                <a href="#blogSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle
+                <a href="#blogSubmenu" data-toggle="collapse" class="dropdown-toggle"
+
                     {{#ifEquals blog 'active'}}
-                        opened-tab
+                        aria-expanded="true"
                     {{/ifEquals}} 
-                ">Blog
+                    
+                    {{#ifEquals blog null}}
+                        aria-expanded="false"
+                    {{/ifEquals}} 
+                >Blog
                 </a>
                 <!-- blog posts -->
                 <ul class="collapse list-unstyled 
