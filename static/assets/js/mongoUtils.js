@@ -6,14 +6,15 @@ var _db;
 module.exports = {
 
   connectToServer: function( callback ) {
-    MongoClient.connect( url,  { useUnifiedTopology: true, useNewUrlParser: true }, function( err, client ) {
+    MongoClient.connect( url,  { auto_reconnect: true, useUnifiedTopology: true, useNewUrlParser: true }, function( err, client ) {
+      console.log('connectToServer() setting _db = ', _db)
       _db  = client.db('node-blog');
       return callback( err );
     } );
   },
 
   getDb: function() {
-    //console.log('process.env.mongodbpword = ', process.env.mongodbpword)
+    console.log('pgetDb() _db = ', _db)
     return _db;
   }
 };
