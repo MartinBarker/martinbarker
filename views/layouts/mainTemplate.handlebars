@@ -444,25 +444,8 @@ font-size: 1.1rem;
                     </li>
                 </ul>
             </li>
-            <!-- contact dropdown -->
-            <li>
-                <a href="#contactSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Contact</a>
-                <ul class="collapse list-unstyled" id="contactSubmenu">
-                    <li>
-                        <a href="#">Email</a>
-                    </li>
-                    <li>
-                        <a href="#">Github</a>
-                    </li>
-                    <li>
-                        <a href="#">LinkedIn</a>
-                    </li>
-                    <li>
-                        <a href="#">Resume</a>
-                    </li>
-                </ul>
-            </li>
-            <!-- blog dropdown -->
+
+             <!-- blog dropdown -->
             <li>
                 <a href="#blogSubmenu" data-toggle="collapse" class="dropdown-toggle"
 
@@ -481,21 +464,36 @@ font-size: 1.1rem;
                         show
                     {{/ifEquals}} 
                 " id="blogSubmenu">
-                    
-                    
                     {{#each posts}}
                         <a 
                         {{#ifEquals activeTab 'true'}} 
                             style='background: {{activeTabColor}}!important; color: {{activeTabTextColor}};'
                         {{/ifEquals}}
-
-                        
                         class='navbarItem' href="/posts/{{id}}">{{title}}</a>
-                        
-                   
+                    {{/each}}   
+                </ul>
+            </li> 
 
+            <!-- contact dropdown -->
+            <li>
+                <a href="#contactSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Contact</a>
+                <ul class="collapse list-unstyled" id="contactSubmenu">
+                    <li>
+                        <a href="mailto:martinbarker99@gmail.com">Email</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/MartinBarker">Github</a>
+                    </li>
+                    <li>
+                        <a href="https://www.linkedin.com/in/martinbarker99">LinkedIn</a>
+                    </li>
+                    <li>
+                        <a href="/static/assets/pdf/Martin Barker Resume 2020.pdf">Resume</a>
+                    </li>
+                </ul>
             </li>
-            {{/each}}
+           
+            
         </ul>
     </li>
 </ul>

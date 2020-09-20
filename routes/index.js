@@ -329,6 +329,7 @@ async function getPostsDisplay(activeTabColorHex, activeTabId, activeTabTextColo
     let postsDisplay = []
     
     var db = mongoUtil.getDb();
+    console.log('getPostsDisplay() db = ', db)
     try{
       //get db
       var cursor = db.collection('posts').find();

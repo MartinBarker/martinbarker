@@ -12,7 +12,10 @@ const port = 8080;
 var mongoUtil = require( './static/assets/js/mongoUtils' );
 
 mongoUtil.connectToServer( function( err, client ) {
-  if (err) console.log('err connecting to mongodb');
+  if (err){
+    console.log('err connecting to mongodb');
+    mongoUtil.connectToServer()
+  }
 } );
 
 //set cors for all routes
