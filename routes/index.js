@@ -5,7 +5,8 @@ var router = express.Router();
 var Vibrant = require('node-vibrant')
 const Post = require('../database/models/Post.js');
 //connect to mongodb
-var mongoUtil = require( '../static/assets/js/mongoUtils' );
+var mongodbutil = require('../static/assets/js/mongodbutils');
+var db = mongodbutil.getDb();
 
 //global vars
 allBlogPosts = []
@@ -16,8 +17,8 @@ app.get('/posts/:id', async (req, res) => {
   let mainTemplateData = await getMainTemplateData(req.params.id)
   //get post
   let post = null;
-  for(var i = 0; i < allBlogPosts.length; i++){
-    if(allBlogPosts[i]['_id'] == req.params.id){
+  for (var i = 0; i < allBlogPosts.length; i++) {
+    if (allBlogPosts[i]['_id'] == req.params.id) {
       post = allBlogPosts[i]
     }
   }
@@ -25,75 +26,21 @@ app.get('/posts/:id', async (req, res) => {
   let displayPosts = mainTemplateData.postsDisplay;
 
   res.render('post', {
-      layout: 'mainTemplate', 
-      post: post,
-      pageTitle:post.title,
-      blog:'active',
-      //icon:'z',,
-      pageBodyNavTitle: `${post.title}`,
-      pageBodyNaavGithub: 'x',
-      postTitle: post.title,
-      postDescription: post.description,
-      postContent: post.content,
-      postDate: post.createdAt,
-      //list to display for navbar 'Blog' options
-      posts:displayPosts,
-      //mainTemplateData
-      imgPath: '/'+mainTemplateData.imgPath, 
-      imgDesc: mainTemplateData.desc,
-      imgSrc: mainTemplateData.src,
-      imgListen: mainTemplateData.listen,
-      textColor1: mainTemplateData.colorData.textColor1, //'Martin Barker' Navbar Header text color
-      backgroundColor1: mainTemplateData.colorData.backgroundColor1, //'Martin Barker' Navbar Header Background Color
-      textColor6: mainTemplateData.colorData.textColor6, //sidebar un-active tab text color
-      backgroundColor2: mainTemplateData.colorData.backgroundColor2, //sidebar un-active tab background color
-      textColor2: mainTemplateData.colorData.textColor2, //sidebar active tab
-      backgroundColor3: mainTemplateData.colorData.backgroundColor3, //sidebar active tab
-      textColor7: mainTemplateData.colorData.textColor7, //sidebar lower background
-      backgroundColor7: mainTemplateData.colorData.backgroundColor7, //sidebar lower background
-      textColor3: mainTemplateData.colorData.textColor3, //sidebar hover tab color
-      backgroundColor4: mainTemplateData.colorData.backgroundColor4, //sidebar hover tab color
-      textColor4: mainTemplateData.colorData.textColor4, //body header title color
-      backgroundColor6: mainTemplateData.colorData.backgroundColor6, //body header title color
-      textColor5: mainTemplateData.colorData.textColor5, //body color
-      backgroundColor5: mainTemplateData.colorData.backgroundColor5, //body color
-      //img color display boxes
-      Vibrant: mainTemplateData.colorData.Vibrant,
-      LightVibrant: mainTemplateData.colorData.LightVibrant,
-      DarkVibrant: mainTemplateData.colorData.DarkVibrant, 
-      Muted: mainTemplateData.colorData.Muted, 
-      LightMuted: mainTemplateData.colorData.LightMuted,
-      DarkMuted: mainTemplateData.colorData.DarkMuted, 
-      
-  })
-  
-});
-
-//home route
-app.get('/', async function (req, res) {
-  console.log('route / ')
-  //get mainTemplate data
-  let mainTemplateData = await getMainTemplateData(req.params.id)
-  //const post = await Post.findById(req.params.id)
-  let displayPosts = mainTemplateData.postsDisplay;
- 
-  res.render('about', {
-    //template layout to use
-    layout: 'mainTemplate', 
-    //page title of tab
-    pageTitle: 'martinbarker.me',
-    //page tab icon
-    icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
-    //set active current tab
-    about: 'active',
-    //body content title 
-    pageBodyNavTitle: 'martinbarker.me',
-    //body content github link
-    pageBodyNavGithub: 'temp',
+    layout: 'mainTemplate',
+    post: post,
+    pageTitle: post.title,
+    blog: 'active',
+    //icon:'z',,
+    pageBodyNavTitle: `${post.title}`,
+    pageBodyNaavGithub: 'x',
+    postTitle: post.title,
+    postDescription: post.description,
+    postContent: post.content,
+    postDate: post.createdAt,
     //list to display for navbar 'Blog' options
-    posts:displayPosts,
+    posts: displayPosts,
     //mainTemplateData
-    imgPath: '/'+mainTemplateData.imgPath, 
+    imgPath: '/' + mainTemplateData.imgPath,
     imgDesc: mainTemplateData.desc,
     imgSrc: mainTemplateData.src,
     imgListen: mainTemplateData.listen,
@@ -114,15 +61,69 @@ app.get('/', async function (req, res) {
     //img color display boxes
     Vibrant: mainTemplateData.colorData.Vibrant,
     LightVibrant: mainTemplateData.colorData.LightVibrant,
-    DarkVibrant: mainTemplateData.colorData.DarkVibrant, 
-    Muted: mainTemplateData.colorData.Muted, 
+    DarkVibrant: mainTemplateData.colorData.DarkVibrant,
+    Muted: mainTemplateData.colorData.Muted,
     LightMuted: mainTemplateData.colorData.LightMuted,
-    DarkMuted: mainTemplateData.colorData.DarkMuted, 
+    DarkMuted: mainTemplateData.colorData.DarkMuted,
+
+  })
+
+});
+
+//home route
+app.get('/', async function (req, res) {
+  console.log('route / ')
+  //get mainTemplate data
+  let mainTemplateData = await getMainTemplateData(req.params.id)
+  //const post = await Post.findById(req.params.id)
+  let displayPosts = mainTemplateData.postsDisplay;
+
+  res.render('about', {
+    //template layout to use
+    layout: 'mainTemplate',
+    //page title of tab
+    pageTitle: 'martinbarker.me',
+    //page tab icon
+    icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
+    //set active current tab
+    about: 'active',
+    //body content title 
+    pageBodyNavTitle: 'martinbarker.me',
+    //body content github link
+    pageBodyNavGithub: 'temp',
+    //list to display for navbar 'Blog' options
+    posts: displayPosts,
+    //mainTemplateData
+    imgPath: '/' + mainTemplateData.imgPath,
+    imgDesc: mainTemplateData.desc,
+    imgSrc: mainTemplateData.src,
+    imgListen: mainTemplateData.listen,
+    textColor1: mainTemplateData.colorData.textColor1, //'Martin Barker' Navbar Header text color
+    backgroundColor1: mainTemplateData.colorData.backgroundColor1, //'Martin Barker' Navbar Header Background Color
+    textColor6: mainTemplateData.colorData.textColor6, //sidebar un-active tab text color
+    backgroundColor2: mainTemplateData.colorData.backgroundColor2, //sidebar un-active tab background color
+    textColor2: mainTemplateData.colorData.textColor2, //sidebar active tab
+    backgroundColor3: mainTemplateData.colorData.backgroundColor3, //sidebar active tab
+    textColor7: mainTemplateData.colorData.textColor7, //sidebar lower background
+    backgroundColor7: mainTemplateData.colorData.backgroundColor7, //sidebar lower background
+    textColor3: mainTemplateData.colorData.textColor3, //sidebar hover tab color
+    backgroundColor4: mainTemplateData.colorData.backgroundColor4, //sidebar hover tab color
+    textColor4: mainTemplateData.colorData.textColor4, //body header title color
+    backgroundColor6: mainTemplateData.colorData.backgroundColor6, //body header title color
+    textColor5: mainTemplateData.colorData.textColor5, //body color
+    backgroundColor5: mainTemplateData.colorData.backgroundColor5, //body color
+    //img color display boxes
+    Vibrant: mainTemplateData.colorData.Vibrant,
+    LightVibrant: mainTemplateData.colorData.LightVibrant,
+    DarkVibrant: mainTemplateData.colorData.DarkVibrant,
+    Muted: mainTemplateData.colorData.Muted,
+    LightMuted: mainTemplateData.colorData.LightMuted,
+    DarkMuted: mainTemplateData.colorData.DarkMuted,
   });
 })
 
 //projects route
-app.get('/projects', async function(req, res){
+app.get('/projects', async function (req, res) {
   res.redirect('/');
 })
 
@@ -133,10 +134,10 @@ app.get('/popularify', async function (req, res) {
   let mainTemplateData = await getMainTemplateData(req.params.id)
   //const post = await Post.findById(req.params.id)
   let displayPosts = mainTemplateData.postsDisplay;
- 
+
   res.render('popularify', {
     //template layout to use
-    layout: 'mainTemplate', 
+    layout: 'mainTemplate',
     //page title of tab
     pageTitle: 'popularify.site',
     //page tab icon
@@ -150,9 +151,9 @@ app.get('/popularify', async function (req, res) {
     //body content github link
     pageBodyNavGithub: 'temp',
     //list to display for navbar 'Blog' options
-    posts:displayPosts,
+    posts: displayPosts,
     //mainTemplateData
-    imgPath: '/'+mainTemplateData.imgPath, 
+    imgPath: '/' + mainTemplateData.imgPath,
     imgDesc: mainTemplateData.desc,
     imgSrc: mainTemplateData.src,
     imgListen: mainTemplateData.listen,
@@ -173,32 +174,32 @@ app.get('/popularify', async function (req, res) {
     //img color display boxes
     Vibrant: mainTemplateData.colorData.Vibrant,
     LightVibrant: mainTemplateData.colorData.LightVibrant,
-    DarkVibrant: mainTemplateData.colorData.DarkVibrant, 
-    Muted: mainTemplateData.colorData.Muted, 
+    DarkVibrant: mainTemplateData.colorData.DarkVibrant,
+    Muted: mainTemplateData.colorData.Muted,
     LightMuted: mainTemplateData.colorData.LightMuted,
-    DarkMuted: mainTemplateData.colorData.DarkMuted, 
+    DarkMuted: mainTemplateData.colorData.DarkMuted,
   });
 })
 
 //popularify spotify api route
 app.post('/popularifyRequest', async function (req, res) {
-  console.log("/popularifyRequest req.body=",req.body)
-  
+  console.log("/popularifyRequest req.body=", req.body)
+
   var SpotifyWebApi = require('spotify-web-api-node');
- 
+
   // credentials are optional
   var spotifyApi = new SpotifyWebApi({
     clientId: 'f80489d0401f431b9ce0b7bff0244248',
     clientSecret: 'b7ec06f77e2340ec939882b267a3f178',
     redirectUri: 'https://masterb-j2xzapyrnq-uc.a.run.app/popularify'
   });
- 
+
   // Get Elvis' albums
   spotifyApi.getArtistAlbums('5fAix5NwfNgHQqYRrHIPxo').then(
-    function(data) {
+    function (data) {
       res.send(data.body);
     },
-    function(err) {
+    function (err) {
       res.send(err);
     }
   );
@@ -211,12 +212,12 @@ app.get('/tagger', async function (req, res) {
   console.log('route /tagger ')
   //get mainTemplate data
   let mainTemplateData = await getMainTemplateData(req.params.id)
-  
+
   let displayPosts = mainTemplateData.postsDisplay;
 
   res.render('tagger', {
     //template layout to use
-    layout: 'mainTemplate', 
+    layout: 'mainTemplate',
     //page title of tab
     pageTitle: 'tagger.site',
     //page tab icon
@@ -230,9 +231,9 @@ app.get('/tagger', async function (req, res) {
     //body content github link
     pageBodyNavGithub: 'temp',
     //list to display for navbar 'Blog' options
-    posts:displayPosts,
+    posts: displayPosts,
     //mainTemplateData
-    imgPath: '/'+mainTemplateData.imgPath, 
+    imgPath: '/' + mainTemplateData.imgPath,
     imgDesc: mainTemplateData.desc,
     imgSrc: mainTemplateData.src,
     imgListen: mainTemplateData.listen,
@@ -253,10 +254,10 @@ app.get('/tagger', async function (req, res) {
     //img color display boxes
     Vibrant: mainTemplateData.colorData.Vibrant,
     LightVibrant: mainTemplateData.colorData.LightVibrant,
-    DarkVibrant: mainTemplateData.colorData.DarkVibrant, 
-    Muted: mainTemplateData.colorData.Muted, 
+    DarkVibrant: mainTemplateData.colorData.DarkVibrant,
+    Muted: mainTemplateData.colorData.Muted,
     LightMuted: mainTemplateData.colorData.LightMuted,
-    DarkMuted: mainTemplateData.colorData.DarkMuted, 
+    DarkMuted: mainTemplateData.colorData.DarkMuted,
   });
 })
 
@@ -270,19 +271,19 @@ app.post('/getColors', async function (req, res) {
 
 //api audio file metadata tags
 app.post('/getFileMetadataTags', async function (req, res) {
-  console.log("/getFileMetadataTags req.body=",req.body)
+  console.log("/getFileMetadataTags req.body=", req.body)
   var jsonResults = {
     'tags': {
-        'releaseArtist': [], 
-        'releaseInfo': [],
-        'tracklist': [],
-        'combinations': []
+      'releaseArtist': [],
+      'releaseInfo': [],
+      'tracklist': [],
+      'combinations': []
     }
   };
   res.send(jsonResults)
 });
 
-async function getMainTemplateData(activeTabId){
+async function getMainTemplateData(activeTabId) {
   return new Promise(async function (resolve, reject) {
     //get color data based on a random image from /static/assets/aesthetic-images
     let colorData = await getColorData()
@@ -290,18 +291,18 @@ async function getMainTemplateData(activeTabId){
     let postsDisplay = await getPostsDisplay(colorData.colors['LightMuted'].hex, activeTabId, getReadableTextColor(colorData.colors['LightMuted'].rgb))
 
     let mainTemplateData = {
-      colorDataRaw:colorData,
-      colorData:{
-        textColor1: getReadableTextColor(colorData.colors['DarkMuted'].rgb), 
-        backgroundColor1: colorData.colors['DarkMuted'].hex,   
+      colorDataRaw: colorData,
+      colorData: {
+        textColor1: getReadableTextColor(colorData.colors['DarkMuted'].rgb),
+        backgroundColor1: colorData.colors['DarkMuted'].hex,
         textColor2: getReadableTextColor(colorData.colors['LightMuted'].rgb), //active tab text color
         backgroundColor2: colorData.colors['LightVibrant'].hex,
-        textColor6:getReadableTextColor(colorData.colors['LightVibrant'].rgb),
+        textColor6: getReadableTextColor(colorData.colors['LightVibrant'].rgb),
         backgroundColor3: colorData.colors['LightMuted'].hex,
         textColor7: getReadableTextColor(colorData.colors['DarkVibrant'].rgb),
-        backgroundColor7:  colorData.colors['DarkVibrant'].hex,
+        backgroundColor7: colorData.colors['DarkVibrant'].hex,
         textColor3: getReadableTextColor(colorData.colors['Vibrant'].rgb), //navbar hover tab text color
-        backgroundColor4: colorData.colors['Vibrant'].hex, 
+        backgroundColor4: colorData.colors['Vibrant'].hex,
         textColor4: getReadableTextColor(colorData.colors['Muted'].rgb),
         backgroundColor6: colorData.colors['Muted'].hex,
         textColor5: getReadableTextColor(colorData.colors['LightMuted'].rgb),
@@ -312,52 +313,41 @@ async function getMainTemplateData(activeTabId){
         Muted: colorData.colors['Muted'].hex,
         LightMuted: colorData.colors['LightMuted'].hex,
         DarkMuted: colorData.colors['DarkMuted'].hex,
-      }, 
-      imgPath:colorData.imgPath,
-      imgDesc:colorData.desc,
-      imgSrc:colorData.src,
-      imgListen:colorData.listen,
-      
-      postsDisplay:postsDisplay,
+      },
+      imgPath: colorData.imgPath,
+      imgDesc: colorData.desc,
+      imgSrc: colorData.src,
+      imgListen: colorData.listen,
+
+      postsDisplay: postsDisplay,
     }
     resolve(mainTemplateData)
   })
 }
 
-async function getPostsDisplay(activeTabColorHex, activeTabId, activeTabTextColor){
+async function getPostsDisplay(activeTabColorHex, activeTabId, activeTabTextColor) {
   return new Promise(async function (resolve, reject) {
     let postsDisplay = []
-    
-    var db = mongoUtil.getDb();
-    console.log('getPostsDisplay() db = ', db)
-    try{
-      //get db
-      var cursor = db.collection('posts').find();
-      // Execute the each command, triggers for each document
-      cursor.each(function(err, item) {
-        // If the item is null then the cursor is exhausted/empty and closed
-        if(item == null) {
-          resolve(postsDisplay)
-            return;
-        }
-        // otherwise, do something with the item
-        allBlogPosts.push(item)
-        let tempObj = null;
-        if(activeTabId == item._id){
-          tempObj = {'title':item.title, 'id':item._id, 'activeTabTextColor':activeTabTextColor, 'activeTabColor':activeTabColorHex, 'activeTab':'true'}
-        }else{
-          tempObj = {'title':item.title, 'id':item._id}
-        }
-        
-        postsDisplay.push(tempObj)
+    var cursor = db.collection('posts').find();
+    cursor.each(function (err, item) {
+      // If the item is null then the cursor is exhausted/empty and closed
+      if (item == null) {
+        //console.log('cursor item = null')
+        resolve(postsDisplay)
+        return;
+      }
+      // otherwise, do something with the item
+      allBlogPosts.push(item)
+      let tempObj = null;
+      if (activeTabId == item._id) {
+        tempObj = { 'title': item.title, 'id': item._id, 'activeTabTextColor': activeTabTextColor, 'activeTabColor': activeTabColorHex, 'activeTab': 'true' }
+      } else {
+        tempObj = { 'title': item.title, 'id': item._id }
+      }
+      //console.log('tempObj = ', tempObj)
+      postsDisplay.push(tempObj)
     });
-    }catch(err){
-      console.log('err getting posts db collection')
-      resolve([])
-    }
-    
-    
-   
+
   })
 }
 
@@ -378,18 +368,18 @@ async function getColorData() {
       let hexColor = rgbToHex(colorValue)
       //construct object
       var keyName = `${key}`
-      colors[keyName] = {'hex':hexColor, 'rgb':colorValue}
+      colors[keyName] = { 'hex': hexColor, 'rgb': colorValue }
     }
 
     //get source info
     let sourceInfo = await getSourceInfo(randomImg)
 
-    resolve({ 
-      colors: colors, 
-      imgPath: imgPath, 
-      filename: randomImg, 
-      listenable: sourceInfo.listenable, 
-      desc: sourceInfo.desc, 
+    resolve({
+      colors: colors,
+      imgPath: imgPath,
+      filename: randomImg,
+      listenable: sourceInfo.listenable,
+      desc: sourceInfo.desc,
       src: sourceInfo.src,
       listen: sourceInfo.listen,
     })
@@ -400,41 +390,41 @@ async function getColorData() {
    Helper functions
 */
 
-function getReadableTextColor(inputRGBcolor){
-  if(((inputRGBcolor[0])*0.299 + (inputRGBcolor[1])*0.587 + (inputRGBcolor[2])*0.114) > 186){
-    return("#000000")  
-  }else{
-    return("#ffffff")
+function getReadableTextColor(inputRGBcolor) {
+  if (((inputRGBcolor[0]) * 0.299 + (inputRGBcolor[1]) * 0.587 + (inputRGBcolor[2]) * 0.114) > 186) {
+    return ("#000000")
+  } else {
+    return ("#ffffff")
   }
 }
 
 function LightenDarkenColor(col, amt) {
-  
+
   var usePound = false;
 
   if (col[0] == "#") {
-      col = col.slice(1);
-      usePound = true;
+    col = col.slice(1);
+    usePound = true;
   }
 
-  var num = parseInt(col,16);
+  var num = parseInt(col, 16);
 
   var r = (num >> 16) + amt;
 
   if (r > 255) r = 255;
-  else if  (r < 0) r = 0;
+  else if (r < 0) r = 0;
 
   var b = ((num >> 8) & 0x00FF) + amt;
 
   if (b > 255) b = 255;
-  else if  (b < 0) b = 0;
+  else if (b < 0) b = 0;
 
   var g = (num & 0x0000FF) + amt;
 
   if (g > 255) g = 255;
   else if (g < 0) g = 0;
 
-  return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+  return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
 
 }
 
@@ -461,38 +451,38 @@ function componentToHex(c) {
 }
 
 //get img source info
-function getSourceInfo(imgFilename){
-  
+function getSourceInfo(imgFilename) {
+
   return new Promise(async function (resolve, reject) {
-    
+
     //remove filetype at end
     imgFilename = imgFilename.substring(0, imgFilename.indexOf('.'))
 
     let imgSources = {
-      'beatgeneration':{
-        'desc':'This album is not availiable online anywhere.',
-        'src':'https://www.discogs.com/John-Brent-Len-Chandler-Hugh-Romney-Beat-Generation-Vol-I/release/12692463',
-        'listenable':false,
-      },
-      
-      'folkwaysMexico':{
-        'listen':'https://www.youtube.com/embed/hsolGtuwvYU',
-        'listenable':true,
+      'beatgeneration': {
+        'desc': 'This album is not availiable online anywhere.',
+        'src': 'https://www.discogs.com/John-Brent-Len-Chandler-Hugh-Romney-Beat-Generation-Vol-I/release/12692463',
+        'listenable': false,
       },
 
-      'JohnBerkey':{
-        'desc':'John Berkey',
-        'listenable':false,
+      'folkwaysMexico': {
+        'listen': 'https://www.youtube.com/embed/hsolGtuwvYU',
+        'listenable': true,
       },
-      
-      'apple1':{
-        'src':'http://www.macmothership.com/gallery/gallery3.html',
+
+      'JohnBerkey': {
+        'desc': 'John Berkey',
+        'listenable': false,
       },
-      
+
+      'apple1': {
+        'src': 'http://www.macmothership.com/gallery/gallery3.html',
+      },
+
     }
 
     let imgSrcInfo = {}
-    if(imgSources[imgFilename]){
+    if (imgSources[imgFilename]) {
       imgSrcInfo = imgSources[imgFilename]
     }
 
