@@ -227,7 +227,7 @@ app.get('/tagger', async function (req, res) {
     //set active current tab
     tagger: 'active',
     //body content title 
-    pageBodyNavTitle: 'tagger.site',
+    pageBodyNavTitle: 'ztagger.site',
     //body content github link
     pageBodyNavGithub: 'temp',
     //list to display for navbar 'Blog' options
