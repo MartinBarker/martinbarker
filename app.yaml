@@ -1,1 +1,4 @@
-runtime: nodejs10
+runtime: nodejs
+env: flex
+manual_scaling:
+  instances: 2
