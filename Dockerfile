@@ -1,7 +1,5 @@
 FROM node:carbon	
 VOLUME ["/root"]	
-ADD setup-ffmpeg.sh /root	
-RUN /root/setup-ffmpeg.sh	
 # Create app directory	
 WORKDIR /usr/src/app	
 # Install app dependencies	
