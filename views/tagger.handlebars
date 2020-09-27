@@ -16,8 +16,10 @@
             <label>
                 <h5>Discogs URL:</h5>
             </label>
+            <div id='taggerErrDisplay'></div>
             <input size="12" type="text" placeholder='Discogs URL' name="url" id="urlInput">
-            <button style="cursor: pointer;" id='urlInputButton' name="data" type="button" onclick="submitDiscogsURL(document.getElementById('urlInput').value)">Submit</button>
+            <button style="cursor: pointer;" id='urlInputButton' name="data" type="button"
+                onclick="submitDiscogsURL(document.getElementById('urlInput').value)">Submit</button>
         </div>
 
         <!-- File Input Selection -->
@@ -31,46 +33,52 @@
 
         <style>
             #drop-area {
-            /* border: 2px dashed #ccc; */
-            border-radius: 20px;
-            width: 480px;
-            padding: 20px;
-            } 
+                /* border: 2px dashed #ccc; */
+                border-radius: 20px;
+                width: 480px;
+                padding: 20px;
+            }
+
             /*
             #drop-area.highlight {
             border-color: purple;
             } 
             */
             p {
-            margin-top: 0;
-            }
-            .my-form {
-            margin-bottom: 10px;
-            }
-            #gallery {
-            margin-top: 10px;
-            }
-            #gallery img {
-            width: 150px;
-            margin-bottom: 10px;
-            margin-right: 10px;
-            vertical-align: middle;
-            }
-            .button {
-            display: inline-block;
-            padding: 10px;
-            background: #ccc;
-            cursor: pointer;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            }
-            .button:hover {
-            background: #ddd;
-            }
-            #fileElem {
-            display: none;
+                margin-top: 0;
             }
 
+            .my-form {
+                margin-bottom: 10px;
+            }
+
+            #gallery {
+                margin-top: 10px;
+            }
+
+            #gallery img {
+                width: 150px;
+                margin-bottom: 10px;
+                margin-right: 10px;
+                vertical-align: middle;
+            }
+
+            .button {
+                display: inline-block;
+                padding: 10px;
+                background: #ccc;
+                cursor: pointer;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+            }
+
+            .button:hover {
+                background: #ddd;
+            }
+
+            #fileElem {
+                display: none;
+            }
         </style>
         <!-- tagger output -->
         <hr>
@@ -85,16 +93,18 @@
 20:30 - 24:42 05 - for priscilla
 24:42 - 34:14 06 - the delta song
 34:14 - 39:35 07 - why "></textarea>
-                <button class="btn default copyButton" style="cursor: pointer; max-width: 70px; width: 100%;" id='copyToClipboarad' onclick="copyToClipboard('inputBox')" type="button">Copy</button>
+                <button class="btn default copyButton" style="cursor: pointer; max-width: 70px; width: 100%;"
+                    id='copyToClipboarad' onclick="copyToClipboard('inputBox')" type="button">Copy</button>
                 <div>
-                    <table class="fixed h-100" align="left" style="white-space:nowrap; table-layout: fixed; max-width: 533px;" height="100"
+                    <table class="fixed h-100" align="left"
+                        style="white-space:nowrap; table-layout: fixed; max-width: 533px;" height="100"
                         id="adjustments">
                         <tbody>
                             <!-- Columns -->
                             <tr>
                                 <th style="text-align:center; width: 6%;">
                                     <select class='taggerOptions' id="taggerOption1">
-                                        <option value="startTime" selected>startTime</option>
+                                        <option value="startTime" selected>start</option>
                                         <option value="blank">(blank)</option>
                                     </select>
 
@@ -104,12 +114,17 @@
                                     </select>
 
                                     <select class='taggerOptions' id="taggerOption3">
-                                        <option value="endTime" selected>endTime</option>
+                                        <option value="endTime" selected>end</option>
                                         <option value="blank">(blank)</option>
                                     </select>
 
                                     <select class='taggerOptions' id="taggerOption4">
                                         <option value="title">title</option>
+                                    </select>
+
+                                    <select class='taggerOptions' id="taggerOption5">
+                                        <option value="artist">artist</option>
+                                        <option value="blank" selected>(blank)</option>
                                     </select>
                                 </th>
                             </tr>
@@ -124,10 +139,13 @@
         <h3>Comma-Separated Discogs Tags:</h3>
         <div class='outputDiscogstaggerBox' style='margin-left:15px;'>
             <div class='row'>
-                <textarea class="inputbox" id="tagsBox" rows="7" cols="44" placeholder="Booker T. Jones,Priscilla Jones,Booker T & The MGs,The Mar-Keys,The Stax Staff,The Packers,The RCO All-Stars,Priscilla Coolidge,Booker T. & Priscilla,1971,France,The Wedding Song,She,The Indian Song,Sea Gull,For Priscilla,The Delta  Song,Why,Mississippi Voodoo,Cool  Black Dream,Sweet Child Youre Not Alone,Booker T. & Priscilla 1971,Booker T. Jones 1971,"></textarea>
-                <button class="btn default copyButton" style="cursor: pointer; max-width: 70px; width: 100%;" id='copyToClipboarad' onclick="copyToClipboard('tagsBox')" type="button">Copy</button>
+                <textarea class="inputbox" id="tagsBox" rows="7" cols="44"
+                    placeholder="Booker T. Jones,Priscilla Jones,Booker T & The MGs,The Mar-Keys,The Stax Staff,The Packers,The RCO All-Stars,Priscilla Coolidge,Booker T. & Priscilla,1971,France,The Wedding Song,She,The Indian Song,Sea Gull,For Priscilla,The Delta  Song,Why,Mississippi Voodoo,Cool  Black Dream,Sweet Child Youre Not Alone,Booker T. & Priscilla 1971,Booker T. Jones 1971,"></textarea>
+                <button class="btn default copyButton" style="cursor: pointer; max-width: 70px; width: 100%;"
+                    id='copyToClipboarad' onclick="copyToClipboard('tagsBox')" type="button">Copy</button>
                 <div>
-                    <table class="fixed h-100" align="left" style="white-space:nowrap; table-layout: fixed; max-width: 533px;" height="100"
+                    <table class="fixed h-100" align="left"
+                        style="white-space:nowrap; table-layout: fixed; max-width: 533px;" height="100"
                         id="adjustments">
                         <tbody>
                             <!-- Columns -->
@@ -138,19 +156,65 @@
                                 <th style="text-align:center; width: 20%;">Tags</th>
                             </tr>
 
+                            <script>
+                                $(document).ready(function () {
+                                    //release artist
+                                    var releaseArtistsSlider = document.getElementById("releaseArtistsSlider");
+                                    var releaseArtistsSliderPercent = document.getElementById("releaseArtistsSliderPercent");
+                                    releaseArtistsSliderPercent.innerHTML = `${releaseArtistsSlider.value}%`; // Display the default releaseArtistsSlider value
+                                    // Update the current releaseArtistsSlider value (each time you drag the releaseArtistsSlider handle)
+                                    releaseArtistsSlider.oninput = function () {
+                                        releaseArtistsSliderPercent.innerHTML = `${this.value}%`;
+                                        prepUpdateTagsBox()
+                                    }
+                                    //release info
+                                    var releaseInfoSlider = document.getElementById("releaseInfoSlider");
+                                    var releaseInfoSliderSliderPercent = document.getElementById("releaseInfoSliderPercent");
+                                    releaseInfoSliderSliderPercent.innerHTML = `${releaseInfoSlider.value}%`; // Display the default releaseInfoSlider value
+                                    // Update the current releaseInfoSlider value (each time you drag the releaseInfoSlider handle)
+                                    releaseInfoSlider.oninput = function () {
+                                        releaseInfoSliderPercent.innerHTML = `${this.value}%`;
+                                        prepUpdateTagsBox()
+                                    }
+                                    //tracklist
+                                    var tracklistSlider = document.getElementById("tracklistSlider");
+                                    var tracklistSliderPercent = document.getElementById("tracklistSliderPercent");
+                                    tracklistSliderPercent.innerHTML = `${tracklistSlider.value}%`;
+                                    tracklistSlider.oninput = function () {
+                                        tracklistSliderPercent.innerHTML = `${this.value}%`;
+                                        prepUpdateTagsBox()
+                                    }
+                                    //combinations
+                                    var combinationsSlider = document.getElementById("combinationsSlider");
+                                    var combinationsSliderPercent = document.getElementById("combinationsSliderPercent");
+                                    combinationsSliderPercent.innerHTML = `${combinationsSlider.value}%`;
+                                    combinationsSlider.oninput = function () {
+                                        combinationsSliderPercent.innerHTML = `${this.value}%`;
+                                        prepUpdateTagsBox()
+                                    }
+                                })
+                            </script>
+
                             <!-- Artists -->
                             <tr>
                                 <td style="text-align:center;">
                                     <input type="checkbox" class="releaseArtistsCheckbox" id="releaseArtistsCheckbox"
                                         checked="" onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:left;">Artist(s)</td>
+                                <td style="text-align:center;">Artist(s)</td>
                                 <td>
-                                    <div style="text-align:left;">
-                                        <input type="range" class="releaseArtistsSlider" id="releaseArtistsSlider"
-                                            min="0" max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-right' id="releaseArtistsSliderValue">100%</div>
-                                        <div class='float-right' id='releaseArtistsNumber'>0 chars</div>
+                                    <div style="text-align:center;">
+                                        <input type="range" min="0" max="100" value="100" onchange="prepUpdateTagsBox()"
+                                            id="releaseArtistsSlider">
+                                        <span id="releaseArtistsSliderPercent"></span>
+                                        <div class='row'>
+                                            <div class='col'
+                                                style='font-size: 15px;white-space:nowrap;text-align:center'
+                                                id='releaseArtistsNumber'>0 chars</div>
+                                            <div class='col'
+                                                style='font-size: 15px;white-space:nowrap;text-align:center'
+                                                id='releaseArtistsTagNum'>0/0 tags</div>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -161,13 +225,16 @@
                                     <input type="checkbox" class="releaseInfoCheckbox" id="releaseInfoCheckbox"
                                         checked="" onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:left;">Album</td>
-                                <td>
-                                    <div style="text-align:left;">
-                                        <input type="range" class="releaseInfoSlider" id="releaseInfoSlider" min="0"
-                                            max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-right' id="releaseInfoSliderValue">100%</div>
-                                        <div class='float-right' id='releaseInfoNumber'>0 chars</div>
+                                <td style="text-align:center;">Album</td>
+                                <td style="text-align:center;">
+                                    <input type="range" min="0" max="100" value="100" onchange="prepUpdateTagsBox()"
+                                        id="releaseInfoSlider">
+                                    <span id="releaseInfoSliderPercent"></span>
+                                    <div class='row'>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='releaseInfoNumber'>0 chars</div>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='releaseInfoTagNum'>0/0 tags</div>
                                     </div>
                                 </td>
 
@@ -179,13 +246,16 @@
                                     <input type="checkbox" class="tracklistCheckbox" id="tracklistCheckbox" checked=""
                                         onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:left;">Tracklist</td>
-                                <td>
-                                    <div style="text-align:left;">
-                                        <input type="range" class="tracklistSlider" id="tracklistSlider" min="0"
-                                            max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-right' id="tracklistSliderValue">100%</div>
-                                        <div class='float-right' id='tracklistNumber'>0 chars</div>
+                                <td style="text-align:center;">Tracklist</td>
+                                <td style="text-align:center;">
+                                    <input type="range" min="0" max="100" value="100" onchange="prepUpdateTagsBox()"
+                                        id="tracklistSlider">
+                                    <span id="tracklistSliderPercent"></span>
+                                    <div class='row'>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='tracklistNumber'>0 chars</div>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='tracklistTagNum'>0/0 tags</div>
                                     </div>
                                 </td>
 
@@ -197,13 +267,16 @@
                                     <input type="checkbox" class="combinationsCheckbox" id="combinationsCheckbox"
                                         checked="" onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:left;">Combinations</td>
-                                <td>
-                                    <div style="text-align:left;">
-                                        <input type="range" class="combinationsSlider" id="combinationsSlider" min="0"
-                                            max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-right' id="combinationsSliderValue">100%</div>
-                                        <div class='float-right' id='combinationsNumber'>0 chars</div>
+                                <td style="text-align:center;">Combinations</td>
+                                <td style="text-align:center;">
+                                    <input type="range" id="combinationsSlider" min="0" max="100" value="100"
+                                        onchange="prepUpdateTagsBox()">
+                                    <span id="combinationsSliderPercent">100%</span>
+                                    <div class='row'>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='combinationsNumber'>0 chars</div>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='combinationsTagNum'>0/0 tags</div>
                                     </div>
                                 </td>
                             </tr>
@@ -216,16 +289,16 @@
         <div id="charCount">Number of characters: 0</div>
 
         <style>
-            
-
             .copyButton {
                 border: 2px solid black;
             }
 
-            table, th, td {
+            table,
+            th,
+            td {
                 border: 2px solid black;
                 background: white;
-                color:black;
+                color: black;
                 height: 100%;
                 white-space: normal;
                 word-wrap: break-word;
@@ -236,15 +309,15 @@
                 /* font-size: 18px; */
             }
         </style>
-    {{!-- --}}
+        {{!-- --}}
     </div>
 </div>
 
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         //call function to set drag and drop colors
         setDragAndDropColors()
-        function setDragAndDropColors(){
+        function setDragAndDropColors() {
             var sheet = document.createElement('style')
             let innerHTMLHoverColorStyle = `
                 #drop-area.highlight {
@@ -258,7 +331,7 @@
 
                 
                 `;
-            sheet.innerHTML = innerHTMLHoverColorStyle 
+            sheet.innerHTML = innerHTMLHoverColorStyle
             document.head.appendChild(sheet);
         }
     })
