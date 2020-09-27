@@ -167,13 +167,23 @@
                                     <!-- new slider -->
                                     <script>
                                         $(document).ready(function () {
-                                            var slider = document.getElementById("releaseArtistsSlider");
-                                            var output = document.getElementById("releaseArtistsSliderPercent");
-                                            output.innerHTML = `${slider.value}%`; // Display the default slider value
-
-                                            // Update the current slider value (each time you drag the slider handle)
-                                            slider.oninput = function () {
-                                                output.innerHTML = `${this.value}%`;
+                                            //release artist
+                                            var releaseArtistsSlider = document.getElementById("releaseArtistsSlider");
+                                            var releaseArtistsSliderPercent = document.getElementById("releaseArtistsSliderPercent");
+                                            releaseArtistsSliderPercent.innerHTML = `${releaseArtistsSlider.value}%`; // Display the default releaseArtistsSlider value
+                                            // Update the current releaseArtistsSlider value (each time you drag the releaseArtistsSlider handle)
+                                            releaseArtistsSlider.oninput = function () {
+                                                releaseArtistsSliderPercent.innerHTML = `${this.value}%`;
+                                                prepUpdateTagsBox()
+                                            }
+                                            //release info
+                                            var releaseInfoSlider = document.getElementById("releaseInfoSlider");
+                                            var releaseInfoSliderSliderPercent = document.getElementById("releaseInfoSliderPercent");
+                                            releaseInfoSliderSliderPercent.innerHTML = `${releaseInfoSlider.value}%`; // Display the default releaseInfoSlider value
+                                            // Update the current releaseInfoSlider value (each time you drag the releaseInfoSlider handle)
+                                            releaseInfoSlider.oninput = function () {
+                                                releaseInfoSliderPercent.innerHTML = `${this.value}%`;
+                                                prepUpdateTagsBox()
                                             }
                                         })
                                     </script>
@@ -185,17 +195,6 @@
                                             <div class='col' style='white-space:nowrap;text-align:right' id='releaseArtistsTagNum'>0/0 tags</div>
                                         </div>
                                     </div>
-                                     <!-- 
-                                    <div class='float-left' >0 chars</div>
-                                    <div class='float-right' >2 tags</div>
-
-                                     old slider 
-                                    <div style="text-align:left;">
-                                        <input type="range" class="releaseArtistsSlider" id="releaseArtistsSlider"
-                                            min="0" max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-right' id="releaseArtistsSliderValue">100%</div>
-                                        <div class='float-right' id='releaseArtistsNumber'>0 chars</div>
-                                    </div> -->
                                 </td>
                             </tr>
 
@@ -207,11 +206,11 @@
                                 </td>
                                 <td style="text-align:left;">Album</td>
                                 <td>
-                                    <div style="text-align:left;">
-                                        <input type="range" class="releaseInfoSlider" id="releaseInfoSlider" min="0"
-                                            max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-right' id="releaseInfoSliderValue">100%</div>
-                                        <div class='float-right' id='releaseInfoNumber'>0 chars</div>
+                                    <input type="range" min="0" max="100" value="100" onchange="prepUpdateTagsBox()" id="releaseInfoSlider">
+                                    <span id="releaseInfoSliderPercent"></span>
+                                    <div class='row'>
+                                        <div class='col' style='white-space:nowrap;text-align:left' id='releaseInfoNumber'>0 chars</div>
+                                        <div class='col' style='white-space:nowrap;text-align:right' id='releaseInfoTagNum'>0/0 tags</div>
                                     </div>
                                 </td>
 
