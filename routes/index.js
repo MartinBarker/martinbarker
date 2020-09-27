@@ -217,7 +217,7 @@ app.get('/tagger', async function (req, res) {
     //template layout to use
     layout: 'mainTemplate',
     //page title of tab
-    pageTitle: 'xtagger.site',
+    pageTitle: 'tagger.site',
     //page tab icon
     icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
     //expand projects tab
@@ -225,7 +225,7 @@ app.get('/tagger', async function (req, res) {
     //set active current tab
     tagger: 'active',
     //body content title 
-    pageBodyNavTitle: 'ztagger.site',
+    pageBodyNavTitle: 'tagger.site',
     //body content github link
     pageBodyNavGithub: 'temp',
     //list to display for navbar 'Blog' options
@@ -264,6 +264,49 @@ app.post('/getColors', async function (req, res) {
   console.log("/getColors")
   let colorData = await getColorData()
   res.send(colorData)
+});
+
+//get discogs api info
+app.post('/discogsAPI', async function (req, res) {
+  //get vars 
+  let code = req.body.code
+  let type = req.body.type
+    
+  //setup using npm package 'disconnect' for getting discogs api data
+  var Discogs = require('disconnect').Client;
+  var db = new Discogs().database();
+
+  console.log(`/discogsAPI code = ${code}, type = ${type}`)
+  if(type=='master'){
+    console.log('master')
+    //cant get master data 
+    db.getMaster(code, function(err, resp){
+      console.log('resp get master = ', resp)
+
+      //if err message is present return that, else return full response 
+      if(resp.message){
+        res.status(400).send(resp.message)
+      }else{
+        res.status(200).send(resp)
+      }
+    });
+
+  }else if(type=='release'){
+    console.log('release')
+
+      //get discogs api data
+      db.getRelease(code, function(err, resp){
+        //console.log('resp = ', resp)
+
+        //if err message is present return that, else return full response 
+        if(resp.message){
+          res.status(400).send(resp.message)
+        }else{
+          res.status(200).send(resp)
+        }
+      });
+  }
+  
 });
 
 //api audio file metadata tags
@@ -353,6 +396,7 @@ async function getColorData() {
   return new Promise(async function (resolve, reject) {
     let randomImg = await getRandomImg('static/assets/aesthetic-images/')
     let imgPath = `static/assets/aesthetic-images/${randomImg}`
+    console.log('img = ', imgPath)
 
     //get color swatches
     var swatches = await Vibrant.from(imgPath).getPalette()
@@ -367,6 +411,7 @@ async function getColorData() {
       var keyName = `${key}`
       colors[keyName] = { 'hex': hexColor, 'rgb': colorValue }
     }
+    console.log('color stuff fine, now getting metadata')
     //get source info
     let imgMetadata = await getImgMetadata(randomImg)
 
@@ -450,10 +495,17 @@ function getImgMetadata(imgFilename) {
     const fs = require('fs')
     let pathOneFolderUp = __dirname.split('/')
     let filepath = `${__dirname}/../static/assets/aesthetic-images/${imgFilename}`
-    const buffer = fs.readFileSync(filepath)
-    const parser = exif.create(buffer)
-    const result = parser.parse()
-    resolve({'title':result.tags.ImageDescription, 'listen':'tempListenUrl'})
+    console.log('get metadata')
+    try{
+      const buffer = fs.readFileSync(filepath)
+      const parser = exif.create(buffer)
+      const result = parser.parse()
+      resolve({'title':result.tags.ImageDescription, 'listen':'tempListenUrl'})
+    }catch(err){
+      console.log('there was an err getting this img metadata, err = ', err)
+      resolve({'title':"", 'listen':'tempListenUrl'})
+    }
+
   });
 }
 

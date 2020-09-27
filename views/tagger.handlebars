@@ -16,6 +16,7 @@
             <label>
                 <h5>Discogs URL:</h5>
             </label>
+            <div id='taggerErrDisplay'></div>
             <input size="12" type="text" placeholder='Discogs URL' name="url" id="urlInput">
             <button style="cursor: pointer;" id='urlInputButton' name="data" type="button" onclick="submitDiscogsURL(document.getElementById('urlInput').value)">Submit</button>
         </div>
@@ -94,7 +95,7 @@
                             <tr>
                                 <th style="text-align:center; width: 6%;">
                                     <select class='taggerOptions' id="taggerOption1">
-                                        <option value="startTime" selected>startTime</option>
+                                        <option value="startTime" selected>start</option>
                                         <option value="blank">(blank)</option>
                                     </select>
 
@@ -104,12 +105,17 @@
                                     </select>
 
                                     <select class='taggerOptions' id="taggerOption3">
-                                        <option value="endTime" selected>endTime</option>
+                                        <option value="endTime" selected>end</option>
                                         <option value="blank">(blank)</option>
                                     </select>
 
                                     <select class='taggerOptions' id="taggerOption4">
                                         <option value="title">title</option>
+                                    </select>
+
+                                    <select class='taggerOptions' id="taggerOption5">
+                                        <option value="artist">artist</option>
+                                        <option value="blank" selected>(blank)</option>
                                     </select>
                                 </th>
                             </tr>
