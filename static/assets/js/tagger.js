@@ -128,7 +128,7 @@ let tagsJsonDisplay = null;
 async function displayMetadataTags(tags){
     //reset table slider values
     document.getElementById('releaseArtistsSlider').value = 100;
-    document.getElementById('releaseArtistsSliderValue').innerHTML = `100%`;
+    document.getElementById('releaseArtistsSliderPercent').innerHTML = `100%`;
     document.getElementById('releaseInfoSlider').value = 100;
     document.getElementById('releaseInfoSliderValue').innerHTML = `100%`;
     document.getElementById('tracklistSlider').value = 100;
@@ -148,8 +148,7 @@ async function displayMetadataTags(tags){
 
     //get all checkbox and slider values
     var releaseArtistsCheckboxValue = $('.releaseArtistsCheckbox:checked').val();
-    var releaseArtistsSliderValue = $('.releaseArtistsSlider').val();
-    console.log('displayMetadataTags() releaseArtistsSliderValue = ', releaseArtistsSliderValue)
+    var releaseArtistsSliderValue = $('#releaseArtistsSlider').val();
 
     var releaseInfoCheckboxValue = $('.releaseInfoCheckbox:checked').val();
     var releaseInfoSliderValue = $('.releaseInfoSlider').val();
@@ -403,6 +402,7 @@ async function generateDiscogsFileTags(songs){
 async function generateDiscogsURLTags(discogsReleaseData) {
     //get releaseArtist tags
     let releaseArtistTags = await getArtistTags(discogsReleaseData)
+    console.log('releaseArtistTaghs=', releaseArtistTags)
 
     //get releaseInfo tags
     let releaseInfoTags = await getReleaseInfoTags(discogsReleaseData)
@@ -412,7 +412,6 @@ async function generateDiscogsURLTags(discogsReleaseData) {
 
     //get combinations tags
     let combinationsTags = await getCombinationTags(discogsReleaseData)
-    console.log('combo tags = ', combinationsTags)
 
     //combine tags into json results
     var jsonResults = {
@@ -450,11 +449,18 @@ function getAllTags(jsonObj) {
 function updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, releaseInfoCheckboxValue, releaseInfoSliderValue, tracklistCheckboxValue, tracklistSliderValue, combinationsCheckboxValue, combinationsSliderValue) {
 
     var tags = "";
-
+    console.log('tagsJsonGlobal = ', tagsJsonGlobal)
     if (releaseArtistsCheckboxValue == 'on') {
         tags = tags + addTags(tagsJsonGlobal.tags.releaseArtist, (releaseArtistsSliderValue / 100)).tags;
-
-        document.getElementById('releaseArtistsNumber').innerHTML = `${addTags(tagsJsonGlobal.tags.releaseArtist, (releaseArtistsSliderValue / 100)).tags.length} chars`;
+        let calculatedTags = addTags(tagsJsonGlobal.tags.releaseArtist, (releaseArtistsSliderValue / 100))
+        let numOfChars = `${calculatedTags.tags.length} chars`
+        let currentTagsNum = calculatedTags.length
+        let totalTagsNum = tagsJsonGlobal.tags.releaseArtist.length
+        //update number of tags out of the total number of tags
+        console.log(`${currentTagsNum} / ${totalTagsNum} tags`)
+        document.getElementById('releaseArtistsTagNum').innerHTML = `${currentTagsNum}/${totalTagsNum} tags`;
+        //update number of chars for this tags category
+        document.getElementById('releaseArtistsNumber').innerHTML = numOfChars;
     } else {
         document.getElementById('releaseArtistsNumber').innerHTML = "0 chars"
     }
@@ -486,7 +492,7 @@ function updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, r
 
 //remove any numbers inside parentheses like (2) and remove commas from any string
 function removeNumberParenthesesAndComma(input) {
-    //console.log('removeNumberParenthesesAndComma() input=', input)
+    console.log('removeNumberParenthesesAndComma() input=', input)
     if(input){
 
         //if input is object (discogs api only returns objects that are lists)
@@ -497,7 +503,8 @@ function removeNumberParenthesesAndComma(input) {
         //convert to string
         input = input.toString()
         //remove commas
-        input = input.replace(/,/g, ',')
+        input = input.replace(/,/g, '')
+        console.log('removeNumberParenthesesAndComma() removed commas =', input)
         //remove all numbers within parentheses
         var regEx = /\(([\d)]+)\)/; 
         var matches = regEx.exec(input);
@@ -832,12 +839,12 @@ function addTags(tags, percentToInclude) {
     for (var i = 0; i < numberOfTagsToDisplay; i++) {
         tempTags = tempTags + tags[i] + ","
     }
-    return { tags: tempTags, length: numberOfTagsToDisplay };
+    return { tags: tempTags, length: numberOfTagsToDisplay, numberOfTagsAvailiable:numberOfTagsAvailiable };
 }
 
 function prepUpdateTagsBox() {
     var releaseArtistsCheckboxValue = $('.releaseArtistsCheckbox:checked').val();
-    var releaseArtistsSliderValue = $('.releaseArtistsSlider').val();
+    var releaseArtistsSliderValue = $('#releaseArtistsSlider').val();
 
     var releaseInfoCheckboxValue = $('.releaseInfoCheckbox:checked').val();
     var releaseInfoSliderValue = $('.releaseInfoSlider').val();

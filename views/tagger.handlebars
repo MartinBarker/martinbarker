@@ -18,7 +18,8 @@
             </label>
             <div id='taggerErrDisplay'></div>
             <input size="12" type="text" placeholder='Discogs URL' name="url" id="urlInput">
-            <button style="cursor: pointer;" id='urlInputButton' name="data" type="button" onclick="submitDiscogsURL(document.getElementById('urlInput').value)">Submit</button>
+            <button style="cursor: pointer;" id='urlInputButton' name="data" type="button"
+                onclick="submitDiscogsURL(document.getElementById('urlInput').value)">Submit</button>
         </div>
 
         <!-- File Input Selection -->
@@ -32,46 +33,52 @@
 
         <style>
             #drop-area {
-            /* border: 2px dashed #ccc; */
-            border-radius: 20px;
-            width: 480px;
-            padding: 20px;
-            } 
+                /* border: 2px dashed #ccc; */
+                border-radius: 20px;
+                width: 480px;
+                padding: 20px;
+            }
+
             /*
             #drop-area.highlight {
             border-color: purple;
             } 
             */
             p {
-            margin-top: 0;
-            }
-            .my-form {
-            margin-bottom: 10px;
-            }
-            #gallery {
-            margin-top: 10px;
-            }
-            #gallery img {
-            width: 150px;
-            margin-bottom: 10px;
-            margin-right: 10px;
-            vertical-align: middle;
-            }
-            .button {
-            display: inline-block;
-            padding: 10px;
-            background: #ccc;
-            cursor: pointer;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            }
-            .button:hover {
-            background: #ddd;
-            }
-            #fileElem {
-            display: none;
+                margin-top: 0;
             }
 
+            .my-form {
+                margin-bottom: 10px;
+            }
+
+            #gallery {
+                margin-top: 10px;
+            }
+
+            #gallery img {
+                width: 150px;
+                margin-bottom: 10px;
+                margin-right: 10px;
+                vertical-align: middle;
+            }
+
+            .button {
+                display: inline-block;
+                padding: 10px;
+                background: #ccc;
+                cursor: pointer;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+            }
+
+            .button:hover {
+                background: #ddd;
+            }
+
+            #fileElem {
+                display: none;
+            }
         </style>
         <!-- tagger output -->
         <hr>
@@ -86,9 +93,11 @@
 20:30 - 24:42 05 - for priscilla
 24:42 - 34:14 06 - the delta song
 34:14 - 39:35 07 - why "></textarea>
-                <button class="btn default copyButton" style="cursor: pointer; max-width: 70px; width: 100%;" id='copyToClipboarad' onclick="copyToClipboard('inputBox')" type="button">Copy</button>
+                <button class="btn default copyButton" style="cursor: pointer; max-width: 70px; width: 100%;"
+                    id='copyToClipboarad' onclick="copyToClipboard('inputBox')" type="button">Copy</button>
                 <div>
-                    <table class="fixed h-100" align="left" style="white-space:nowrap; table-layout: fixed; max-width: 533px;" height="100"
+                    <table class="fixed h-100" align="left"
+                        style="white-space:nowrap; table-layout: fixed; max-width: 533px;" height="100"
                         id="adjustments">
                         <tbody>
                             <!-- Columns -->
@@ -130,10 +139,13 @@
         <h3>Comma-Separated Discogs Tags:</h3>
         <div class='outputDiscogstaggerBox' style='margin-left:15px;'>
             <div class='row'>
-                <textarea class="inputbox" id="tagsBox" rows="7" cols="44" placeholder="Booker T. Jones,Priscilla Jones,Booker T & The MGs,The Mar-Keys,The Stax Staff,The Packers,The RCO All-Stars,Priscilla Coolidge,Booker T. & Priscilla,1971,France,The Wedding Song,She,The Indian Song,Sea Gull,For Priscilla,The Delta  Song,Why,Mississippi Voodoo,Cool  Black Dream,Sweet Child Youre Not Alone,Booker T. & Priscilla 1971,Booker T. Jones 1971,"></textarea>
-                <button class="btn default copyButton" style="cursor: pointer; max-width: 70px; width: 100%;" id='copyToClipboarad' onclick="copyToClipboard('tagsBox')" type="button">Copy</button>
+                <textarea class="inputbox" id="tagsBox" rows="7" cols="44"
+                    placeholder="Booker T. Jones,Priscilla Jones,Booker T & The MGs,The Mar-Keys,The Stax Staff,The Packers,The RCO All-Stars,Priscilla Coolidge,Booker T. & Priscilla,1971,France,The Wedding Song,She,The Indian Song,Sea Gull,For Priscilla,The Delta  Song,Why,Mississippi Voodoo,Cool  Black Dream,Sweet Child Youre Not Alone,Booker T. & Priscilla 1971,Booker T. Jones 1971,"></textarea>
+                <button class="btn default copyButton" style="cursor: pointer; max-width: 70px; width: 100%;"
+                    id='copyToClipboarad' onclick="copyToClipboard('tagsBox')" type="button">Copy</button>
                 <div>
-                    <table class="fixed h-100" align="left" style="white-space:nowrap; table-layout: fixed; max-width: 533px;" height="100"
+                    <table class="fixed h-100" align="left"
+                        style="white-space:nowrap; table-layout: fixed; max-width: 533px;" height="100"
                         id="adjustments">
                         <tbody>
                             <!-- Columns -->
@@ -152,12 +164,38 @@
                                 </td>
                                 <td style="text-align:left;">Artist(s)</td>
                                 <td>
+                                    <!-- new slider -->
+                                    <script>
+                                        $(document).ready(function () {
+                                            var slider = document.getElementById("releaseArtistsSlider");
+                                            var output = document.getElementById("releaseArtistsSliderPercent");
+                                            output.innerHTML = `${slider.value}%`; // Display the default slider value
+
+                                            // Update the current slider value (each time you drag the slider handle)
+                                            slider.oninput = function () {
+                                                output.innerHTML = `${this.value}%`;
+                                            }
+                                        })
+                                    </script>
+                                    <div>
+                                        <input type="range" min="0" max="100" value="100" onchange="prepUpdateTagsBox()" id="releaseArtistsSlider">
+                                        <span id="releaseArtistsSliderPercent"></span>
+                                        <div class='row'>
+                                            <div class='col' style='white-space:nowrap;text-align:left' id='releaseArtistsNumber'>0 chars</div>
+                                            <div class='col' style='white-space:nowrap;text-align:right' id='releaseArtistsTagNum'>0/0 tags</div>
+                                        </div>
+                                    </div>
+                                     <!-- 
+                                    <div class='float-left' >0 chars</div>
+                                    <div class='float-right' >2 tags</div>
+
+                                     old slider 
                                     <div style="text-align:left;">
                                         <input type="range" class="releaseArtistsSlider" id="releaseArtistsSlider"
                                             min="0" max="100" value="100" onchange="prepUpdateTagsBox()">
                                         <div class='float-right' id="releaseArtistsSliderValue">100%</div>
                                         <div class='float-right' id='releaseArtistsNumber'>0 chars</div>
-                                    </div>
+                                    </div> -->
                                 </td>
                             </tr>
 
@@ -222,16 +260,16 @@
         <div id="charCount">Number of characters: 0</div>
 
         <style>
-            
-
             .copyButton {
                 border: 2px solid black;
             }
 
-            table, th, td {
+            table,
+            th,
+            td {
                 border: 2px solid black;
                 background: white;
-                color:black;
+                color: black;
                 height: 100%;
                 white-space: normal;
                 word-wrap: break-word;
@@ -242,15 +280,15 @@
                 /* font-size: 18px; */
             }
         </style>
-    {{!-- --}}
+        {{!-- --}}
     </div>
 </div>
 
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         //call function to set drag and drop colors
         setDragAndDropColors()
-        function setDragAndDropColors(){
+        function setDragAndDropColors() {
             var sheet = document.createElement('style')
             let innerHTMLHoverColorStyle = `
                 #drop-area.highlight {
@@ -264,7 +302,7 @@
 
                 
                 `;
-            sheet.innerHTML = innerHTMLHoverColorStyle 
+            sheet.innerHTML = innerHTMLHoverColorStyle
             document.head.appendChild(sheet);
         }
     })
