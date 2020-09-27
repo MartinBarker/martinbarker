@@ -2,7 +2,8 @@ const express = require('express');
 const app = express();
 var router = express.Router();
 //nodejs virbant color picker extension
-var Vibrant = require('node-vibrant')
+var Vibrant = require('node-vibrant');
+const { xyzToCIELab } = require('node-vibrant/lib/util');
 const Post = require('../database/models/Post.js');
 //connect to mongodb
 var mongodbutil = require('../static/assets/js/mongodbutils');
@@ -30,7 +31,7 @@ app.get('/posts/:id', async (req, res) => {
     post: post,
     pageTitle: post.title,
     blog: 'active',
-    //icon:'z',,
+    icon:'https://cdn0.iconfinder.com/data/icons/picons-social/57/53-medium-512.png',
     pageBodyNavTitle: `${post.title}`,
     pageBodyNaavGithub: 'x',
     postTitle: post.title,
@@ -41,9 +42,8 @@ app.get('/posts/:id', async (req, res) => {
     posts: displayPosts,
     //mainTemplateData
     imgPath: '/' + mainTemplateData.imgPath,
-    imgDesc: mainTemplateData.desc,
-    imgSrc: mainTemplateData.src,
-    imgListen: mainTemplateData.listen,
+    imgSrcUrl: mainTemplateData.imgSrc,
+    imgListen: mainTemplateData.imgListen,
     textColor1: mainTemplateData.colorData.textColor1, //'Martin Barker' Navbar Header text color
     backgroundColor1: mainTemplateData.colorData.backgroundColor1, //'Martin Barker' Navbar Header Background Color
     textColor6: mainTemplateData.colorData.textColor6, //sidebar un-active tab text color
@@ -77,14 +77,14 @@ app.get('/', async function (req, res) {
   let mainTemplateData = await getMainTemplateData(req.params.id)
   //const post = await Post.findById(req.params.id)
   let displayPosts = mainTemplateData.postsDisplay;
-
+  
   res.render('about', {
     //template layout to use
     layout: 'mainTemplate',
     //page title of tab
     pageTitle: 'martinbarker.me',
     //page tab icon
-    icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
+    icon: "https://cdn0.iconfinder.com/data/icons/picons-social/57/53-medium-512.png",
     //set active current tab
     about: 'active',
     //body content title 
@@ -95,9 +95,8 @@ app.get('/', async function (req, res) {
     posts: displayPosts,
     //mainTemplateData
     imgPath: '/' + mainTemplateData.imgPath,
-    imgDesc: mainTemplateData.desc,
-    imgSrc: mainTemplateData.src,
-    imgListen: mainTemplateData.listen,
+    imgSrcUrl: mainTemplateData.imgSrc,
+    imgListen: mainTemplateData.imgListen,
     textColor1: mainTemplateData.colorData.textColor1, //'Martin Barker' Navbar Header text color
     backgroundColor1: mainTemplateData.colorData.backgroundColor1, //'Martin Barker' Navbar Header Background Color
     textColor6: mainTemplateData.colorData.textColor6, //sidebar un-active tab text color
@@ -154,9 +153,8 @@ app.get('/popularify', async function (req, res) {
     posts: displayPosts,
     //mainTemplateData
     imgPath: '/' + mainTemplateData.imgPath,
-    imgDesc: mainTemplateData.desc,
-    imgSrc: mainTemplateData.src,
-    imgListen: mainTemplateData.listen,
+    imgSrcUrl: mainTemplateData.imgSrc,
+    imgListen: mainTemplateData.imgListen,
     textColor1: mainTemplateData.colorData.textColor1, //'Martin Barker' Navbar Header text color
     backgroundColor1: mainTemplateData.colorData.backgroundColor1, //'Martin Barker' Navbar Header Background Color
     textColor6: mainTemplateData.colorData.textColor6, //sidebar un-active tab text color
@@ -234,9 +232,8 @@ app.get('/tagger', async function (req, res) {
     posts: displayPosts,
     //mainTemplateData
     imgPath: '/' + mainTemplateData.imgPath,
-    imgDesc: mainTemplateData.desc,
-    imgSrc: mainTemplateData.src,
-    imgListen: mainTemplateData.listen,
+    imgSrcUrl: mainTemplateData.imgSrc,
+    imgListen: mainTemplateData.imgListen,
     textColor1: mainTemplateData.colorData.textColor1, //'Martin Barker' Navbar Header text color
     backgroundColor1: mainTemplateData.colorData.backgroundColor1, //'Martin Barker' Navbar Header Background Color
     textColor6: mainTemplateData.colorData.textColor6, //sidebar un-active tab text color
@@ -315,8 +312,8 @@ async function getMainTemplateData(activeTabId) {
         DarkMuted: colorData.colors['DarkMuted'].hex,
       },
       imgPath: colorData.imgPath,
+      imgSrc: colorData.imgSrc,
       imgDesc: colorData.desc,
-      imgSrc: colorData.src,
       imgListen: colorData.listen,
 
       postsDisplay: postsDisplay,
@@ -370,18 +367,15 @@ async function getColorData() {
       var keyName = `${key}`
       colors[keyName] = { 'hex': hexColor, 'rgb': colorValue }
     }
-
     //get source info
-    let sourceInfo = await getSourceInfo(randomImg)
+    let imgMetadata = await getImgMetadata(randomImg)
 
     resolve({
       colors: colors,
       imgPath: imgPath,
       filename: randomImg,
-      listenable: sourceInfo.listenable,
-      desc: sourceInfo.desc,
-      src: sourceInfo.src,
-      listen: sourceInfo.listen,
+      imgSrc: imgMetadata.title,
+      listen: imgMetadata.listen,
     })
   })
 }
@@ -450,44 +444,17 @@ function componentToHex(c) {
   return hex.length == 1 ? "0" + hex : hex;
 }
 
-//get img source info
-function getSourceInfo(imgFilename) {
-
+function getImgMetadata(imgFilename) {
   return new Promise(async function (resolve, reject) {
-
-    //remove filetype at end
-    imgFilename = imgFilename.substring(0, imgFilename.indexOf('.'))
-
-    let imgSources = {
-      'beatgeneration': {
-        'desc': 'This album is not availiable online anywhere.',
-        'src': 'https://www.discogs.com/John-Brent-Len-Chandler-Hugh-Romney-Beat-Generation-Vol-I/release/12692463',
-        'listenable': false,
-      },
-
-      'folkwaysMexico': {
-        'listen': 'https://www.youtube.com/embed/hsolGtuwvYU',
-        'listenable': true,
-      },
-
-      'JohnBerkey': {
-        'desc': 'John Berkey',
-        'listenable': false,
-      },
-
-      'apple1': {
-        'src': 'http://www.macmothership.com/gallery/gallery3.html',
-      },
-
-    }
-
-    let imgSrcInfo = {}
-    if (imgSources[imgFilename]) {
-      imgSrcInfo = imgSources[imgFilename]
-    }
-
-    resolve(imgSrcInfo)
-  })
+    const exif = require('exif-parser')
+    const fs = require('fs')
+    let pathOneFolderUp = __dirname.split('/')
+    let filepath = `${__dirname}/../static/assets/aesthetic-images/${imgFilename}`
+    const buffer = fs.readFileSync(filepath)
+    const parser = exif.create(buffer)
+    const result = parser.parse()
+    resolve({'title':result.tags.ImageDescription, 'listen':'tempListenUrl'})
+  });
 }
 
 //return random image filename from path
