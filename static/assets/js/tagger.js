@@ -134,9 +134,10 @@ async function displayMetadataTags(tags){
     document.getElementById('releaseInfoSliderPercent').innerHTML = `100%`;
     
     document.getElementById('tracklistSlider').value = 100;
-    document.getElementById('tracklistSliderValue').innerHTML = `100%`;
+    document.getElementById('tracklistSliderPercent').innerHTML = `100%`;
+
     document.getElementById('combinationsSlider').value = 100;
-    document.getElementById('combinationsSliderValue').innerHTML = `100%`;
+    document.getElementById('combinationsSliderPercent').innerHTML = `100%`;
     
     //store as global variables
     tagsJsonGlobal = tags;
@@ -156,10 +157,10 @@ async function displayMetadataTags(tags){
     var releaseInfoSliderValue = $('#releaseInfoSlider').val();
 
     var tracklistCheckboxValue = $('.tracklistCheckbox:checked').val();
-    var tracklistSliderValue = $('.tracklistSlider').val();
+    var tracklistSliderValue = $('#tracklistSlider').val();
 
     var combinationsCheckboxValue = $('.combinationsCheckbox:checked').val();
-    var combinationsSliderValue = $('.combinationsSlider').val();
+    var combinationsSliderValue = $('#combinationsSlider').val();
 
     //update display box based on checkbox and slider values
     updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, releaseInfoCheckboxValue, releaseInfoSliderValue, tracklistCheckboxValue, tracklistSliderValue, combinationsCheckboxValue, combinationsSliderValue);
@@ -464,6 +465,9 @@ function updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, r
         document.getElementById('releaseArtistsNumber').innerHTML = numOfChars;
     } else {
         document.getElementById('releaseArtistsNumber').innerHTML = "0 chars"
+        //document.getElementById('releaseArtistsTagNum').innerHTML = `0/${totalTagsNum} tags`;
+        //document.getElementById('releaseArtistsSlider').value = "0"
+        //document.getElementById('releaseArtistsSliderPercent').innerText = "0%"
     }
 
     if (releaseInfoCheckboxValue == 'on') {
@@ -476,25 +480,40 @@ function updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, r
         document.getElementById('releaseInfoTagNum').innerHTML = `${currentTagsNum}/${totalTagsNum} tags`;
         //update number of chars for this tags category
         document.getElementById('releaseInfoNumber').innerHTML = numOfChars;
-
-
-        //
-        //tags = tags + addTags(tagsJsonGlobal.tags.releaseInfo, (releaseInfoSliderValue / 100)).tags;
-        //document.getElementById('releaseInfoNumber').innerHTML = `${addTags(tagsJsonGlobal.tags.releaseInfo, (releaseInfoSliderValue / 100)).tags.length} chars`;
     } else {
         document.getElementById('releaseInfoNumber').innerHTML = "0 chars"
     }
 
     if (tracklistCheckboxValue == 'on') {
         tags = tags + addTags(tagsJsonGlobal.tags.tracklist, (tracklistSliderValue / 100)).tags;
-        document.getElementById('tracklistNumber').innerHTML = `${addTags(tagsJsonGlobal.tags.tracklist, (tracklistSliderValue / 100)).tags.length} chars`;
+        let calculatedTags = addTags(tagsJsonGlobal.tags.tracklist, (tracklistSliderValue / 100))
+        let numOfChars = `${calculatedTags.tags.length} chars`
+        let currentTagsNum = calculatedTags.length
+        let totalTagsNum = tagsJsonGlobal.tags.tracklist.length
+        //update number of tags out of the total number of tags
+        document.getElementById('tracklistTagNum').innerHTML = `${currentTagsNum}/${totalTagsNum} tags`;
+        //update number of chars for this tags category
+        document.getElementById('tracklistNumber').innerHTML = numOfChars;
+
+        //tags = tags + addTags(tagsJsonGlobal.tags.tracklist, (tracklistSliderValue / 100)).tags;
+        //document.getElementById('tracklistNumber').innerHTML = `${addTags(tagsJsonGlobal.tags.tracklist, (tracklistSliderValue / 100)).tags.length} chars`;
     } else {
         document.getElementById('tracklistNumber').innerHTML = "0 chars"
     }
 
     if (combinationsCheckboxValue == 'on') {
         tags = tags + addTags(tagsJsonGlobal.tags.combinations, (combinationsSliderValue / 100)).tags;
-        document.getElementById('combinationsNumber').innerHTML = `${addTags(tagsJsonGlobal.tags.combinations, (combinationsSliderValue / 100)).tags.length} chars`;
+        let calculatedTags = addTags(tagsJsonGlobal.tags.combinations, (combinationsSliderValue / 100))
+        let numOfChars = `${calculatedTags.tags.length} chars`
+        let currentTagsNum = calculatedTags.length
+        let totalTagsNum = tagsJsonGlobal.tags.combinations.length
+        //update number of tags out of the total number of tags
+        document.getElementById('combinationsTagNum').innerHTML = `${currentTagsNum}/${totalTagsNum} tags`;
+        //update number of chars for this tags category
+        document.getElementById('combinationsNumber').innerHTML = numOfChars;
+        
+        //tags = tags + addTags(tagsJsonGlobal.tags.combinations, (combinationsSliderValue / 100)).tags;
+        //document.getElementById('combinationsNumber').innerHTML = `${addTags(tagsJsonGlobal.tags.combinations, (combinationsSliderValue / 100)).tags.length} chars`;
     } else {
         document.getElementById('combinationsNumber').innerHTML = "0 chars"
     }
@@ -854,6 +873,7 @@ function addTags(tags, percentToInclude) {
 }
 
 function prepUpdateTagsBox() {
+    console.log('prepUpdateTagsBox()')
     var releaseArtistsCheckboxValue = $('.releaseArtistsCheckbox:checked').val();
     var releaseArtistsSliderValue = $('#releaseArtistsSlider').val();
 
@@ -861,12 +881,11 @@ function prepUpdateTagsBox() {
     var releaseInfoSliderValue = $('#releaseInfoSlider').val();
 
     var tracklistCheckboxValue = $('.tracklistCheckbox:checked').val();
-    var tracklistSliderValue = $('.tracklistSlider').val();
+    var tracklistSliderValue = $('#tracklistSlider').val();
 
     var combinationsCheckboxValue = $('.combinationsCheckbox:checked').val();
-    var combinationsSliderValue = $('.combinationsSlider').val();
+    var combinationsSliderValue = $('#combinationsSlider').val();
 
-    //updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, releaseInfoCheckboxValue, releaseInfoSliderValue, tracklistCheckboxValue, tracklistSliderValue, publisherNotesCheckboxValue, publisherNotesSliderValue, combinationsCheckboxValue, combinationsSliderValue);
     updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, releaseInfoCheckboxValue, releaseInfoSliderValue, tracklistCheckboxValue, tracklistSliderValue, combinationsCheckboxValue, combinationsSliderValue);
 
 }

@@ -227,7 +227,7 @@ app.get('/tagger', async function (req, res) {
     //body content title 
     pageBodyNavTitle: 'tagger.site',
     //body content github link
-    pageBodyNavGithub: 'temp',
+    pageBodyNavGithub: 'https://github.com/MartinBarker/martinbarker/blob/master/views/tagger.handlebars',
     //list to display for navbar 'Blog' options
     posts: displayPosts,
     //mainTemplateData
@@ -278,10 +278,8 @@ app.post('/discogsAPI', async function (req, res) {
 
   console.log(`/discogsAPI code = ${code}, type = ${type}`)
   if(type=='master'){
-    console.log('master')
     //cant get master data 
     db.getMaster(code, function(err, resp){
-      console.log('resp get master = ', resp)
 
       //if err message is present return that, else return full response 
       if(resp.message){
@@ -292,7 +290,6 @@ app.post('/discogsAPI', async function (req, res) {
     });
 
   }else if(type=='release'){
-    console.log('release')
 
       //get discogs api data
       db.getRelease(code, function(err, resp){
@@ -311,7 +308,6 @@ app.post('/discogsAPI', async function (req, res) {
 
 //api audio file metadata tags
 app.post('/getFileMetadataTags', async function (req, res) {
-  console.log("/getFileMetadataTags req.body=", req.body)
   var jsonResults = {
     'tags': {
       'releaseArtist': [],

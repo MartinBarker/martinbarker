@@ -156,43 +156,64 @@
                                 <th style="text-align:center; width: 20%;">Tags</th>
                             </tr>
 
+                            <script>
+                                $(document).ready(function () {
+                                    //release artist
+                                    var releaseArtistsSlider = document.getElementById("releaseArtistsSlider");
+                                    var releaseArtistsSliderPercent = document.getElementById("releaseArtistsSliderPercent");
+                                    releaseArtistsSliderPercent.innerHTML = `${releaseArtistsSlider.value}%`; // Display the default releaseArtistsSlider value
+                                    // Update the current releaseArtistsSlider value (each time you drag the releaseArtistsSlider handle)
+                                    releaseArtistsSlider.oninput = function () {
+                                        releaseArtistsSliderPercent.innerHTML = `${this.value}%`;
+                                        prepUpdateTagsBox()
+                                    }
+                                    //release info
+                                    var releaseInfoSlider = document.getElementById("releaseInfoSlider");
+                                    var releaseInfoSliderSliderPercent = document.getElementById("releaseInfoSliderPercent");
+                                    releaseInfoSliderSliderPercent.innerHTML = `${releaseInfoSlider.value}%`; // Display the default releaseInfoSlider value
+                                    // Update the current releaseInfoSlider value (each time you drag the releaseInfoSlider handle)
+                                    releaseInfoSlider.oninput = function () {
+                                        releaseInfoSliderPercent.innerHTML = `${this.value}%`;
+                                        prepUpdateTagsBox()
+                                    }
+                                    //tracklist
+                                    var tracklistSlider = document.getElementById("tracklistSlider");
+                                    var tracklistSliderPercent = document.getElementById("tracklistSliderPercent");
+                                    tracklistSliderPercent.innerHTML = `${tracklistSlider.value}%`;
+                                    tracklistSlider.oninput = function () {
+                                        tracklistSliderPercent.innerHTML = `${this.value}%`;
+                                        prepUpdateTagsBox()
+                                    }
+                                    //combinations
+                                    var combinationsSlider = document.getElementById("combinationsSlider");
+                                    var combinationsSliderPercent = document.getElementById("combinationsSliderPercent");
+                                    combinationsSliderPercent.innerHTML = `${combinationsSlider.value}%`;
+                                    combinationsSlider.oninput = function () {
+                                        combinationsSliderPercent.innerHTML = `${this.value}%`;
+                                        prepUpdateTagsBox()
+                                    }
+                                })
+                            </script>
+
                             <!-- Artists -->
                             <tr>
                                 <td style="text-align:center;">
                                     <input type="checkbox" class="releaseArtistsCheckbox" id="releaseArtistsCheckbox"
                                         checked="" onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:left;">Artist(s)</td>
+                                <td style="text-align:center;">Artist(s)</td>
                                 <td>
-                                    <!-- new slider -->
-                                    <script>
-                                        $(document).ready(function () {
-                                            //release artist
-                                            var releaseArtistsSlider = document.getElementById("releaseArtistsSlider");
-                                            var releaseArtistsSliderPercent = document.getElementById("releaseArtistsSliderPercent");
-                                            releaseArtistsSliderPercent.innerHTML = `${releaseArtistsSlider.value}%`; // Display the default releaseArtistsSlider value
-                                            // Update the current releaseArtistsSlider value (each time you drag the releaseArtistsSlider handle)
-                                            releaseArtistsSlider.oninput = function () {
-                                                releaseArtistsSliderPercent.innerHTML = `${this.value}%`;
-                                                prepUpdateTagsBox()
-                                            }
-                                            //release info
-                                            var releaseInfoSlider = document.getElementById("releaseInfoSlider");
-                                            var releaseInfoSliderSliderPercent = document.getElementById("releaseInfoSliderPercent");
-                                            releaseInfoSliderSliderPercent.innerHTML = `${releaseInfoSlider.value}%`; // Display the default releaseInfoSlider value
-                                            // Update the current releaseInfoSlider value (each time you drag the releaseInfoSlider handle)
-                                            releaseInfoSlider.oninput = function () {
-                                                releaseInfoSliderPercent.innerHTML = `${this.value}%`;
-                                                prepUpdateTagsBox()
-                                            }
-                                        })
-                                    </script>
-                                    <div>
-                                        <input type="range" min="0" max="100" value="100" onchange="prepUpdateTagsBox()" id="releaseArtistsSlider">
+                                    <div style="text-align:center;">
+                                        <input type="range" min="0" max="100" value="100" onchange="prepUpdateTagsBox()"
+                                            id="releaseArtistsSlider">
                                         <span id="releaseArtistsSliderPercent"></span>
                                         <div class='row'>
-                                            <div class='col' style='white-space:nowrap;text-align:left' id='releaseArtistsNumber'>0 chars</div>
-                                            <div class='col' style='white-space:nowrap;text-align:right' id='releaseArtistsTagNum'>0/0 tags</div>
+                                            <div class='col'
+                                                style='font-size: 15px;white-space:nowrap;text-align:center'
+                                                id='releaseArtistsNumber'>0 chars</div>
+                                            <div class='col'
+                                                style='font-size: 15px;white-space:nowrap;text-align:center'
+                                                id='releaseArtistsTagNum'>0/0 tags</div>
                                         </div>
                                     </div>
                                 </td>
@@ -204,13 +225,16 @@
                                     <input type="checkbox" class="releaseInfoCheckbox" id="releaseInfoCheckbox"
                                         checked="" onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:left;">Album</td>
-                                <td>
-                                    <input type="range" min="0" max="100" value="100" onchange="prepUpdateTagsBox()" id="releaseInfoSlider">
+                                <td style="text-align:center;">Album</td>
+                                <td style="text-align:center;">
+                                    <input type="range" min="0" max="100" value="100" onchange="prepUpdateTagsBox()"
+                                        id="releaseInfoSlider">
                                     <span id="releaseInfoSliderPercent"></span>
                                     <div class='row'>
-                                        <div class='col' style='white-space:nowrap;text-align:left' id='releaseInfoNumber'>0 chars</div>
-                                        <div class='col' style='white-space:nowrap;text-align:right' id='releaseInfoTagNum'>0/0 tags</div>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='releaseInfoNumber'>0 chars</div>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='releaseInfoTagNum'>0/0 tags</div>
                                     </div>
                                 </td>
 
@@ -222,13 +246,16 @@
                                     <input type="checkbox" class="tracklistCheckbox" id="tracklistCheckbox" checked=""
                                         onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:left;">Tracklist</td>
-                                <td>
-                                    <div style="text-align:left;">
-                                        <input type="range" class="tracklistSlider" id="tracklistSlider" min="0"
-                                            max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-right' id="tracklistSliderValue">100%</div>
-                                        <div class='float-right' id='tracklistNumber'>0 chars</div>
+                                <td style="text-align:center;">Tracklist</td>
+                                <td style="text-align:center;">
+                                    <input type="range" min="0" max="100" value="100" onchange="prepUpdateTagsBox()"
+                                        id="tracklistSlider">
+                                    <span id="tracklistSliderPercent"></span>
+                                    <div class='row'>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='tracklistNumber'>0 chars</div>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='tracklistTagNum'>0/0 tags</div>
                                     </div>
                                 </td>
 
@@ -240,13 +267,16 @@
                                     <input type="checkbox" class="combinationsCheckbox" id="combinationsCheckbox"
                                         checked="" onchange="prepUpdateTagsBox()">
                                 </td>
-                                <td style="text-align:left;">Combinations</td>
-                                <td>
-                                    <div style="text-align:left;">
-                                        <input type="range" class="combinationsSlider" id="combinationsSlider" min="0"
-                                            max="100" value="100" onchange="prepUpdateTagsBox()">
-                                        <div class='float-right' id="combinationsSliderValue">100%</div>
-                                        <div class='float-right' id='combinationsNumber'>0 chars</div>
+                                <td style="text-align:center;">Combinations</td>
+                                <td style="text-align:center;">
+                                    <input type="range" id="combinationsSlider" min="0" max="100" value="100"
+                                        onchange="prepUpdateTagsBox()">
+                                    <span id="combinationsSliderPercent">100%</span>
+                                    <div class='row'>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='combinationsNumber'>0 chars</div>
+                                        <div class='col' style='font-size: 15px;white-space:nowrap;text-align:center'
+                                            id='combinationsTagNum'>0/0 tags</div>
                                     </div>
                                 </td>
                             </tr>
