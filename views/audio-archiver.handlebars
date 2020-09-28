@@ -1,0 +1,39 @@
+<!-- page main content -->
+<div class="container-fluid" style='color: {{textColor5}}'>
+    <div style="margin-top:-30px;">
+        <h3>Download:</h3>
+        <ul>
+            <li style='cursor:pointer' href='https://github.com/MartinBarker/audio-archiver/releases' id='downloadOption'>Win</li>
+            <li style='cursor:pointer' href='https://github.com/MartinBarker/audio-archiver/releases' id='downloadOption'>Mac</li>
+            <li style='cursor:pointer' href='https://github.com/MartinBarker/audio-archiver/releases' id='downloadOption'>Linux</li>
+        </ul>
+        <style>
+            #downloadOption:hover{
+                color:{{LightVibrant}};
+            }
+        </style>
+        <h2><strong>What is audio-archiver?</strong></h2>
+        <div>audio-archiver is a free open source program for music video rendering I created that can be downloaded and ran on Windows, Mac, and Linux machines.<br>The program will take audio/image files as input, and presents an easy to use UI for users to render single song videos, or full album videos; which will concatenate multiple audio files together.</div>
+        
+        <br>
+        <h2><strong>Why is it useful?</strong></h2>
+        <div>I created this program because I found the process of rednering music videos for YouTube to be too complicated. My program is designed with music in mine, alternatives to audio-archiver would be using expensive video editing software like Adobe Premiere / Sony Vegas, or using a watermarked/payment website such as tubes to tunes. 
+        <br>
+        I've made software in the past that does these same ffmpeg commands, but they've always had a bit of a learning curve to them. <a id='hoverUrl' href='https://github.com/MartinBarker/bashAlbumExporter'>bashAlbumExporter</a> is a bash script that runs ffmpeg commands from the terminal, and <a id='hoverUrl' href='https://github.com/MartinBarker/commandLineMusicVideo'>commandLineMusicVideo</a> is a python3 pip package that can be run from the command line and does the same. Both of these options require the user to have knowledge of the command line and installing/running packages. I created audio-archiver so that there would be a free, easy to use program that anyone could use to upload and archive music online, regardless of their knowledge for using the terminal and running packages manually. 
+        </div>
+
+        <br>
+        <h2><strong>How does it work?</strong></h2>
+        <div>audio-archiver is an electron app that includes the ffmpeg binaries packaged into it, so the user doesn't need to install / setup any complicated libraries, just download the audio-archiver executable, and run it. audio-archiver mainly uses the npm package fluent-ffmeg for rendering the video files. </div>
+        
+        <br>
+        <h2><strong>How do I use it?</strong></h2>
+        <div>To use audio-archiver, download the file for your computer (Mac, Windows, or Linux) and run it. </div><br>
+        
+        <br>
+        <h2><strong>What will be added in the future?</strong></h2>
+        <div>In future versions I plan on improving the render buttons UI, and adding more features for the user to customize their output video (output file location, video resolution, image cropping, etc). I also want to add an audio recording system, so you can digitize vinyl records directly in the application.</div>
+        
+        
+    </div>
+</div>

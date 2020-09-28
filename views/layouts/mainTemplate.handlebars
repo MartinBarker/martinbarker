@@ -422,17 +422,28 @@
                     <!-- tagger.site -->
                     <li>
                         <a {{#ifEquals tagger 'active'}}
-                            style='background: {{backgroundColor3}}; color: {{textColor2}};' {{/ifEquals}}
+                            style='background: {{backgroundColor3}}; color: {{textColor2}};' 
+                            {{/ifEquals}}
                             href="/tagger" class='navbarItem'>tagger.site</a>
                     </li>
+                    
+                    <!-- audio-archiver -->
+                    <li>
+                        <a {{#ifEquals audioarchiver 'active'}}
+                            style='background: {{backgroundColor3}}; color: {{textColor2}};' 
+                            {{/ifEquals}}
+                            href="/audio-archiver" class='navbarItem'>audio-archiver</a>
+                    </li>
+
                     <!-- popularify.site -->
                     <li>
-                        <a href="/popularify">popularify.biz</a>
+                        <a {{#ifEquals popularify 'active'}}
+                            style='background: {{backgroundColor3}}; color: {{textColor2}};' 
+                            {{/ifEquals}}
+                            href="/popularify" class='navbarItem'>popularify.biz</a>
+
                     </li>
-                    <!-- electron-upload-tool -->
-                    <li>
-                        <a href="/electron-upload-tool">electron-upload-tool</a>
-                    </li>
+                    
                 </ul>
             </li>
 
@@ -464,13 +475,13 @@
                         <a href="mailto:martinbarker99@gmail.com">Email</a>
                     </li>
                     <li>
-                        <a href="https://github.com/MartinBarker">Github</a>
+                        <a target="_blank" href="https://github.com/MartinBarker">Github</a>
                     </li>
                     <li>
-                        <a href="https://www.linkedin.com/in/martinbarker99">LinkedIn</a>
+                        <a target="_blank" href="https://www.linkedin.com/in/martinbarker99">LinkedIn</a>
                     </li>
                     <li>
-                        <a href="/static/assets/pdf/Martin Barker Resume 2020.pdf">Resume</a>
+                        <a target="_blank" href="/static/assets/pdf/Martin Barker Resume 2020.pdf">Resume</a>
                     </li>
                 </ul>
             </li>
@@ -521,7 +532,13 @@
                     <div class="w-100"></div>
 
                     <div class="col" style=''>
-                        <a id='githubUrl' target="_blank" href='{{pageBodyNavGithub}}'>View code for this page</a>
+                        {{#if pageBodyNavSrc includeZero=true}}
+                            <a id='hoverUrl' target="_blank" href='{{pageBodyNavSrc}}'>Github Code</a>
+                        {{/if}}
+
+                        {{#if pageBodyNavGithub includeZero=true}}
+                        <a id='hoverUrl' target="_blank" href='{{pageBodyNavGithub}}'>View code for this page</a>
+                        {{/if}}
                     </div>
                 </div>
             </div>
@@ -576,8 +593,8 @@
         var sheet = document.createElement('style')
         //create css style rule for on-hover tab and on hover github url
         let innerHTMLHoverColorStyle = `
-            /* githubUrl hover */
-            #githubUrl:hover{
+            /* hoverUrl hover */
+            #hoverUrl:hover{
                 color:{{LightVibrant}};
             }
 
