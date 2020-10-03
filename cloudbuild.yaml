@@ -1,4 +1,6 @@
 steps:
-- name: "gcr.io/cloud-builders/gcloud"
-  args: ["app", "deploy"]
-timeout: 990s
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/[PRODUCT_ID]/[CONTAINER_IMAGE]', '.' ]
+images: 
+- 'gcr.io/[PRODUCT_ID]/[CONTAINER_IMAGE]'
+timeout: 660s
