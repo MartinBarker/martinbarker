@@ -278,7 +278,7 @@ app.get('/tagger', async function (req, res) {
     //set active current tab
     tagger: 'active',
     //body content title 
-    pageBodyNavTitle: '3_tagger.site',
+    pageBodyNavTitle: 'tagger.site',
     //body content github link
     pageBodyNavGithub: 'https://github.com/MartinBarker/martinbarker/blob/master/views/tagger.handlebars',
     //list to display for navbar 'Blog' options
