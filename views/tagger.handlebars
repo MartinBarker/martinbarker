@@ -10,82 +10,156 @@
         <h5 class="widgettitle">Use a Discogs URL or local files to generate a timestamped tracklist and metadata tags.
         </h5>
         <hr>
+        
+        <!-- inputs -->
+        <div class="container" style='padding-right:0;margin-left:0;margin-right:0;'>
+            <div class="row">
+                
+                <!-- discogs input -->
+                <div class="col" style='min-width: 200px; padding-left:0;padding-right:0;'>
+                    <div id="drop-area">
+                        <form class="my-form">
+                            <h7>Upload multiple files with the file dialog or by dragging and dropping files here.</h7>
+                            <br>
+                            <input style="cursor: pointer;" type="file" id="file" multiple="multiple" />
+                        </form>
+                    </div>
+                </div>
 
-        <!-- Discogs Input Form -->
-        <div class="form-group">
-            <label>
-                <h5>Discogs URL:</h5>
-            </label>
-            <div id='taggerErrDisplay'></div>
-            <input size="12" type="text" placeholder='Discogs URL' name="url" id="urlInput">
-            <button style="cursor: pointer;" id='urlInputButton' name="data" type="button"
-                onclick="submitDiscogsURL(document.getElementById('urlInput').value)">Submit</button>
+                <!-- drag & drop -->
+                <div class="col" style='min-width: 200px; padding-left:0;padding-right:0;'>
+                    <div class="form-group" style="text-align:center;margin-top:5%">
+                        <div id='taggerErrDisplay'></div>
+                        <input size="22" type="text" placeholder='Discogs URL' name="url" id="urlInput">
+                        <button style="cursor: pointer;" id='urlInputButton' name="data" type="button"
+                            onclick="submitDiscogsURL(document.getElementById('urlInput').value)">Submit</button>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-        <!-- File Input Selection -->
-        <div id="drop-area">
-            <form class="my-form">
-                <h5>Upload multiple files with the file dialog or by dragging and dropping files here.</h5>
-                <br>
-                <input style="cursor: pointer;" type="file" id="file" multiple="multiple" />
-            </form>
-        </div>
+        <!-- inputs attempty 2 
+        <div class="container" style='padding-right:0;margin-left:0;margin-right:0;'>
+            <div class="row">
+                <div class="col" style='background:green; padding-left:0;padding-right:0;'>
+                    left box content
+                </div>
+                <div class="col" style='background:orange;padding-left:0;padding-right:0;'>
+                    right box content
+                </div>
 
-        <style>
-            #drop-area {
-                /* border: 2px dashed #ccc; */
-                border-radius: 20px;
-                width: 480px;
-                padding: 20px;
-            }
+            </div>
+        </div> 
+        -->
 
-            /*
+        {{!--
+        <!-- new inputs attempt1 -->
+        <div>
+            <style>
+                #container {
+
+                    display: flex;
+                    /* flex-wrap: wrap; */
+                    flex-direction: row;
+                    align-items: center;
+                    width: 100%;
+                }
+
+                .box {
+                    width: 50%;
+                    box-sizing: border-box;
+                    margin: 5px;
+                    text-align: center;
+                }
+            </style>
+            <div id="container" class='w-100'>
+                <!-- flex container -->
+
+                <div class="box" style='background:red'>
+                    <!-- flex item -->
+                    <div class="form-group">
+                        <div id='taggerErrDisplay'></div>
+                        <input size="22" type="text" placeholder='Discogs URL' name="url" id="urlInput">
+                        <button style="cursor: pointer;" id='urlInputButton' name="data" type="button"
+                            onclick="submitDiscogsURL(document.getElementById('urlInput').value)">Submit</button>
+                    </div>
+                </div>
+
+                <div class=" box" style='background:blue'>
+                    <!-- flex item -->
+                    <div id="drop-area">
+                        <form class="my-form">
+                            <h5>Upload multiple files with the file dialog or by dragging and dropping files here.</h5>
+                            <br>
+                            <input style="cursor: pointer;" type="file" id="file" multiple="multiple" />
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+            <style>
+                #drop-area {
+                    /* border: 2px dashed #ccc; */
+                    border-radius: 20px;
+                    width: 480px;
+                    padding: 20px;
+                }
+
+                /*
             #drop-area.highlight {
             border-color: purple;
             } 
             */
-            p {
-                margin-top: 0;
-            }
+                p {
+                    margin-top: 0;
+                }
 
-            .my-form {
-                margin-bottom: 10px;
-            }
+                .my-form {
+                    margin-bottom: 10px;
+                }
 
-            #gallery {
-                margin-top: 10px;
-            }
+                #gallery {
+                    margin-top: 10px;
+                }
 
-            #gallery img {
-                width: 150px;
-                margin-bottom: 10px;
-                margin-right: 10px;
-                vertical-align: middle;
-            }
+                #gallery img {
+                    width: 150px;
+                    margin-bottom: 10px;
+                    margin-right: 10px;
+                    vertical-align: middle;
+                }
 
-            .button {
-                display: inline-block;
-                padding: 10px;
-                background: #ccc;
-                cursor: pointer;
-                border-radius: 5px;
-                border: 1px solid #ccc;
-            }
+                .button {
+                    display: inline-block;
+                    padding: 10px;
+                    background: #ccc;
+                    cursor: pointer;
+                    border-radius: 5px;
+                    border: 1px solid #ccc;
+                }
 
-            .button:hover {
-                background: #ddd;
-            }
+                .button:hover {
+                    background: #ddd;
+                }
 
-            #fileElem {
-                display: none;
-            }
-        </style>
-        <!-- tagger output -->
+                #fileElem {
+                    display: none;
+                }
+            </style>
+        </div>
+         --}}
+
+        <!-- new tagger output -->
         <hr>
         <h3>Timestamped Tracklist:</h3>
-        <div class='outputTaggerBox' style='margin-left:15px;'>
-            <div class='row'>
-                <textarea class="inputbox" id="inputBox" rows="7" cols="44" placeholder="Tracklist generated by http://tagger.site:
+        <div class="container" style='padding-right:0;margin-left:0;margin-right:0;'>
+            <div class="row">
+                
+                <!-- textarea -->
+                <div class="col" style='min-width: 200px; padding-left:0;padding-right:0;'>
+                    <textarea class="w-100 h-100 inputbox" id="inputBox" rows="7" cols="44" placeholder="Tracklist generated by http://tagger.site:
 00:00 - 09:29 01 - wedding song
 09:29 - 13:31 02 - she
 13:31 - 19:14 03 - long song
@@ -93,59 +167,68 @@
 20:30 - 24:42 05 - for priscilla
 24:42 - 34:14 06 - the delta song
 34:14 - 39:35 07 - why "></textarea>
-                <button class="btn default copyButton" style="cursor: pointer; max-width: 70px; width: 100%;"
-                    id='copyToClipboarad' onclick="copyToClipboard('inputBox')" type="button">Copy</button>
-                <div>
-                    <table class="fixed h-100" align="left"
-                        style="white-space:nowrap; table-layout: fixed; max-width: 533px;" height="100"
+                </div>
+
+                <!-- table -->
+                <div class="col" style='min-width: 200px; padding-left:0;padding-right:0;'>
+                    <table class="w-100 h-100" align="left" style="white-space:nowrap; table-layout: fixed;"
                         id="adjustments">
                         <tbody>
                             <!-- Columns -->
-                            <tr>
-                                <th style="text-align:center; width: 6%;">
-                                    <select class='taggerOptions' id="taggerOption1">
-                                        <option value="startTime" selected>start</option>
-                                        <option value="blank">(blank)</option>
-                                    </select>
+                            <th style="text-align:center; width: 6%;">
+                                <select class='taggerOptions' id="taggerOption1">
+                                    <option value="startTime" selected>start</option>
+                                    <option value="blank">(blank)</option>
+                                </select>
 
-                                    <select class='taggerOptions' id="taggerOption2">
-                                        <option value="dash" selected><a style="text-align:center;">-</a></option>
-                                        <option value="blank">(blank)</option>
-                                    </select>
+                                <select class='taggerOptions' id="taggerOption2">
+                                    <option value="dash" selected><a style="text-align:center;">-</a></option>
+                                    <option value="blank">(blank)</option>
+                                </select>
 
-                                    <select class='taggerOptions' id="taggerOption3">
-                                        <option value="endTime" selected>end</option>
-                                        <option value="blank">(blank)</option>
-                                    </select>
+                                <select class='taggerOptions' id="taggerOption3">
+                                    <option value="endTime" selected>end</option>
+                                    <option value="blank">(blank)</option>
+                                </select>
 
-                                    <select class='taggerOptions' id="taggerOption4">
-                                        <option value="title">title</option>
-                                    </select>
+                                <select class='taggerOptions' id="taggerOption4">
+                                    <option value="title">title</option>
+                                </select>
 
-                                    <select class='taggerOptions' id="taggerOption5">
-                                        <option value="artist">artist</option>
-                                        <option value="blank" selected>(blank)</option>
-                                    </select>
-                                </th>
-                            </tr>
+                                <select class='taggerOptions' id="taggerOption5">
+                                    <option value="artist">artist</option>
+                                    <option value="blank" selected>(blank)</option>
+                                </select>
+                            </th>
                         </tbody>
                     </table>
                 </div>
+
+            </div>
+            <div class='row'>
+                <button class="btn default copyButton" style="cursor: pointer; width: 100%;" id='copyToClipboarad'
+                    onclick="copyToClipboard('inputBox')" type="button">Copy</button>
             </div>
         </div>
 
-        <!-- discogstagger output -->
+        <!-- new discogstagger output -->
         <hr>
         <h3>Comma-Separated Discogs Tags:</h3>
-        <div class='outputDiscogstaggerBox' style='margin-left:15px;'>
-            <div class='row'>
-                <textarea class="inputbox" id="tagsBox" rows="7" cols="44"
-                    placeholder="Booker T. Jones,Priscilla Jones,Booker T & The MGs,The Mar-Keys,The Stax Staff,The Packers,The RCO All-Stars,Priscilla Coolidge,Booker T. & Priscilla,1971,France,The Wedding Song,She,The Indian Song,Sea Gull,For Priscilla,The Delta  Song,Why,Mississippi Voodoo,Cool  Black Dream,Sweet Child Youre Not Alone,Booker T. & Priscilla 1971,Booker T. Jones 1971,"></textarea>
-                <button class="btn default copyButton" style="cursor: pointer; max-width: 70px; width: 100%;"
-                    id='copyToClipboarad' onclick="copyToClipboard('tagsBox')" type="button">Copy</button>
-                <div>
-                    <table class="fixed h-100" align="left"
-                        style="white-space:nowrap; table-layout: fixed; max-width: 533px;" height="100"
+        <div class="container" style='padding-right:0;margin-left:0;margin-right:0;'>
+            <div class="row">
+                
+                <!-- textarea -->
+                <div class="col" style='display:inline-block;position:relative;         min-width: 300px; padding-left:0;padding-right:0;'>
+                    
+                    <textarea style='display:block;' class="w-100 h-100 inputbox" id="tagsBox" rows="7" cols="44" placeholder="Booker T. Jones,Priscilla Jones,Booker T & The MGs,The Mar-Keys,The Stax Staff,The Packers,The RCO All-Stars,Priscilla Coolidge,Booker T. & Priscilla,1971,France,The Wedding Song,She,The Indian Song,Sea Gull,For Priscilla,The Delta  Song,Why,Mississippi Voodoo,Cool  Black Dream,Sweet Child Youre Not Alone,Booker T. & Priscilla 1971,Booker T. Jones 1971,"></textarea>
+                   
+                </div>
+
+                <!-- table -->
+                <div class="col" style='min-width: 300px; padding-left:0;padding-right:0;'>
+                    
+                    <!-- discogstagger options table -->
+                    <table class="w-100 h-100" align="left" style="white-space:nowrap; table-layout: fixed;"
                         id="adjustments">
                         <tbody>
                             <!-- Columns -->
@@ -283,35 +366,48 @@
 
                         </tbody>
                     </table>
+                
                 </div>
+
             </div>
+            <div class='row'>
+                <button class="btn default copyButton" style="cursor: pointer; width: 100%;" id='copyToClipboarad'
+                    onclick="copyToClipboard('tagsBox')" type="button"><div id="tagsCharCount">Copy 0 Chars to Clipboard</div></button>
+            </div>
+                <script>
+                    $("#tagsBox").bind('input propertychange', function() {
+                        $("#tagsCharCount").text(`Copy ${($(this).val().length)} Chars to Clipboard`);
+                    });
+                </script>
         </div>
-        <div id="charCount">Number of characters: 0</div>
 
-        <style>
-            .copyButton {
-                border: 2px solid black;
-            }
 
-            table,
-            th,
-            td {
-                border: 2px solid black;
-                background: white;
-                color: black;
-                height: 100%;
-                white-space: normal;
-                word-wrap: break-word;
-            }
 
-            textarea {
-                font-family: "Lucida Console";
-                /* font-size: 18px; */
-            }
-        </style>
-        {{!-- --}}
     </div>
 </div>
+
+<!-- page css -->
+<style>
+    .copyButton {
+        border: 2px solid black;
+    }
+
+    table,
+    th,
+    td {
+        border: 2px solid black;
+        background: white;
+        color: black;
+        height: 100%;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    textarea {
+        font-family: "Lucida Console";
+        /* font-size: 18px; */
+    }
+</style>
 
 <script>
     $(document).ready(function () {
