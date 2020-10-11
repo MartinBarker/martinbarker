@@ -29,8 +29,9 @@ $(document).ready(function () {
         let taggerData = await getFileTaggerData(files)
         displayData(taggerData)
         //generate and display metadata tags
-        let discogsTaggerData = await generateDiscogsFileTags(files) 
-        displayMetadataTags(discogsTaggerData)
+        document.getElementById('tagsBox').value = "Metadata tags generation via files not currently supported :( Try using a Discogs URL"
+        //let discogsTaggerData = await generateDiscogsFileTags(files) 
+        //displayMetadataTags(discogsTaggerData)
     }
 
     //function to make sure hitting 'enter' key submits input box
@@ -98,21 +99,23 @@ $(document).ready(function () {
             var endTimeSeconds = 0
             var taggerData = []
             for (i = 0; i < numberOfSongs; i++) {
-                let songLength = await getSongLength(songs[i], i);
-                let songTitle = await getSongTitle(songs[i], i);
-    
-                var endTimeSeconds = startTimeSeconds + songLength
-    
-                //convert seconds to minutes 
-                startTime = convertSecondsToTimestamp(startTimeSeconds);
-    
-                //convert seconds to minutes
-                endTime = convertSecondsToTimestamp(endTimeSeconds);
-    
-                var trackData = { title: songTitle, startTime: startTime, endTime: endTime }
-                taggerData.push(trackData)
-    
-                var startTimeSeconds = endTimeSeconds
+                if(!songs[i].type.includes('image')){
+                    let songLength = await getSongLength(songs[i], i);
+                    let songTitle = await getSongTitle(songs[i], i);
+        
+                    var endTimeSeconds = startTimeSeconds + songLength
+        
+                    //convert seconds to minutes 
+                    startTime = convertSecondsToTimestamp(startTimeSeconds);
+        
+                    //convert seconds to minutes
+                    endTime = convertSecondsToTimestamp(endTimeSeconds);
+        
+                    var trackData = { title: songTitle, startTime: startTime, endTime: endTime }
+                    taggerData.push(trackData)
+        
+                    var startTimeSeconds = endTimeSeconds
+                }
             }
             resolve(taggerData)
         })
