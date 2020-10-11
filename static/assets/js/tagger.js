@@ -405,7 +405,6 @@ async function generateDiscogsFileTags(songs){
 async function generateDiscogsURLTags(discogsReleaseData) {
     //get releaseArtist tags
     let releaseArtistTags = await getArtistTags(discogsReleaseData)
-    console.log('releaseArtistTaghs=', releaseArtistTags)
 
     //get releaseInfo tags
     let releaseInfoTags = await getReleaseInfoTags(discogsReleaseData)
@@ -686,11 +685,13 @@ async function getArtistTags(discogsReleaseData) {
                 if (discogsReleaseData.artists[i].anv) {
                     artistTags.push(removeNumberParenthesesAndComma(discogsReleaseData.artists[i].anv))
                 }
-                /*
+                
                 //if artist is not 'Various', get more info
                 if (discogsReleaseData.artists[i].name != "Various" && discogsReleaseData.artists[i].resource_url) {
                     
-                    let artistData = await discogsAPIQuery(discogsReleaseData.artists[i].resource_url)
+                    //get artist data from discogs API
+                    let artistData = await getDiscogsData('artist', discogsReleaseData.artists[i].id)
+               
                     //if namevariations exist, add those to artistTags
                     if (artistData.namevariations) {
                         artistTags = artistTags.concat(artistData.namevariations)
@@ -762,7 +763,7 @@ async function getArtistTags(discogsReleaseData) {
                     }
                     
                 }
-                */
+                
             }
         }
         /*
