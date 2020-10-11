@@ -10,8 +10,36 @@
         <h5 class="widgettitle">Use a Discogs URL or local files to generate a timestamped tracklist and metadata tags.
         </h5>
         <hr>
+        
+        <!-- inputs -->
+        <div class="container" style='padding-right:0;margin-left:0;margin-right:0;'>
+            <div class="row">
+                
+                <!-- discogs input -->
+                <div class="col" style='min-width: 200px; padding-left:0;padding-right:0;'>
+                    <div id="drop-area">
+                        <form class="my-form">
+                            <h7>Upload multiple files with the file dialog or by dragging and dropping files here.</h7>
+                            <br>
+                            <input style="cursor: pointer;" type="file" id="file" multiple="multiple" />
+                        </form>
+                    </div>
+                </div>
 
-        <!-- inputs attempty 2 -->
+                <!-- drag & drop -->
+                <div class="col" style='min-width: 200px; padding-left:0;padding-right:0;'>
+                    <div class="form-group" style="text-align:center;margin-top:5%">
+                        <div id='taggerErrDisplay'></div>
+                        <input size="22" type="text" placeholder='Discogs URL' name="url" id="urlInput">
+                        <button style="cursor: pointer;" id='urlInputButton' name="data" type="button"
+                            onclick="submitDiscogsURL(document.getElementById('urlInput').value)">Submit</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- inputs attempty 2 
         <div class="container" style='padding-right:0;margin-left:0;margin-right:0;'>
             <div class="row">
                 <div class="col" style='background:green; padding-left:0;padding-right:0;'>
@@ -22,7 +50,8 @@
                 </div>
 
             </div>
-        </div>
+        </div> 
+        -->
 
         {{!--
         <!-- new inputs attempt1 -->
@@ -120,7 +149,7 @@
                 }
             </style>
         </div>
-        --}}
+         --}}
 
         <!-- new tagger output -->
         <hr>
@@ -189,13 +218,15 @@
             <div class="row">
                 
                 <!-- textarea -->
-                <div class="col" style='min-width: 300px; padding-left:0;padding-right:0;'>
-                    <textarea class="w-100 h-100 inputbox" id="tagsBox" rows="7" cols="44"
-                        placeholder="Booker T. Jones,Priscilla Jones,Booker T & The MGs,The Mar-Keys,The Stax Staff,The Packers,The RCO All-Stars,Priscilla Coolidge,Booker T. & Priscilla,1971,France,The Wedding Song,She,The Indian Song,Sea Gull,For Priscilla,The Delta  Song,Why,Mississippi Voodoo,Cool  Black Dream,Sweet Child Youre Not Alone,Booker T. & Priscilla 1971,Booker T. Jones 1971,"></textarea>
+                <div class="col" style='display:inline-block;position:relative;         min-width: 300px; padding-left:0;padding-right:0;'>
+                    
+                    <textarea style='display:block;' class="w-100 h-100 inputbox" id="tagsBox" rows="7" cols="44" placeholder="Booker T. Jones,Priscilla Jones,Booker T & The MGs,The Mar-Keys,The Stax Staff,The Packers,The RCO All-Stars,Priscilla Coolidge,Booker T. & Priscilla,1971,France,The Wedding Song,She,The Indian Song,Sea Gull,For Priscilla,The Delta  Song,Why,Mississippi Voodoo,Cool  Black Dream,Sweet Child Youre Not Alone,Booker T. & Priscilla 1971,Booker T. Jones 1971,"></textarea>
+                   
                 </div>
 
                 <!-- table -->
                 <div class="col" style='min-width: 300px; padding-left:0;padding-right:0;'>
+                    
                     <!-- discogstagger options table -->
                     <table class="w-100 h-100" align="left" style="white-space:nowrap; table-layout: fixed;"
                         id="adjustments">
@@ -335,15 +366,20 @@
 
                         </tbody>
                     </table>
+                
                 </div>
 
             </div>
             <div class='row'>
                 <button class="btn default copyButton" style="cursor: pointer; width: 100%;" id='copyToClipboarad'
-                    onclick="copyToClipboard('tagsBox')" type="button">Copy</button>
+                    onclick="copyToClipboard('tagsBox')" type="button"><div id="tagsCharCount">Copy 0 Chars to Clipboard</div></button>
             </div>
+                <script>
+                    $("#tagsBox").bind('input propertychange', function() {
+                        $("#tagsCharCount").text(`Copy ${($(this).val().length)} Chars to Clipboard`);
+                    });
+                </script>
         </div>
-        <div id="charCount">Number of characters: 0</div>
 
 
 

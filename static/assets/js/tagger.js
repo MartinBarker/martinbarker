@@ -30,6 +30,7 @@ $(document).ready(function () {
         displayData(taggerData)
         //generate and display metadata tags
         document.getElementById('tagsBox').value = "Metadata tags generation via files not currently supported :( Try using a Discogs URL"
+        $("#tagsCharCount").text(`Copy 85 Chars to Clipboard`);
         //let discogsTaggerData = await generateDiscogsFileTags(files) 
         //displayMetadataTags(discogsTaggerData)
     }
@@ -85,6 +86,8 @@ $(document).ready(function () {
         //generate and display metadata tags
         let discogsTaggerData = await generateDiscogsFileTags(songs) 
         displayMetadataTags(discogsTaggerData)
+        document.getElementById('tagsBox').value = "Metadata tags generation via files not currently supported :( Try using a Discogs URL"
+        $("#tagsCharCount").text(`Copy 85 Chars to Clipboard`);
 
         
     });
@@ -521,7 +524,7 @@ function updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, r
     }
 
     document.getElementById("tagsBox").value = tags;
-    document.getElementById("charCount").innerText = "Number of characters: " + tags.length.toString();
+    document.getElementById("tagsCharCount").innerText = `Copy ${tags.length.toString()} Chars to Clipboard`;
 }
 
 //remove any numbers inside parentheses like (2) and remove commas from any string
