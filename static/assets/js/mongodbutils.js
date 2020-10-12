@@ -1,7 +1,6 @@
 var MongoClient = require( 'mongodb' ).MongoClient;
 var _db;
-var pw = 'dbUserPassword'
-//process.env.mongodbpword
+var pw = process.env.mongodbpword
 var url = `mongodb+srv://dbUser:${pw}@cluster0.qotrh.gcp.mongodb.net/node-blog?retryWrites=true&w=majority`;
 
 module.exports = {
