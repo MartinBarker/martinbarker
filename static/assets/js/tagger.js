@@ -69,6 +69,7 @@ $(document).ready(function () {
     //if tagger options change
     $(".taggerOptions").change(function () {
         console.log('taggerOptions chanmged, globalTaggerData = ', globalTaggerData)
+        displayData(globalTaggerData)
         if (globalTaggerData) {
             displayData(globalTaggerData)
         } else {
@@ -235,6 +236,7 @@ async function displayData(input) {
         textResult = textResult + textLine + "&#13;&#10;"
     }
     document.getElementById("inputBox").innerHTML = textResult
+    document.getElementById("tracklistCopy").innerText = `Copy ${textResult.length} Chars to Clipboard`;
 }
 
 //take an object with track times and titles and calculate the timestamped tracklist to display
@@ -250,7 +252,8 @@ async function getDiscogsTaggerData(tracklistData) {
             if (!isHeadingTrackBool) {
                 if (tracklistData[i].duration == "") {
                     taggerData = []
-                    var trackData = { title: "Track durations not availiable on every track for this Discogs URL", startTime: "", endTime: "" }
+                    var trackData = { title: "Track durations not available on every track for this Discogs URL", startTime: "", endTime: "" }
+                    document.getElementById("tracklistCopy").innerText = `Copy 113 Chars to Clipboard`;
                     taggerData.push(trackData)
                     break
                 } else {
@@ -870,13 +873,13 @@ async function getArtistTags(discogsReleaseData) {
 function addTags(tags, percentToInclude) {
     var tempTags = "";
 
-    var numberOfTagsAvailiable = tags.length;
-    var numberOfTagsToDisplay = numberOfTagsAvailiable * percentToInclude;
+    var numberOfTagsavailable= tags.length;
+    var numberOfTagsToDisplay = numberOfTagsavailable* percentToInclude;
     numberOfTagsToDisplay = ~~numberOfTagsToDisplay;
     for (var i = 0; i < numberOfTagsToDisplay; i++) {
         tempTags = tempTags + tags[i] + ","
     }
-    return { tags: tempTags, length: numberOfTagsToDisplay, numberOfTagsAvailiable:numberOfTagsAvailiable };
+    return { tags: tempTags, length: numberOfTagsToDisplay, numberOfTagsAvailiable:numberOfTagsavailable};
 }
 
 function prepUpdateTagsBox() {
