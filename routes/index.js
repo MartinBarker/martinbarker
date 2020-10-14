@@ -90,7 +90,7 @@ app.get('/', async function (req, res) {
     //body content title 
     pageBodyNavTitle: 'martinbarker.me',
     //body content github link
-    pageBodyNavGithub: 'temp',
+    pageBodyNavGithub: 'https://github.com/MartinBarker/martinbarker/pull/10',
     //list to display for navbar 'Blog' options
     posts: displayPosts,
     //mainTemplateData
@@ -201,7 +201,7 @@ app.get('/popularify', async function (req, res) {
     //body content title 
     pageBodyNavTitle: 'Popularify',
     //body content github link
-    pageBodyNavGithub: 'temp',
+    pageBodyNavGithub: 'https://github.com/MartinBarker/martinbarker/pull/10',
     //list to display for navbar 'Blog' options
     posts: displayPosts,
     //mainTemplateData
@@ -257,6 +257,10 @@ app.post('/popularifyRequest', async function (req, res) {
 
 });
 
+//redirect discogstagger to tagger
+app.get('/discogstagger', async function (req, res) {
+  res.redirect('/tagger');
+})
 
 //tagger route
 app.get('/tagger', async function (req, res) {
