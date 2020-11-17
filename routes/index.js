@@ -264,10 +264,8 @@ app.get('/discogstagger', async function (req, res) {
 
 //tagger route
 app.get('/tagger', async function (req, res) {
-  console.log('route /tagger ')
   //get mainTemplate data
   let mainTemplateData = await getMainTemplateData(req.params.id)
-
   let displayPosts = mainTemplateData.postsDisplay;
 
   res.render('tagger', {

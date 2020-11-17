@@ -2,7 +2,7 @@
 <script src="https://unpkg.com/moment"></script>
 
 <!-- page main content -->
-<div class="container-fluid" style='color: {{textColor5}}'>
+<div class="container-fluid" style='color: {{textColor5}}' onload='checkFileAPI();'>
 
     <div style="margin-top:-30px;">
 
@@ -426,7 +426,7 @@
     }
 </style>
 
-<script>
+<script type="text/javascript">
     $(document).ready(function () {
         //call function to set drag and drop colors
         setDragAndDropColors()
