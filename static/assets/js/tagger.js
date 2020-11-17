@@ -1,10 +1,23 @@
 $(document).ready(function () {
-    
+    var reader;
+    checkFileAPI();
+    //Check for the various File API support.
+    function checkFileAPI() {
+        console.log('checkFileAPI()')
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            reader = new FileReader();
+            return true;
+        } else {
+            alert('The File APIs are not fully supported by your browser. Fallback required.');
+            return false;
+        }
+    }
+
     //drag and drop code
     let dropArea = document.getElementById('drop-area')
-    ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, preventDefaults, false)
-    })
+        ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false)
+        })
     function preventDefaults(e) {
         e.preventDefault()
         e.stopPropagation()
@@ -12,9 +25,9 @@ $(document).ready(function () {
     ;['dragenter', 'dragover'].forEach(eventName => {
         dropArea.addEventListener(eventName, highlight, false)
     })
-    ;['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, unhighlight, false)
-    })
+        ;['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false)
+        })
     function highlight(e) {
         dropArea.classList.add('highlight')
     }
@@ -79,22 +92,124 @@ $(document).ready(function () {
 
     //if files are selected functions
     $("#file").change(async function (e) {
-        var file = e.currentTarget.files[0];
-        var songs = e.currentTarget.files;
-        //generate and display tracklisted timstamp
-        let taggerData = await getFileTaggerData(songs)
+        var firstFile = e.currentTarget.files[0];
+        let taggerData;
+        //if first file filename ends with '.cue'
+        if (firstFile.name.toUpperCase().substr(firstFile.name.length - 4) == (".CUE")) {
+            console.log('its a cue file')
+            var cueFileContents = await readText(e.currentTarget)
+            console.log('cueFileContents=', cueFileContents)
+            taggerData = await getCueTaggerData(cueFileContents)
+
+        } else {
+            console.log("not a cue file")
+            var songs = e.currentTarget.files;
+            console.log('songs=', songs)
+            //generate and display tracklisted timstamp
+            taggerData = await getFileTaggerData(songs)
+        }
+        console.log('taggerData=', taggerData)
         displayData(taggerData)
         //generate and display metadata tags
-        let discogsTaggerData = await generateDiscogsFileTags(songs) 
+        let discogsTaggerData = await generateDiscogsFileTags(songs)
         displayMetadataTags(discogsTaggerData)
         document.getElementById('tagsBox').value = "Metadata tags generation via files not currently supported :( Try using a Discogs URL"
         $("#tagsCharCount").text(`Copy 85 Chars to Clipboard`);
 
-        
+
+
+
+
     });
 
+    function readText(filePath) {
+        return new Promise(async function (resolve, reject) {
+
+            var output = ""; //placeholder for text output
+            if (filePath.files && filePath.files[0]) {
+                reader.onload = function (e) {
+                    output = e.target.result;
+                    resolve(output)
+                };//end onload()
+                reader.readAsText(filePath.files[0]);
+            }//end if html5 filelist support
+            else if (ActiveXObject && filePath) { //fallback to IE 6-8 support via ActiveX
+                try {
+                    reader = new ActiveXObject("Scripting.FileSystemObject");
+                    var file = reader.OpenTextFile(filePath, 1); //ActiveX File Object
+                    output = file.ReadAll(); //text contents of file
+                    file.Close(); //close file "input stream"
+                    resolve(output)
+                } catch (e) {
+                    if (e.number == -2146827859) {
+                        alert('Unable to access local files due to browser security settings. ' +
+                            'To overcome this, go to Tools->Internet Options->Security->Custom Level. ' +
+                            'Find the setting for "Initialize and script ActiveX controls not marked as safe" and change it to "Enable" or "Prompt"');
+                    }
+                }
+            }
+            else { //this is where you could fallback to Java Applet, Flash or similar
+                //resolve(false)
+            }
+            //resolve(true)
+
+        })
+    }
+
+    //convert cue file to tagger data
+    async function getCueTaggerData(cueStr) {
+        return new Promise(async function (resolve, reject) {
+            let splitTracksCue = cueStr.split('TRACK')
+
+            let startTime, endTime;
+            var startTimeSeconds = 0;
+            var endTimeSeconds = 0;
+            let taggerData = [];
+
+            //for each track
+            for (var x = 0; x < splitTracksCue.length; x++) {
+                var cueTrackSplitInfo = splitTracksCue[x].split(/\n/);
+                var durationSeconds = 0;
+                var trackTitle = ""
+
+                console.log(`cueTrackSplitInfo=`, cueTrackSplitInfo)
+                if (cueTrackSplitInfo[0].toUpperCase().includes('AUDIO')) {
+                    //look through each option to get title and durationSeconds
+                    for (var z = 0; z < cueTrackSplitInfo.length; z++) {
+                        let optionStr = cueTrackSplitInfo[z].trim();
+                        //title
+                        if (optionStr.substr(0, 5) == 'TITLE') {
+                            trackTitle = optionStr;
+                            trackTitle = trackTitle.substring(7, trackTitle.length - 1)
+                        }
+                        //length
+                        if (optionStr.substr(0, 5) == 'INDEX' && !optionStr.includes('INDEX 01 00:00:00')) {
+                            //get duration (minutes:seconds:milliseconds)
+                            var m_s_ms = optionStr.split(' ')[2];
+                            var m_s_ms_split = m_s_ms.split(':');
+                            //convert duration to seconds
+                            durationSeconds = (+m_s_ms_split[0] * 60) + (+m_s_ms_split[1]);
+                        }
+                    }
+                    endTimeSeconds = startTimeSeconds + durationSeconds;
+                    startTime = convertSecondsToTimestamp(startTimeSeconds);
+                    endTime = convertSecondsToTimestamp(endTimeSeconds);
+                    var trackData = { title: trackTitle, startTime: startTime, endTime: endTime }
+                    taggerData.push(trackData);
+                    startTimeSeconds = endTimeSeconds;
+
+                }
+
+                //let splitTrackInfo = splitTracksCue[x].split('↵')
+
+            }
+            resolve(taggerData)
+            //resolve([{title: "04 Lifting 2nd Resurrection", startTime: "06:29", endTime: "10:15"},{title: "02 Lifting 2nd Resurrection", startTime: "06:29", endTime: "10:15"}])
+        })
+    }
+
     //convert files to tagger data
-    async function getFileTaggerData(songs){
+    async function getFileTaggerData(songs) {
         return new Promise(async function (resolve, reject) {
             var numberOfSongs = songs.length;
             var startTime = "x"
@@ -103,21 +218,22 @@ $(document).ready(function () {
             var endTimeSeconds = 0
             var taggerData = []
             for (i = 0; i < numberOfSongs; i++) {
-                if(!songs[i].type.includes('image')){
+                console.log(`getFileTaggerData() songs[${i}].type=`, songs[i].type)
+                if (!songs[i].type.includes('image')) {
                     let songLength = await getSongLength(songs[i], i);
                     let songTitle = await getSongTitle(songs[i], i);
-        
+
                     var endTimeSeconds = startTimeSeconds + songLength
-        
+
                     //convert seconds to minutes 
                     startTime = convertSecondsToTimestamp(startTimeSeconds);
-        
+
                     //convert seconds to minutes
                     endTime = convertSecondsToTimestamp(endTimeSeconds);
-        
+
                     var trackData = { title: songTitle, startTime: startTime, endTime: endTime }
                     taggerData.push(trackData)
-        
+
                     var startTimeSeconds = endTimeSeconds
                 }
             }
@@ -132,20 +248,20 @@ let globalTaggerData = null;
 let tagsJsonGlobal = null;
 let tagsJsonDisplay = null;
 
-async function displayMetadataTags(tags){
+async function displayMetadataTags(tags) {
     //reset table slider values
     document.getElementById('releaseArtistsSlider').value = 100;
     document.getElementById('releaseArtistsSliderPercent').innerHTML = `100%`;
-    
+
     document.getElementById('releaseInfoSlider').value = 100;
     document.getElementById('releaseInfoSliderPercent').innerHTML = `100%`;
-    
+
     document.getElementById('tracklistSlider').value = 100;
     document.getElementById('tracklistSliderPercent').innerHTML = `100%`;
 
     document.getElementById('combinationsSlider').value = 100;
     document.getElementById('combinationsSliderPercent').innerHTML = `100%`;
-    
+
     //store as global variables
     tagsJsonGlobal = tags;
     tagsJsonDisplay = tags;
@@ -221,9 +337,9 @@ async function displayData(input) {
         }
 
         //determine option5
-        if (taggerDisplayOption5 == 'artist'){
+        if (taggerDisplayOption5 == 'artist') {
             textLine = `${textLine}${trackArtist}`
-        }else if(taggerDisplayOption5 == 'blank'){
+        } else if (taggerDisplayOption5 == 'blank') {
             textLine = `${textLine}`
         }
 
@@ -269,26 +385,26 @@ async function getDiscogsTaggerData(tracklistData) {
 
                     //get track artists
                     let trackArtistsString = ''
-                   
+
                     let trackArtistArr = []
-                    if(tracklistData[i].artists){
-                    
-                        for(var z = 0; z < tracklistData[i].artists.length; z++){
+                    if (tracklistData[i].artists) {
+
+                        for (var z = 0; z < tracklistData[i].artists.length; z++) {
                             let trackArtist = removeNumberParenthesesAndComma(tracklistData[i].artists[z].name)
                             trackArtistArr.push(trackArtist) //trackArtistArr
                         }
                         trackArtistsString = `${trackArtistsString} - ${trackArtistArr.join(',')}`
-                            
-                    }else{
+
+                    } else {
                         trackArtistsString = ` NA`
                     }
-                   
+
                     //add data to object
-                    var trackData = { 
+                    var trackData = {
                         title: tracklistData[i].title,
-                        trackArtist: trackArtistsString, 
-                        startTime: secondsToTimestamp(startTimeSeconds), 
-                        endTime: secondsToTimestamp(endTimeSeconds) 
+                        trackArtist: trackArtistsString,
+                        startTime: secondsToTimestamp(startTimeSeconds),
+                        endTime: secondsToTimestamp(endTimeSeconds)
                     }
                     taggerData.push(trackData)
 
@@ -313,11 +429,9 @@ async function submitDiscogsURL(input) {
     var discogsListingType = urlArr[urlArr.length - 2];
     var discogsListingCode = urlArr[urlArr.length - 1];
     //get data from discogs API
-    try{
-        //let discogsData = await getDiscogsData(discogsListingType, discogsListingCode)
+    try {
         let discogsData = await getDiscogsData(discogsListingType, discogsListingCode)
-        console.log('discogsData = ', discogsData)
-        
+
         //generate discogs tags
         generateDiscogsURLTags(discogsData)
 
@@ -329,8 +443,8 @@ async function submitDiscogsURL(input) {
             displayData(taggerData)
         }
         document.getElementById('taggerErrDisplay').innerText = ''
-    
-    }catch(err){
+
+    } catch (err) {
         console.log('err getting discogs data = ', err)
         document.getElementById('taggerErrDisplay').innerText = 'Discogs API can only handle so many requests.. please wait a couple seconds and try again.'
     }
@@ -349,11 +463,12 @@ async function getDiscogsData(discogsListingType, discogsListingCode) {
             },
         }).then((resp) => {
             console.log('/discogsAPI status = ', resp.status)
-            if(resp.status == 400){
+            if (resp.status == 400) {
                 console.log('err = ', resp)
             }
             resolve(resp)
         }).catch((err) => {
+            console.log('err caught')
             reject(err)
         });
     });
@@ -392,18 +507,18 @@ function copyToClipboard(elementID) {
 }
 
 //discogstagger file submit generate tags
-async function generateDiscogsFileTags(songs){
+async function generateDiscogsFileTags(songs) {
     return new Promise(function (resolve, reject) {
         $.ajax({
             url: "getFileMetadataTags",
             type: 'POST',
-            data:{
+            data: {
                 songs: 'songs',
             },
             success: function (resp) {
                 resolve(resp)
             },
-            error: function (error) { 
+            error: function (error) {
                 resolve("error")
             }
         })
@@ -519,7 +634,7 @@ function updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, r
         document.getElementById('combinationsTagNum').innerHTML = `${currentTagsNum}/${totalTagsNum} tags`;
         //update number of chars for this tags category
         document.getElementById('combinationsNumber').innerHTML = numOfChars;
-        
+
         //tags = tags + addTags(tagsJsonGlobal.tags.combinations, (combinationsSliderValue / 100)).tags;
         //document.getElementById('combinationsNumber').innerHTML = `${addTags(tagsJsonGlobal.tags.combinations, (combinationsSliderValue / 100)).tags.length} chars`;
     } else {
@@ -532,10 +647,10 @@ function updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, r
 
 //remove any numbers inside parentheses like (2) and remove commas from any string
 function removeNumberParenthesesAndComma(input) {
-    if(input){
+    if (input) {
 
         //if input is object (discogs api only returns objects that are lists)
-        if(typeof input == 'object'){
+        if (typeof input == 'object') {
             input = input.join(', ')
         }
 
@@ -544,7 +659,7 @@ function removeNumberParenthesesAndComma(input) {
         //remove commas
         input = input.replace(/,/g, '')
         //remove all numbers within parentheses
-        var regEx = /\(([\d)]+)\)/; 
+        var regEx = /\(([\d)]+)\)/;
         var matches = regEx.exec(input);
         if (matches) {
             //remove parentheses number
@@ -558,7 +673,7 @@ function removeNumberParenthesesAndComma(input) {
             return input
         }
 
-    }else{
+    } else {
         return ''
     }
 
@@ -694,85 +809,89 @@ async function getArtistTags(discogsReleaseData) {
                 if (discogsReleaseData.artists[i].anv) {
                     artistTags.push(removeNumberParenthesesAndComma(discogsReleaseData.artists[i].anv))
                 }
-                
+
                 //if artist is not 'Various', get more info
                 if (discogsReleaseData.artists[i].name != "Various" && discogsReleaseData.artists[i].resource_url) {
-                    
-                    //get artist data from discogs API
-                    let artistData = await getDiscogsData('artist', discogsReleaseData.artists[i].id)
-               
-                    //if namevariations exist, add those to artistTags
-                    if (artistData.namevariations) {
-                        artistTags = artistTags.concat(artistData.namevariations)
-                    }
 
-                    //if groups exist
-                    if (artistData.groups) {
-                        for (var q = 0; q < artistData.groups.length; q++) {
-                            //push group name
-                            artistTags.push(removeNumberParenthesesAndComma(artistData.groups[q].name))
-                            //if anv exists, push that
-                            if (artistData.groups[q].anv) {
-                                artistTags.push(removeNumberParenthesesAndComma(artistData.groups[q].anv))
+                    //get artist data from discogs API
+                    try {
+                        let artistData = await getDiscogsData('artist', discogsReleaseData.artists[i].id)
+                        //if namevariations exist, add those to artistTags
+                        if (artistData.namevariations) {
+                            artistTags = artistTags.concat(artistData.namevariations)
+                        }
+
+                        //if groups exist
+                        if (artistData.groups) {
+                            for (var q = 0; q < artistData.groups.length; q++) {
+                                //push group name
+                                artistTags.push(removeNumberParenthesesAndComma(artistData.groups[q].name))
+                                //if anv exists, push that
+                                if (artistData.groups[q].anv) {
+                                    artistTags.push(removeNumberParenthesesAndComma(artistData.groups[q].anv))
+                                }
                             }
                         }
-                    }
 
-                    //if members exist
-                    if (artistData.members) {
-                        //for each member
-                        for (var z = 0; z < artistData.members.length; z++) {
-                            //push name
-                            artistTags.push(removeNumberParenthesesAndComma(artistData.members[z].name))
+                        //if members exist
+                        if (artistData.members) {
+                            //for each member
+                            for (var z = 0; z < artistData.members.length; z++) {
+                                //push name
+                                artistTags.push(removeNumberParenthesesAndComma(artistData.members[z].name))
 
-                            //push anv if it exists
-                            if (artistData.members[z].anv) {
-                                artistTags.push(removeNumberParenthesesAndComma(artistData.members[z].anv))
-                            }
-
-           
-                            //get more info on that member if possible
-                            if(artistData.members[z].resource_url){
-                                let memberArtistData = await discogsAPIQuery(artistData.members[z].resource_url)
-                                //if namevariations exist, add that to artistTags
-                                if(memberArtistData.namevariations){
-                                    artistTags = artistTags.concat(memberArtistData.namevariations)
+                                //push anv if it exists
+                                if (artistData.members[z].anv) {
+                                    artistTags.push(removeNumberParenthesesAndComma(artistData.members[z].anv))
                                 }
-                                //if groups exist, add that 
-                                if(memberArtistData.groups){
-                                    //for each group
-                                    for(var x = 0; x < memberArtistData.groups.length; x++){
-                                        //push group name
-                                        artistTags.push(removeNumberParenthesesAndComma(memberArtistData.groups[x].name))
-                                        
+
+
+                                //get more info on that member if possible
+                                if (artistData.members[z].resource_url) {
+                                    let memberArtistData = await discogsAPIQuery(artistData.members[z].resource_url)
+                                    //if namevariations exist, add that to artistTags
+                                    if (memberArtistData.namevariations) {
+                                        artistTags = artistTags.concat(memberArtistData.namevariations)
                                     }
-                                }
-                                //if aliases exist
-                                if(memberArtistData.aliases){
-                                    for(var y = 0; y < memberArtistData.aliases.length; y++){
-                                        artistTags.push(removeNumberParenthesesAndComma(memberArtistData.aliases[y].name))
-                                        if(memberArtistData.aliases[y].anv){
-                                            artistTags.push(removeNumberParenthesesAndComma(memberArtistData.aliases[y].anv))
+                                    //if groups exist, add that 
+                                    if (memberArtistData.groups) {
+                                        //for each group
+                                        for (var x = 0; x < memberArtistData.groups.length; x++) {
+                                            //push group name
+                                            artistTags.push(removeNumberParenthesesAndComma(memberArtistData.groups[x].name))
+
+                                        }
+                                    }
+                                    //if aliases exist
+                                    if (memberArtistData.aliases) {
+                                        for (var y = 0; y < memberArtistData.aliases.length; y++) {
+                                            artistTags.push(removeNumberParenthesesAndComma(memberArtistData.aliases[y].name))
+                                            if (memberArtistData.aliases[y].anv) {
+                                                artistTags.push(removeNumberParenthesesAndComma(memberArtistData.aliases[y].anv))
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    //if aliases exist
-                    if (artistData.aliases) {
-                        for (var y = 0; y < artistData.aliases.length; y++) {
-                            artistTags.push(removeNumberParenthesesAndComma(artistData.aliases[y].name))
-                            removeNumberParenthesesAndComma(artistData.aliases[y].name)
-                            if (artistData.aliases[y].anv) {
-                                artistTags.push(removeNumberParenthesesAndComma(artistData.aliases[y].anv))
+                        //if aliases exist
+                        if (artistData.aliases) {
+                            for (var y = 0; y < artistData.aliases.length; y++) {
+                                artistTags.push(removeNumberParenthesesAndComma(artistData.aliases[y].name))
+                                removeNumberParenthesesAndComma(artistData.aliases[y].name)
+                                if (artistData.aliases[y].anv) {
+                                    artistTags.push(removeNumberParenthesesAndComma(artistData.aliases[y].anv))
+                                }
                             }
                         }
+                    } catch (err) {
+                        console.log('err getting artist data CAUGHT')
                     }
-                    
+
+
                 }
-                
+
             }
         }
         /*
@@ -873,13 +992,13 @@ async function getArtistTags(discogsReleaseData) {
 function addTags(tags, percentToInclude) {
     var tempTags = "";
 
-    var numberOfTagsavailable= tags.length;
-    var numberOfTagsToDisplay = numberOfTagsavailable* percentToInclude;
+    var numberOfTagsavailable = tags.length;
+    var numberOfTagsToDisplay = numberOfTagsavailable * percentToInclude;
     numberOfTagsToDisplay = ~~numberOfTagsToDisplay;
     for (var i = 0; i < numberOfTagsToDisplay; i++) {
         tempTags = tempTags + tags[i] + ","
     }
-    return { tags: tempTags, length: numberOfTagsToDisplay, numberOfTagsAvailiable:numberOfTagsavailable};
+    return { tags: tempTags, length: numberOfTagsToDisplay, numberOfTagsAvailiable: numberOfTagsavailable };
 }
 
 function prepUpdateTagsBox() {
@@ -917,7 +1036,7 @@ async function convertFileInfoToTracklistData(songs) {
             }
 
             resolve(tracklistData)
-        } catch{
+        } catch {
             resolve('error')
         }
     });

@@ -1,7 +1,10 @@
 var MongoClient = require( 'mongodb' ).MongoClient;
 var _db;
-var pw = process.env.mongodbpword
-var url = `mongodb+srv://dbUser:${pw}@cluster0.qotrh.gcp.mongodb.net/node-blog?retryWrites=true&w=majority`;
+var usr = 'dbUserReadOnly';
+var pw = 'FEHQkW6iXINUIB94';
+var url = `mongodb+srv://${usr}:${pw}@cluster0.qotrh.gcp.mongodb.net/node-blog?retryWrites=true&w=majority`;
+
+
 
 module.exports = {
   connectToServer: function( callback ) {
