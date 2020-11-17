@@ -181,12 +181,14 @@ $(document).ready(function () {
             let taggerData = [];
 
             //for each track
+            var cueFileTrackCount = 0;
             for (var x = 0; x < splitTracksCue.length; x++) {
                 var cueTrackSplitInfo = splitTracksCue[x].split(/\n/);
                 var durationSeconds = 0;
                 var trackTitle = ""
-
-                console.log(`cueTrackSplitInfo=`, cueTrackSplitInfo)
+                var tempStartTimeSeconds;
+                var tempEndTimeSeconds;
+                //console.log(`cueTrackSplitInfo=`, cueTrackSplitInfo)
                 if (cueTrackSplitInfo[0].toUpperCase().includes('AUDIO')) {
                     //look through each option to get title and durationSeconds
                     for (var z = 0; z < cueTrackSplitInfo.length; z++) {
@@ -196,27 +198,44 @@ $(document).ready(function () {
                             trackTitle = optionStr;
                             trackTitle = trackTitle.substring(7, trackTitle.length - 1)
                         }
-                        //length
-                        if (optionStr.substr(0, 5) == 'INDEX' && !optionStr.includes('INDEX 01 00:00:00')) {
+                        //get endTime
+                        if (optionStr.substr(0, 5) == 'INDEX') {  // && !optionStr.includes('INDEX 01 00:00:00')
                             //get duration (minutes:seconds:milliseconds)
                             var m_s_ms = optionStr.split(' ')[2];
                             var m_s_ms_split = m_s_ms.split(':');
                             //convert duration to seconds
-                            durationSeconds = (+m_s_ms_split[0] * 60) + (+m_s_ms_split[1]);
+                            tempStartTimeSeconds = (+m_s_ms_split[0] * 60) + (+m_s_ms_split[1]);
+                            durationSeconds = 200;
+
                         }
                     }
-                    endTimeSeconds = startTimeSeconds + durationSeconds;
-                    startTime = convertSecondsToTimestamp(startTimeSeconds);
-                    endTime = convertSecondsToTimestamp(endTimeSeconds);
-                    var trackData = { title: trackTitle, startTime: startTime, endTime: endTime }
+                    //x is track number i am on
+                    //console.log('tempStartTimeSeconds=', tempStartTimeSeconds, ` (${convertSecondsToTimestamp(tempStartTimeSeconds)})`)
+                   
+                    var trackData = { 
+                        title: trackTitle, 
+                        startTime: convertSecondsToTimestamp(tempStartTimeSeconds), 
+                        endTime: convertSecondsToTimestamp(0) 
+                    }
                     taggerData.push(trackData);
-                    startTimeSeconds = endTimeSeconds;
+                    //console.log('before taggerData.length', taggerData.length, 'taggerData=', taggerData, '\n')
+                    //if we have already pushed a track to taggerData:
+                    if(cueFileTrackCount>0){
+                        //console.log('set value of taggerData[', cueFileTrackCount-1, '].endTime = taggerData[', cueFileTrackCount, '].startTime')
+                        taggerData[cueFileTrackCount-1].endTime = taggerData[cueFileTrackCount].startTime
+                    }
 
+
+                    //startTimeSeconds = endTimeSeconds;
+                    cueFileTrackCount+=1;
+                    console.log(" . ")
                 }
 
                 //let splitTrackInfo = splitTracksCue[x].split('↵')
 
             }
+            //console.log('taggerData.length-1 = ', taggerData.length-1, ', taggerData=', taggerData)
+            taggerData[taggerData.length-1].endTime = ""
             resolve(taggerData)
             //resolve([{title: "04 Lifting 2nd Resurrection", startTime: "06:29", endTime: "10:15"},{title: "02 Lifting 2nd Resurrection", startTime: "06:29", endTime: "10:15"}])
         })
