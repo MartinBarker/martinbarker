@@ -361,14 +361,21 @@ app.post('/discogsAPI', async function (req, res) {
   }else if(type=='artist'){
     console.log('get artist data')
     //get discogs artist api data
-    db.getArtist(code, function(err, resp){
-      if(resp.message){
-        res.status(400).send(resp.message)
-      }else{
-        res.status(200).send(resp)
-      }
-    });
+    try{
+      db.getArtist(code, function(err, resp){
+        if(resp.message){
+          res.status(400).send({err:resp.message})
+        }else{
+          res.status(200).send(resp)
+        }
+      });
+    
+    }catch(err){
+        console.log('err getting artist info from discogs')
+    }
+  
   }
+
   
 });
 

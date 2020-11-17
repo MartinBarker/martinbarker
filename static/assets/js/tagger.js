@@ -95,13 +95,13 @@ $(document).ready(function () {
         var firstFile = e.currentTarget.files[0];
         let taggerData;
         //if first file filename ends with '.cue'
-        if(firstFile.name.toUpperCase().substr(firstFile.name.length - 4)==(".CUE")){
+        if (firstFile.name.toUpperCase().substr(firstFile.name.length - 4) == (".CUE")) {
             console.log('its a cue file')
             var cueFileContents = await readText(e.currentTarget)
             console.log('cueFileContents=', cueFileContents)
             taggerData = await getCueTaggerData(cueFileContents)
 
-        }else{
+        } else {
             console.log("not a cue file")
             var songs = e.currentTarget.files;
             console.log('songs=', songs)
@@ -115,7 +115,7 @@ $(document).ready(function () {
         displayMetadataTags(discogsTaggerData)
         document.getElementById('tagsBox').value = "Metadata tags generation via files not currently supported :( Try using a Discogs URL"
         $("#tagsCharCount").text(`Copy 85 Chars to Clipboard`);
-       
+
 
 
 
@@ -157,52 +157,51 @@ $(document).ready(function () {
     }
 
     //convert cue file to tagger data
-    async function getCueTaggerData(cueStr){
+    async function getCueTaggerData(cueStr) {
         return new Promise(async function (resolve, reject) {
             let splitTracksCue = cueStr.split('TRACK')
-            
+
             let startTime, endTime;
-            var startTimeSeconds=0;
-            var endTimeSeconds=0;
-            let taggerData=[];
+            var startTimeSeconds = 0;
+            var endTimeSeconds = 0;
+            let taggerData = [];
 
             //for each track
-            for(var x = 0; x < splitTracksCue.length; x++){    
+            for (var x = 0; x < splitTracksCue.length; x++) {
                 var cueTrackSplitInfo = splitTracksCue[x].split(/\n/);
                 var durationSeconds = 0;
-                var trackTitle=""
+                var trackTitle = ""
 
                 console.log(`cueTrackSplitInfo=`, cueTrackSplitInfo)
-                if(cueTrackSplitInfo[0].toUpperCase().includes('AUDIO')){
+                if (cueTrackSplitInfo[0].toUpperCase().includes('AUDIO')) {
                     //look through each option to get title and durationSeconds
-                    for(var z = 0; z < cueTrackSplitInfo.length; z++){
+                    for (var z = 0; z < cueTrackSplitInfo.length; z++) {
                         let optionStr = cueTrackSplitInfo[z].trim();
                         //title
-                        if(optionStr.substr(0,5)=='TITLE'){
-                            trackTitle=optionStr;
-                            console.log('    trackTitle:', trackTitle)
+                        if (optionStr.substr(0, 5) == 'TITLE') {
+                            trackTitle = optionStr;
+                            trackTitle = trackTitle.substring(7, trackTitle.length - 1)
                         }
                         //length
-                        if(optionStr.substr(0,5)=='INDEX' && !optionStr.includes('INDEX 01 00:00:00')){
+                        if (optionStr.substr(0, 5) == 'INDEX' && !optionStr.includes('INDEX 01 00:00:00')) {
                             //get duration (minutes:seconds:milliseconds)
-                            var m_s_ms=optionStr.split(' ')[2];
-                            var m_s_ms_split=m_s_ms.split(':');
+                            var m_s_ms = optionStr.split(' ')[2];
+                            var m_s_ms_split = m_s_ms.split(':');
                             //convert duration to seconds
-                            durationSeconds=(+m_s_ms_split[0] * 60) + (+m_s_ms_split[1])  ; 
-                            console.log('    parsing length, durationSeconds=', durationSeconds)
+                            durationSeconds = (+m_s_ms_split[0] * 60) + (+m_s_ms_split[1]);
                         }
                     }
-                    endTimeSeconds=startTimeSeconds+durationSeconds;
-                    startTime=convertSecondsToTimestamp(startTimeSeconds);
-                    endTime=convertSecondsToTimestamp(endTimeSeconds);
-                    var trackData={title:trackTitle, startTime:startTime, endTime:endTime}
+                    endTimeSeconds = startTimeSeconds + durationSeconds;
+                    startTime = convertSecondsToTimestamp(startTimeSeconds);
+                    endTime = convertSecondsToTimestamp(endTimeSeconds);
+                    var trackData = { title: trackTitle, startTime: startTime, endTime: endTime }
                     taggerData.push(trackData);
-                    startTimeSeconds=endTimeSeconds;
+                    startTimeSeconds = endTimeSeconds;
 
                 }
 
                 //let splitTrackInfo = splitTracksCue[x].split('↵')
-                
+
             }
             resolve(taggerData)
             //resolve([{title: "04 Lifting 2nd Resurrection", startTime: "06:29", endTime: "10:15"},{title: "02 Lifting 2nd Resurrection", startTime: "06:29", endTime: "10:15"}])
@@ -431,9 +430,7 @@ async function submitDiscogsURL(input) {
     var discogsListingCode = urlArr[urlArr.length - 1];
     //get data from discogs API
     try {
-        //let discogsData = await getDiscogsData(discogsListingType, discogsListingCode)
         let discogsData = await getDiscogsData(discogsListingType, discogsListingCode)
-        console.log('discogsData = ', discogsData)
 
         //generate discogs tags
         generateDiscogsURLTags(discogsData)
@@ -471,6 +468,7 @@ async function getDiscogsData(discogsListingType, discogsListingCode) {
             }
             resolve(resp)
         }).catch((err) => {
+            console.log('err caught')
             reject(err)
         });
     });
@@ -816,77 +814,81 @@ async function getArtistTags(discogsReleaseData) {
                 if (discogsReleaseData.artists[i].name != "Various" && discogsReleaseData.artists[i].resource_url) {
 
                     //get artist data from discogs API
-                    let artistData = await getDiscogsData('artist', discogsReleaseData.artists[i].id)
+                    try {
+                        let artistData = await getDiscogsData('artist', discogsReleaseData.artists[i].id)
+                        //if namevariations exist, add those to artistTags
+                        if (artistData.namevariations) {
+                            artistTags = artistTags.concat(artistData.namevariations)
+                        }
 
-                    //if namevariations exist, add those to artistTags
-                    if (artistData.namevariations) {
-                        artistTags = artistTags.concat(artistData.namevariations)
-                    }
-
-                    //if groups exist
-                    if (artistData.groups) {
-                        for (var q = 0; q < artistData.groups.length; q++) {
-                            //push group name
-                            artistTags.push(removeNumberParenthesesAndComma(artistData.groups[q].name))
-                            //if anv exists, push that
-                            if (artistData.groups[q].anv) {
-                                artistTags.push(removeNumberParenthesesAndComma(artistData.groups[q].anv))
+                        //if groups exist
+                        if (artistData.groups) {
+                            for (var q = 0; q < artistData.groups.length; q++) {
+                                //push group name
+                                artistTags.push(removeNumberParenthesesAndComma(artistData.groups[q].name))
+                                //if anv exists, push that
+                                if (artistData.groups[q].anv) {
+                                    artistTags.push(removeNumberParenthesesAndComma(artistData.groups[q].anv))
+                                }
                             }
                         }
-                    }
 
-                    //if members exist
-                    if (artistData.members) {
-                        //for each member
-                        for (var z = 0; z < artistData.members.length; z++) {
-                            //push name
-                            artistTags.push(removeNumberParenthesesAndComma(artistData.members[z].name))
+                        //if members exist
+                        if (artistData.members) {
+                            //for each member
+                            for (var z = 0; z < artistData.members.length; z++) {
+                                //push name
+                                artistTags.push(removeNumberParenthesesAndComma(artistData.members[z].name))
 
-                            //push anv if it exists
-                            if (artistData.members[z].anv) {
-                                artistTags.push(removeNumberParenthesesAndComma(artistData.members[z].anv))
-                            }
-
-
-                            //get more info on that member if possible
-                            if (artistData.members[z].resource_url) {
-                                let memberArtistData = await discogsAPIQuery(artistData.members[z].resource_url)
-                                //if namevariations exist, add that to artistTags
-                                if (memberArtistData.namevariations) {
-                                    artistTags = artistTags.concat(memberArtistData.namevariations)
+                                //push anv if it exists
+                                if (artistData.members[z].anv) {
+                                    artistTags.push(removeNumberParenthesesAndComma(artistData.members[z].anv))
                                 }
-                                //if groups exist, add that 
-                                if (memberArtistData.groups) {
-                                    //for each group
-                                    for (var x = 0; x < memberArtistData.groups.length; x++) {
-                                        //push group name
-                                        artistTags.push(removeNumberParenthesesAndComma(memberArtistData.groups[x].name))
 
+
+                                //get more info on that member if possible
+                                if (artistData.members[z].resource_url) {
+                                    let memberArtistData = await discogsAPIQuery(artistData.members[z].resource_url)
+                                    //if namevariations exist, add that to artistTags
+                                    if (memberArtistData.namevariations) {
+                                        artistTags = artistTags.concat(memberArtistData.namevariations)
                                     }
-                                }
-                                //if aliases exist
-                                if (memberArtistData.aliases) {
-                                    for (var y = 0; y < memberArtistData.aliases.length; y++) {
-                                        artistTags.push(removeNumberParenthesesAndComma(memberArtistData.aliases[y].name))
-                                        if (memberArtistData.aliases[y].anv) {
-                                            artistTags.push(removeNumberParenthesesAndComma(memberArtistData.aliases[y].anv))
+                                    //if groups exist, add that 
+                                    if (memberArtistData.groups) {
+                                        //for each group
+                                        for (var x = 0; x < memberArtistData.groups.length; x++) {
+                                            //push group name
+                                            artistTags.push(removeNumberParenthesesAndComma(memberArtistData.groups[x].name))
+
+                                        }
+                                    }
+                                    //if aliases exist
+                                    if (memberArtistData.aliases) {
+                                        for (var y = 0; y < memberArtistData.aliases.length; y++) {
+                                            artistTags.push(removeNumberParenthesesAndComma(memberArtistData.aliases[y].name))
+                                            if (memberArtistData.aliases[y].anv) {
+                                                artistTags.push(removeNumberParenthesesAndComma(memberArtistData.aliases[y].anv))
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    //if aliases exist
-                    if (artistData.aliases) {
-                        for (var y = 0; y < artistData.aliases.length; y++) {
-                            artistTags.push(removeNumberParenthesesAndComma(artistData.aliases[y].name))
-                            removeNumberParenthesesAndComma(artistData.aliases[y].name)
-                            if (artistData.aliases[y].anv) {
-                                artistTags.push(removeNumberParenthesesAndComma(artistData.aliases[y].anv))
+                        //if aliases exist
+                        if (artistData.aliases) {
+                            for (var y = 0; y < artistData.aliases.length; y++) {
+                                artistTags.push(removeNumberParenthesesAndComma(artistData.aliases[y].name))
+                                removeNumberParenthesesAndComma(artistData.aliases[y].name)
+                                if (artistData.aliases[y].anv) {
+                                    artistTags.push(removeNumberParenthesesAndComma(artistData.aliases[y].anv))
+                                }
                             }
                         }
+                    } catch (err) {
+                        console.log('err getting artist data CAUGHT')
                     }
+
 
                 }
 
