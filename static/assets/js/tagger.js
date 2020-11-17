@@ -38,8 +38,22 @@ $(document).ready(function () {
     async function handleDrop(e) {
         let dt = e.dataTransfer
         let files = dt.files
-        //generate and display timestamped tracklist data
-        let taggerData = await getFileTaggerData(files)
+
+
+        var firstFile = files[0];
+        let taggerData;
+        //if first file filename ends with '.cue'
+        if (firstFile.name.toUpperCase().substr(firstFile.name.length - 4) == (".CUE")) {
+            var cueFileContents = await readText(e.dataTransfer)
+            taggerData = await getCueTaggerData(cueFileContents)
+
+        } else {
+            var songs = e.currentTarget.files;
+            //generate tracklisted timstamp
+            taggerData = await getFileTaggerData(songs)
+        }
+
+        //display results
         displayData(taggerData)
         //generate and display metadata tags
         document.getElementById('tagsBox').value = "Metadata tags generation via files not currently supported :( Try using a Discogs URL"
