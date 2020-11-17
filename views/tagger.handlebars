@@ -39,118 +39,6 @@
             </div>
         </div>
 
-        <!-- inputs attempty 2 
-        <div class="container" style='padding-right:0;margin-left:0;margin-right:0;'>
-            <div class="row">
-                <div class="col" style='background:green; padding-left:0;padding-right:0;'>
-                    left box content
-                </div>
-                <div class="col" style='background:orange;padding-left:0;padding-right:0;'>
-                    right box content
-                </div>
-
-            </div>
-        </div> 
-        -->
-
-        {{!--
-        <!-- new inputs attempt1 -->
-        <div>
-            <style>
-                #container {
-
-                    display: flex;
-                    /* flex-wrap: wrap; */
-                    flex-direction: row;
-                    align-items: center;
-                    width: 100%;
-                }
-
-                .box {
-                    width: 50%;
-                    box-sizing: border-box;
-                    margin: 5px;
-                    text-align: center;
-                }
-            </style>
-            <div id="container" class='w-100'>
-                <!-- flex container -->
-
-                <div class="box" style='background:red'>
-                    <!-- flex item -->
-                    <div class="form-group">
-                        <div id='taggerErrDisplay'></div>
-                        <input size="22" type="text" placeholder='Discogs URL' name="url" id="urlInput">
-                        <button style="cursor: pointer;" id='urlInputButton' name="data" type="button"
-                            onclick="submitDiscogsURL(document.getElementById('urlInput').value)">Submit</button>
-                    </div>
-                </div>
-
-                <div class=" box" style='background:blue'>
-                    <!-- flex item -->
-                    <div id="drop-area">
-                        <form class="my-form">
-                            <h5>Upload multiple files with the file dialog or by dragging and dropping files here.</h5>
-                            <br>
-                            <input style="cursor: pointer;" type="file" id="file" multiple="multiple" />
-                        </form>
-                    </div>
-                </div>
-
-            </div>
-
-            <style>
-                #drop-area {
-                    /* border: 2px dashed #ccc; */
-                    border-radius: 20px;
-                    width: 480px;
-                    padding: 20px;
-                }
-
-                /*
-            #drop-area.highlight {
-            border-color: purple;
-            } 
-            */
-                p {
-                    margin-top: 0;
-                }
-
-                .my-form {
-                    margin-bottom: 10px;
-                }
-
-                #gallery {
-                    margin-top: 10px;
-                }
-
-                #gallery img {
-                    width: 150px;
-                    margin-bottom: 10px;
-                    margin-right: 10px;
-                    vertical-align: middle;
-                }
-
-                .button {
-                    display: inline-block;
-                    padding: 10px;
-                    background: #ccc;
-                    cursor: pointer;
-                    border-radius: 5px;
-                    border: 1px solid #ccc;
-                }
-
-                .button:hover {
-                    background: #ddd;
-                }
-
-                #fileElem {
-                    display: none;
-                }
-            </style>
-        </div>
-         --}}
-
         <!-- new tagger output -->
         <hr>
         <h3>Timestamped Tracklist:</h3>
@@ -398,6 +286,14 @@
                 </script>
         </div>
 
+        <!-- Changelog -->
+        <hr>
+        <h3>Changelog:</h3>
+        <div class="container" style='padding-right:0;margin-left:0;margin-right:0;'>
+            <ul>
+                <li>11/17/2020: .cue files now work for generating a timestamped tracklist, and I improved the error handling for <a class='hoverURLClass' href='https://www.discogs.com/New-Golden-Wings-Its-Rough-Its-Tough/release/5390422'>release URLs like this</a> which have a broken artist page. </li>
+            </ul>
+        </div>
 
 
     </div>
