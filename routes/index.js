@@ -278,7 +278,7 @@ app.get('/tagger', async function (req, res) {
     previewCardUrl:'http://www.tagger.site',
     previewCardWebsite:'website',
     previewCardDescription:'Generate tags using files or a Discogs URL',
-    previewCardImage:'https://i.imgur.com/dSmtQ9R.jpg',
+    previewCardImage:'https://i.imgur.com/f0xepPT.jpg',
 
 
     //page tab icon
