@@ -275,10 +275,10 @@ app.get('/tagger', async function (req, res) {
     pageTitle: 'tagger.site',
     //shareable preview-cart metadata
     previewCardTitle:'Timestamped Tracklist Generator',
-    previewCardUrl:'www.tagger.site',
+    previewCardUrl:'http://www.tagger.site',
     previewCardWebsite:'website',
     previewCardDescription:'Generate tags using files or a Discogs URL',
-    previewCardImage:'/static/assets/aesthetic-images/ONLYTWOCOLORS.png',
+    previewCardImage:'https://i.imgur.com/dSmtQ9R.jpg',
 
 
     //page tab icon
