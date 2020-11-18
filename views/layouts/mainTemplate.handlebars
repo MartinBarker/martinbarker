@@ -10,11 +10,10 @@
     <link rel='icon' href='{{ icon }}' type='image/x-icon' />
     <title>{{ pageTitle }}</title>
 
-    <a style='display:none'>{{metaTitle}}</a>
-    <meta property="og:title" content="{{metaTitle }}"/>
-    <meta property="og:url" content={{ previewCardUrl }}/>
-    <meta property="og:type" content=`{{ previewCardWebsite }}`/>
-    <meta property="og:description" content='{{ pageTitle }}'/> <!-- previewCardDescription -->
+    <meta property="og:title" content='{{ previewCardTitle }}'/>
+    <meta property="og:url" content='{{ previewCardUrl }}'/>
+    <meta property="og:type" content='{{ previewCardWebsite }}'/>
+    <meta property="og:description" content='{{ pageTitle }}'/> 
     <meta property="og:image" content='{{ previewCardImage }}'/>
 
     <!-- jQuery CDN - Slim version (=without AJAX) -->

@@ -276,7 +276,7 @@ app.get('/tagger', async function (req, res) {
     //page tab icon
     icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
     //shareable preview-cart metadata
-    metaTitle:'Timestamped Tracklist Generator',
+    previewCardTitle:'Timestamped Tracklist Generator',
     previewCardUrl:'http://www.tagger.site',
     previewCardWebsite:'website',
     previewCardDescription:'Generate tags using files or a Discogs URL',
