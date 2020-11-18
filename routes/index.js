@@ -313,6 +313,62 @@ app.get('/tagger', async function (req, res) {
   });
 })
 
+//any route that starts with tagger
+app.get(/^\/tagger\/(.*)/, async function (req, res) {
+  let discogs_url = req.params[0];
+  console.log('tagger any route discogs_url=', discogs_url)
+
+  //get mainTemplate data
+  let mainTemplateData = await getMainTemplateData(req.params.id)
+  let displayPosts = mainTemplateData.postsDisplay;
+
+  res.render('tagger', {
+    //template layout to use
+    layout: 'mainTemplate',
+    //page title of tab
+    pageTitle: 'tagger.site',
+    //discogs url
+    discogs_url: discogs_url,
+    //page tab icon
+    icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
+    //expand projects tab
+    projects: 'active',
+    //set active current tab
+    tagger: 'active',
+    //body content title 
+    pageBodyNavTitle: 'tagger.site',
+    //body content github link
+    pageBodyNavGithub: 'https://github.com/MartinBarker/martinbarker/blob/master/views/tagger.handlebars',
+    //list to display for navbar 'Blog' options
+    posts: displayPosts,
+    //mainTemplateData
+    imgPath: '/' + mainTemplateData.imgPath,
+    imgSrcUrl: mainTemplateData.imgSrc,
+    imgListen: mainTemplateData.imgListen,
+    textColor1: mainTemplateData.colorData.textColor1, //'Martin Barker' Navbar Header text color
+    backgroundColor1: mainTemplateData.colorData.backgroundColor1, //'Martin Barker' Navbar Header Background Color
+    textColor6: mainTemplateData.colorData.textColor6, //sidebar un-active tab text color
+    backgroundColor2: mainTemplateData.colorData.backgroundColor2, //sidebar un-active tab background color
+    textColor2: mainTemplateData.colorData.textColor2, //sidebar active tab
+    backgroundColor3: mainTemplateData.colorData.backgroundColor3, //sidebar active tab
+    textColor7: mainTemplateData.colorData.textColor7, //sidebar lower background
+    backgroundColor7: mainTemplateData.colorData.backgroundColor7, //sidebar lower background
+    textColor3: mainTemplateData.colorData.textColor3, //sidebar hover tab color
+    backgroundColor4: mainTemplateData.colorData.backgroundColor4, //sidebar hover tab color
+    textColor4: mainTemplateData.colorData.textColor4, //body header title color
+    backgroundColor6: mainTemplateData.colorData.backgroundColor6, //body header title color
+    textColor5: mainTemplateData.colorData.textColor5, //body color
+    backgroundColor5: mainTemplateData.colorData.backgroundColor5, //body color
+    //img color display boxes
+    Vibrant: mainTemplateData.colorData.Vibrant,
+    LightVibrant: mainTemplateData.colorData.LightVibrant,
+    DarkVibrant: mainTemplateData.colorData.DarkVibrant,
+    Muted: mainTemplateData.colorData.Muted,
+    LightMuted: mainTemplateData.colorData.LightMuted,
+    DarkMuted: mainTemplateData.colorData.DarkMuted,
+  });
+})
+
 //api route to return pageColors
 app.post('/getColors', async function (req, res) {
   //let filepath = req.body.filepath
