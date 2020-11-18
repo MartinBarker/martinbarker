@@ -32,6 +32,11 @@ app.get('/posts/:id', async (req, res) => {
     pageTitle: post.title,
     blog: 'active',
     icon:'https://cdn0.iconfinder.com/data/icons/picons-social/57/53-medium-512.png',
+    previewCardTitle:'Martin Barker',
+    previewCardUrl:'http://www.martinbarker.me',
+    previewCardWebsite:'website',
+    previewCardDescription:'',
+    previewCardImage:'https://i.imgur.com/bQ3W6mO.jpg',
     pageBodyNavTitle: `${post.title}`,
     pageBodyNaavGithub: 'x',
     postTitle: post.title,
@@ -85,6 +90,11 @@ app.get('/', async function (req, res) {
     pageTitle: 'martinbarker.me',
     //page tab icon
     icon: "https://cdn0.iconfinder.com/data/icons/picons-social/57/53-medium-512.png",
+    previewCardTitle:'Martin Barker',
+    previewCardUrl:'http://www.martinbarker.me',
+    previewCardWebsite:'website',
+    previewCardDescription:'',
+    previewCardImage:'https://i.imgur.com/bQ3W6mO.jpg',
     //set active current tab
     about: 'active',
     //body content title 
@@ -141,6 +151,11 @@ app.get('/audio-archiver', async function (req, res) {
     pageTitle: 'audio-archiver',
     //page tab icon
     icon: "../static/assets/img/icon.png",
+    previewCardTitle:'audio-archiver',
+    previewCardUrl:'http://www.martinbarker.me/audio-archiver',
+    previewCardWebsite:'website',
+    previewCardDescription:'',
+    previewCardImage:'https://i.imgur.com/bQ3W6mO.jpg',
     //expand projects tab
     projects: 'active',
     //set active current tab
@@ -194,6 +209,12 @@ app.get('/popularify', async function (req, res) {
     pageTitle: 'popularify.site',
     //page tab icon
     icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
+    //shareable preview-cart metadata
+    previewCardTitle:'Popularify',
+    previewCardUrl:'http://www.popularify.site',
+    previewCardWebsite:'website',
+    previewCardDescription:'',
+    previewCardImage:'https://i.imgur.com/bQ3W6mO.jpg',
     //expand projects tab
     projects: 'active',
     //set active current tab
@@ -337,6 +358,12 @@ app.get(/^\/tagger\/(.*)/, async function (req, res) {
     discogs_url: discogs_url,
     //page tab icon
     icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
+    //shareable preview-cart metadata
+    previewCardTitle:'Timestamped Tracklist Generator',
+    previewCardUrl:'http://www.tagger.site',
+    previewCardWebsite:'website',
+    previewCardDescription:'Generate tags using files or a Discogs URL',
+    previewCardImage:'https://i.imgur.com/f0xepPT.jpg',
     //expand projects tab
     projects: 'active',
     //set active current tab
