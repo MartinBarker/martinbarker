@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    
     var reader;
     checkFileAPI();
     //Check for the various File API support.

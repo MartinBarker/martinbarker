@@ -9,6 +9,11 @@
 
     <link rel='icon' href='{{ icon }}' type='image/x-icon' />
     <title>{{ pageTitle }}</title>
+    <meta property="og:title" content="page title cool!"/>
+    <meta property="og:url" content="http://www.tagger.site"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:description" content="awesome description"/>
+    <meta property="og:image" content="https://i.imgur.com/bQ3W6mO.jpg"/>
 
     <!-- jQuery CDN - Slim version (=without AJAX) -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -599,6 +604,9 @@
             }
             .hoverURLClass:hover{
                 color:{{LightVibrant}};
+            }
+            .hoverURLClassBody:hover{
+                color:{{Vibrant}};
             }
             #sidebar ul li a:hover { 
                 background: {{backgroundColor4}}; 
