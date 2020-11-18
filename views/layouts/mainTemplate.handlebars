@@ -9,7 +9,9 @@
 
     <link rel='icon' href='{{ icon }}' type='image/x-icon' />
     <title>{{ pageTitle }}</title>
-    <meta property="og:title" content="{{ metaTitle }}"/>
+
+    <a style='display:none'>{{metaTitle}}</a>
+    <meta property="og:title" content="{{metaTitle }}"/>
     <meta property="og:url" content={{ previewCardUrl }}/>
     <meta property="og:type" content=`{{ previewCardWebsite }}`/>
     <meta property="og:description" content='{{ pageTitle }}'/> <!-- previewCardDescription -->
