@@ -38,20 +38,21 @@ $(document).ready(function () {
     dropArea.addEventListener('drop', handleDrop, false)
     async function handleDrop(e) {
         let dt = e.dataTransfer
-        let files = dt.files
+        let files = e.dataTransfer.files; //dt.files
 
 
         var firstFile = files[0];
         let taggerData;
         //if first file filename ends with '.cue'
         if (firstFile.name.toUpperCase().substr(firstFile.name.length - 4) == (".CUE")) {
+            //console.log('drag files: .cue')
             var cueFileContents = await readText(e.dataTransfer)
             taggerData = await getCueTaggerData(cueFileContents)
-
         } else {
-            var songs = e.currentTarget.files;
+            //console.log('drag files: NOT .cue')
+            //var songs = e.currentTarget.files;
             //generate tracklisted timstamp
-            taggerData = await getFileTaggerData(songs)
+            taggerData = await getFileTaggerData(files)
         }
 
         //display results
@@ -74,7 +75,7 @@ $(document).ready(function () {
 
     //if select all is clicked
     $('#selectAll').on('click', function () {
-        console.log(';select all')
+        //console.log(';select all')
 
         if (document.getElementById('selectAll').checked == true) {
             document.getElementById('releaseArtistsCheckbox').checked = true
@@ -96,7 +97,7 @@ $(document).ready(function () {
 
     //if tagger options change
     $(".taggerOptions").change(function () {
-        console.log('taggerOptions chanmged, globalTaggerData = ', globalTaggerData)
+        //console.log('taggerOptions chanmged, globalTaggerData = ', globalTaggerData)
         displayData(globalTaggerData)
         if (globalTaggerData) {
             displayData(globalTaggerData)
@@ -105,36 +106,53 @@ $(document).ready(function () {
         }
     });
 
+    //get length of audio file
+    async function getLength(file){
+        return new Promise(async function (resolve, reject) {
+            //console.log('getLength file=', file)
+            try{
+                const mediainfo = await new Promise( (res) => MediaInfo(null, res) );
+                const getSize = () => file.size;
+                const readChunk = async (chunkSize, offset) =>
+                    new Uint8Array( await file.slice(offset, offset + chunkSize).arrayBuffer() );
+        
+                const info = await mediainfo.analyzeData(getSize, readChunk);
+                // assumes we are only interested in audio duration
+                const audio_track = info.media.track.find( (track) => track[ "@type" ] === "Audio" );
+                let duration = parseFloat(audio_track.Duration);
+                resolve(duration);
+            }catch(err){
+                console.log('err getting file length = ', err);
+                resolve(0)
+            }
+        });
+    }
+
     //if files are selected functions
     $("#file").change(async function (e) {
         var firstFile = e.currentTarget.files[0];
         let taggerData;
         //if first file filename ends with '.cue'
         if (firstFile.name.toUpperCase().substr(firstFile.name.length - 4) == (".CUE")) {
-            console.log('its a cue file')
+            //console.log('its a cue file')
             var cueFileContents = await readText(e.currentTarget)
-            console.log('cueFileContents=', cueFileContents)
+            //console.log('cueFileContents=', cueFileContents)
             taggerData = await getCueTaggerData(cueFileContents)
 
         } else {
-            console.log("not a cue file")
+            //console.log("not a cue file")
             var songs = e.currentTarget.files;
-            console.log('songs=', songs)
+            //console.log('songs=', songs)
             //generate and display tracklisted timstamp
             taggerData = await getFileTaggerData(songs)
         }
-        console.log('taggerData=', taggerData)
+        //console.log('taggerData=', taggerData)
         displayData(taggerData)
         //generate and display metadata tags
         let discogsTaggerData = await generateDiscogsFileTags(songs)
         displayMetadataTags(discogsTaggerData)
         document.getElementById('tagsBox').value = "Metadata tags generation via files not currently supported :( Try using a Discogs URL"
         $("#tagsCharCount").text(`Copy 85 Chars to Clipboard`);
-
-
-
-
-
     });
 
     function readText(filePath) {
@@ -229,7 +247,7 @@ $(document).ready(function () {
 
                     //startTimeSeconds = endTimeSeconds;
                     cueFileTrackCount+=1;
-                    console.log(" . ")
+                    //console.log(" . ")
                 }
 
                 //let splitTrackInfo = splitTracksCue[x].split('↵')
@@ -252,9 +270,10 @@ $(document).ready(function () {
             var endTimeSeconds = 0
             var taggerData = []
             for (i = 0; i < numberOfSongs; i++) {
-                console.log(`getFileTaggerData() songs[${i}].type=`, songs[i].type)
+                //console.log(`getFileTaggerData() songs[${i}].type=`, songs[i].type)
                 if (!songs[i].type.includes('image')) {
-                    let songLength = await getSongLength(songs[i], i);
+                    let songLength = await getLength(songs[i]);
+                    //let songLength = await getSongLength(songs[i], i);
                     let songTitle = await getSongTitle(songs[i], i);
 
                     var endTimeSeconds = startTimeSeconds + songLength
@@ -392,7 +411,7 @@ async function displayData(input) {
 //take an object with track times and titles and calculate the timestamped tracklist to display
 async function getDiscogsTaggerData(tracklistData) {
     return new Promise(async function (resolve, reject) {
-        console.log('getDiscogsTaggerData() tracklistData=', tracklistData)
+        //console.log('getDiscogsTaggerData() tracklistData=', tracklistData)
         var taggerData = []
         var startTimeSeconds = 0;
         var endTimeSeconds = 0;
@@ -496,13 +515,13 @@ async function getDiscogsData(discogsListingType, discogsListingCode) {
                 type: discogsListingType,
             },
         }).then((resp) => {
-            console.log('/discogsAPI status = ', resp.status)
+            //console.log('/discogsAPI status = ', resp.status)
             if (resp.status == 400) {
-                console.log('err = ', resp)
+                console.log('/discogsAPI res.status=400, resp = ', resp)
             }
             resolve(resp)
         }).catch((err) => {
-            console.log('err caught')
+            console.log('/discogsAPI err = ', err)
             reject(err)
         });
     });
@@ -609,7 +628,7 @@ function getAllTags(jsonObj) {
 function updateTagsBox(releaseArtistsCheckboxValue, releaseArtistsSliderValue, releaseInfoCheckboxValue, releaseInfoSliderValue, tracklistCheckboxValue, tracklistSliderValue, combinationsCheckboxValue, combinationsSliderValue) {
 
     var tags = "";
-    console.log('tagsJsonGlobal = ', tagsJsonGlobal)
+    //console.log('tagsJsonGlobal = ', tagsJsonGlobal)
     if (releaseArtistsCheckboxValue == 'on') {
         tags = tags + addTags(tagsJsonGlobal.tags.releaseArtist, (releaseArtistsSliderValue / 100)).tags;
         let calculatedTags = addTags(tagsJsonGlobal.tags.releaseArtist, (releaseArtistsSliderValue / 100))
@@ -920,7 +939,7 @@ async function getArtistTags(discogsReleaseData) {
                             }
                         }
                     } catch (err) {
-                        console.log('err getting artist data CAUGHT')
+                        console.log('err getting artist data = ', err)
                     }
 
 
@@ -1036,7 +1055,7 @@ function addTags(tags, percentToInclude) {
 }
 
 function prepUpdateTagsBox() {
-    console.log('prepUpdateTagsBox()')
+    //console.log('prepUpdateTagsBox()')
     var releaseArtistsCheckboxValue = $('.releaseArtistsCheckbox:checked').val();
     var releaseArtistsSliderValue = $('#releaseArtistsSlider').val();
 
