@@ -1,0 +1,41 @@
+choose audio file to get length:
+<input style="cursor: pointer;" type="file" id="file" multiple="multiple" />
+
+<script>
+
+    //when files are selected:
+    $("#file").change(async function (e) {
+        console.log('file(s) selected')
+        //get files 
+        var files = e.currentTarget.files;
+        //get number of files
+        var numberOfFiles = files.length;
+        //for each file
+        for (i = 0; i < numberOfFiles; i++) {
+            console.log(`songs[${i}].type=`, files[i].type)
+            //get file length
+            let songLength = await getSongLength(files[i]);
+            console.log('songLength=', songLength)
+        }
+
+    });
+
+    //recieve audio file, return length
+    function getSongLength(song) {
+        return new Promise(function (resolve, reject) {
+            console.log('getSongLength() begin setup')
+            //create objectURL and audio object for ssong
+            objectURL = URL.createObjectURL(song);
+            mySound = new Audio([objectURL])
+            console.log('getSongLength() end setup')
+            //when song metadata is loaded:
+            mySound.addEventListener("canplaythrough", function (e) {
+                console.log('getSongLength() canplaythrough')
+                var seconds = e.currentTarget.duration;
+                resolve(seconds)
+            });
+
+        });
+    }
+
+</script>
