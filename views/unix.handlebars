@@ -1,0 +1,49 @@
+
+<script src="https://unpkg.com/moment"></script>
+<!-- mediainfo.js for getting length of audio files like m4a/aif -->
+<script src="https://unpkg.com/mediainfo.js@0.1.4/dist/mediainfo.min.js"></script>
+
+<!-- page main content -->
+<div class="container-fluid" style='color: {{textColor5}}' >
+
+    <div style="margin-top:-30px;">
+        Load the URL:
+        <br>
+        "www.martinbarker.me/unix" 
+        <br>
+        with a Unix Timestamp appended to the end like so:
+        <br>
+        "www.martinbarker.me/unix/1612232986 "
+        <br>
+        To see that Unix Timestamp converted into readable text:
+        <br>
+        <a style="background:white;color:black;" id='outputText'>
+
+        </a>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var unxiTimestamp = `{{unxiTimestamp}}`
+        var displaydateLocal = new Date(unxiTimestamp * 1000);
+
+        var date = new Date(unxiTimestamp * 1000);
+        // Hours part from the timestamp
+        var hours = date.getHours();
+        // Minutes part from the timestamp
+        var minutes = "0" + date.getMinutes();
+        // Seconds part from the timestamp
+        var seconds = "0" + date.getSeconds();
+
+        // Will display time in 10:30:23 format
+        var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+
+        var displaydateUtc = '';
+        document.getElementById('outputText').innerText = `
+        Local: ${displaydateLocal}
+        UTC: ${displaydateLocal.toISOString()}
+        `;;
+    })
+</script>
