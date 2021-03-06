@@ -484,7 +484,8 @@ async function submitDiscogsURL(input) {
     //get data from discogs API
     try {
         let discogsData = await getDiscogsData(discogsListingType, discogsListingCode)
-
+        console.log('submitDiscogsURL() discogsData=', discogsData)
+        /*
         //generate discogs tags
         generateDiscogsURLTags(discogsData)
 
@@ -496,7 +497,7 @@ async function submitDiscogsURL(input) {
             displayData(taggerData)
         }
         document.getElementById('taggerErrDisplay').innerText = ''
-
+*/
     } catch (err) {
         console.log('err getting discogs data = ', err)
         document.getElementById('taggerErrDisplay').innerText = 'Discogs API can only handle so many requests.. please wait a couple seconds and try again.'
@@ -506,6 +507,7 @@ async function submitDiscogsURL(input) {
 //make discogs api call
 async function getDiscogsData(discogsListingType, discogsListingCode) {
     return new Promise(function (resolve, reject) {
+        console.log(`getDiscogsData() discogsListingType=${discogsListingType}, discogsListingCode=${discogsListingCode}`)
         //make request to colors backend
         $.ajax({
             type: 'POST',
@@ -519,6 +521,7 @@ async function getDiscogsData(discogsListingType, discogsListingCode) {
             if (resp.status == 400) {
                 console.log('/discogsAPI res.status=400, resp = ', resp)
             }
+            console.log(`getDiscogsData() resp=${resp}`)
             resolve(resp)
         }).catch((err) => {
             console.log('/discogsAPI err = ', err)
