@@ -318,6 +318,7 @@ app.get('/digify', async function (req, res) {
     imgPath: '/' + mainTemplateData.imgPath,
     imgSrcUrl: mainTemplateData.imgSrc,
     imgListen: mainTemplateData.imgListen,
+  
     textColor1: mainTemplateData.colorData.textColor1, //'Martin Barker' Navbar Header text color
     backgroundColor1: mainTemplateData.colorData.backgroundColor1, //'Martin Barker' Navbar Header Background Color
     textColor6: mainTemplateData.colorData.textColor6, //sidebar un-active tab text color
@@ -332,6 +333,7 @@ app.get('/digify', async function (req, res) {
     backgroundColor6: mainTemplateData.colorData.backgroundColor6, //body header title color
     textColor5: mainTemplateData.colorData.textColor5, //body color
     backgroundColor5: mainTemplateData.colorData.backgroundColor5, //body color
+ 
     //img color display boxes
     Vibrant: mainTemplateData.colorData.Vibrant,
     LightVibrant: mainTemplateData.colorData.LightVibrant,
@@ -345,9 +347,41 @@ app.get('/digify', async function (req, res) {
 
 //tagger route
 app.get('/tagger', async function (req, res) {
+
+
+  /*
+textColor1: getReadableTextColor(colorData.colors['DarkMuted'].rgb),
+backgroundColor1: colorData.colors['DarkMuted'].hex,
+textColor2: getReadableTextColor(colorData.colors['LightMuted'].rgb), //active tab text color
+backgroundColor2: colorData.colors['LightVibrant'].hex,
+textColor6: getReadableTextColor(colorData.colors['LightVibrant'].rgb),
+backgroundColor3: colorData.colors['LightMuted'].hex,
+textColor7: getReadableTextColor(colorData.colors['DarkVibrant'].rgb),
+backgroundColor7: colorData.colors['DarkVibrant'].hex,
+textColor3: getReadableTextColor(colorData.colors['Vibrant'].rgb), //navbar hover tab text color
+backgroundColor4: colorData.colors['Vibrant'].hex,
+textColor4: getReadableTextColor(colorData.colors['Muted'].rgb),
+backgroundColor6: colorData.colors['Muted'].hex,
+textColor5: getReadableTextColor(colorData.colors['LightMuted'].rgb),
+backgroundColor5: colorData.colors['LightMuted'].hex,
+Vibrant: colorData.colors['Vibrant'].hex,
+LightVibrant: colorData.colors['LightVibrant'].hex,
+DarkVibrant: colorData.colors['DarkVibrant'].hex,
+Muted: colorData.colors['Muted'].hex,
+LightMuted: colorData.colors['LightMuted'].hex,
+DarkMuted: colorData.colors['DarkMuted'].hex,
+  */
   //get mainTemplate data
-  let mainTemplateData = await getMainTemplateData(req.params.id)
-  let displayPosts = mainTemplateData.postsDisplay;
+  //let mainTemplateData = await getMainTemplateData(req.params.id)
+  //let displayPosts = mainTemplateData.postsDisplay;
+
+
+  //get color Data
+  let colorData = await getColorData();
+  //get blog posts
+  let displayPosts = await getPostsDisplay(colorData.colors['LightMuted'].hex, req.params.id, getReadableTextColor(colorData.colors['LightMuted'].rgb))
+  //create colorObj
+  let colorsObj = await createColorObj(colorData);
 
   res.render('tagger', {
     //template layout to use
@@ -372,10 +406,14 @@ app.get('/tagger', async function (req, res) {
     pageBodyNavGithub: 'https://github.com/MartinBarker/martinbarker/blob/master/views/tagger.handlebars',
     //list to display for navbar 'Blog' options
     posts: displayPosts,
-    //mainTemplateData
-    imgPath: '/' + mainTemplateData.imgPath,
-    imgSrcUrl: mainTemplateData.imgSrc,
-    imgListen: mainTemplateData.imgListen,
+    //new colorData
+    colorsObj:colorsObj,
+    colorsStr:JSON.stringify(colorsObj),
+    //old color data
+    imgPath: '/' + colorData.imgPath,
+    imgSrcUrl: colorData.imgSrc,
+    imgListen: colorData.imgListen,
+    /*  
     textColor1: mainTemplateData.colorData.textColor1, //'Martin Barker' Navbar Header text color
     backgroundColor1: mainTemplateData.colorData.backgroundColor1, //'Martin Barker' Navbar Header Background Color
     textColor6: mainTemplateData.colorData.textColor6, //sidebar un-active tab text color
@@ -390,15 +428,40 @@ app.get('/tagger', async function (req, res) {
     backgroundColor6: mainTemplateData.colorData.backgroundColor6, //body header title color
     textColor5: mainTemplateData.colorData.textColor5, //body color
     backgroundColor5: mainTemplateData.colorData.backgroundColor5, //body color
+  */
     //img color display boxes
-    Vibrant: mainTemplateData.colorData.Vibrant,
-    LightVibrant: mainTemplateData.colorData.LightVibrant,
-    DarkVibrant: mainTemplateData.colorData.DarkVibrant,
-    Muted: mainTemplateData.colorData.Muted,
-    LightMuted: mainTemplateData.colorData.LightMuted,
-    DarkMuted: mainTemplateData.colorData.DarkMuted,
+    Vibrant: colorData.colors['Vibrant'].hex,
+    LightVibrant: colorData.colors['LightVibrant'].hex,
+    DarkVibrant: colorData.colors['DarkVibrant'].hex,
+    Muted: colorData.colors['Muted'].hex,
+    LightMuted: colorData.colors['LightMuted'].hex,
+    DarkMuted: colorData.colors['DarkMuted'].hex,
   });
 })
+
+async function getMostReadableTextColor(hex){
+  return new Promise(async function (resolve, reject) {
+    console.log('getMostReadableTextColor() hex = ', hex)
+    let rgb=convertHexToRGB(hex)
+    console.log('getMostReadableTextColor() rgb = ', rgb)
+    if (((rgb[0]) * 0.299 + (rgb[1]) * 0.587 + (rgb[2]) * 0.114) > 186) {
+      console.log('getMostReadableTextColor() returning black')
+      resolve("#000000")
+    } else {
+      console.log('getMostReadableTextColor() returning white')
+      resolve("#ffffff")
+    }
+  })
+}
+
+async function convertHexToRGB(hex){
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? [
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16)
+  ] : null;
+}
 
 //any route that starts with tagger
 app.get(/^\/tagger\/(.*)/, async function (req, res) {
@@ -535,10 +598,11 @@ async function unixRoute(req, res){
 
 //api route to return pageColors
 app.post('/getColors', async function (req, res) {
-  //let filepath = req.body.filepath
-  console.log("/getColors")
-  let colorData = await getColorData()
-  res.send(colorData)
+  console.log("/getColors");
+  let colorData = await getColorData();
+  //create colorObj
+  let colorsObj = await createColorObj(colorData);
+  res.send(colorsObj)
 });
 
 //get discogs api info
@@ -680,6 +744,68 @@ async function getPostsDisplay(activeTabColorHex, activeTabId, activeTabTextColo
   })
 }
 
+async function createColorObj(colorData){
+  return new Promise(async function (resolve, reject) {
+    let colorsObj = {
+
+      'cssClassElements':{
+        'sidebarStyle': [
+          {
+            "attribute":"background", 
+            "value":`${colorData.colors['LightVibrant'].hex}`
+          },
+          {
+            "attribute":"color", 
+            "value":`${getReadableTextColor(colorData.colors['LightVibrant'].rgb)}`
+          }
+        ],
+        'sidebarHeaderStyle':[
+          {
+            "attribute": 'background',
+            "value": `${colorData.colors['DarkMuted'].hex}`
+          }
+        ],
+        'sidebarHeaderText':[
+          {
+            "attribute": 'color',
+            "value": `${getReadableTextColor(colorData.colors['DarkMuted'].rgb)}`
+          }
+        ],
+        'sidebarItemsStyle':[
+          {
+            "attribute": 'background',
+            "value": `${colorData.colors['DarkVibrant'].hex}`
+          },
+          {
+            "attribute": 'color',
+            "value": `${getReadableTextColor(colorData.colors['DarkVibrant'].hex)}`
+          },
+        ],
+        'sidebarActiveItem':[
+          {
+            "attribute": 'background',
+            "value": `${colorData.colors['LightMuted'].hex}`
+          },
+          {
+            "attribute": 'color',
+            "value": `${getReadableTextColor(colorData.colors['LightMuted'].rgb)}`
+          },
+        ],
+      },
+      'imgPath':`${colorData.imgPath}`,
+      'filename':`${colorData.filename}`,
+      'hoverColors':{
+        'hoverUrl1':`${colorData.colors['LightVibrant'].hex}`,
+        'hoverUrl2':`${colorData.colors['Vibrant'].hex}`,
+        'sidebarHoverColor':`${colorData.colors['Vibrant'].hex}`,
+        'sidebarHoverText':`${getReadableTextColor(colorData.colors['Vibrant'].rgb)}`,
+      }
+      
+    }
+    resolve(colorsObj)
+  })
+}
+
 //return pageColors
 async function getColorData() {
   return new Promise(async function (resolve, reject) {
@@ -780,12 +906,13 @@ function componentToHex(c) {
 
 function getImgMetadata(imgFilename) {
   return new Promise(async function (resolve, reject) {
-    const exif = require('exif-parser')
-    const fs = require('fs')
-    let pathOneFolderUp = __dirname.split('/')
-    let filepath = `${__dirname}/../static/assets/aesthetic-images/${imgFilename}`
-    console.log('get metadata')
     try{
+      const exif = require('exif-parser')
+      const fs = require('fs')
+      let pathOneFolderUp = __dirname.split('/')
+      let filepath = `${__dirname}/../static/assets/aesthetic-images/${imgFilename}`
+      console.log('get metadata')
+    
       const buffer = fs.readFileSync(filepath)
       const parser = exif.create(buffer)
       const result = parser.parse()

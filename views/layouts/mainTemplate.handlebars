@@ -382,12 +382,12 @@
 <div class="wrapper" class="toggled">
 
     <!-- Sidebar -->
-    <nav id="sidebar" style='background: {{backgroundColor2}}; color:{{textColor6}};'>
-
+    <nav id="sidebar" class='sidebarStyle' style='{{#colorsObj.cssClassElements.sidebarStyle }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarStyle}}'>
+  
         <!-- sidenav top title -->
-        <div id='sidebarTop' class="sidebar-header" style='background: {{backgroundColor1}}'>
+        <div id='sidebarTop' class="sidebar-header sidebarHeaderStyle" style='{{#colorsObj.cssClassElements.sidebarHeaderStyle }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarHeaderStyle}}'>
             <!-- sidebar top title text -->
-            <h3 style='color: {{textColor1}}' style='font-weight: bold; text-size:12px'><strong>Martin Barker</strong>
+            <h3 class='sidebarHeaderText' style='{{#colorsObj.cssClassElements.sidebarHeaderText }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarHeaderText}}' style='font-weight: bold; text-size:12px '><strong>Martin Barker</strong>
             </h3>
             <!-- sidebar expand/collapse button -->
             <button id='sidebarCollapse'>
@@ -405,12 +405,11 @@
                 transition: 0.4s;
             }
         </style>
-        <!-- sidenav list of items -->
-        <ul class="list-unstyled components sideBarOption"
-            style='background: {{backgroundColor7}}; color: {{textColor7}};'>
+        <!-- sidebar list of items -->     
+        <ul class="list-unstyled components sideBarOption sidebarItemsStyle" style='{{#colorsObj.cssClassElements.sidebarItemsStyle }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarItemsStyle}}'>
             <!-- about page -->
             <li>
-                <a {{#ifEquals about 'active'}} style='background: {{backgroundColor3}}; color: {{textColor2}};'
+                <a {{#ifEquals about 'active'}} style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
                     {{/ifEquals}} href="/" class='navbarItem'>About
                 </a>
             </li>
@@ -427,8 +426,8 @@
                 " id="projectsSubmenu">
                     <!-- tagger.site -->
                     <li>
-                        <a {{#ifEquals tagger 'active'}}
-                            style='background: {{backgroundColor3}}; color: {{textColor2}};' 
+                        <a {{#ifEquals tagger 'active'}} activetagger
+                            style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}' 
                             {{/ifEquals}}
                             href="/tagger" class='navbarItem'>tagger.site</a>
                     </li>
@@ -436,7 +435,7 @@
                     <!-- Unix Timestamp Converter -->
                     <li>
                         <a {{#ifEquals unix 'active'}}
-                            style='background: {{backgroundColor3}}; color: {{textColor2}};' 
+                            style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}' 
                             {{/ifEquals}}
                             href="/unix" class='navbarItem'>Unix Timestamp Converter</a>
                     </li>
@@ -444,7 +443,7 @@
                     <!-- Digify -->
                     <li>
                         <a {{#ifEquals digify 'active'}}
-                            style='background: {{backgroundColor3}}; color: {{textColor2}};' 
+                            style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
                             {{/ifEquals}}
                             href="/digify" class='navbarItem'>digify</a>
                     </li>
@@ -452,7 +451,7 @@
                     <!-- audio-archiver -->
                     <li>
                         <a {{#ifEquals audioarchiver 'active'}}
-                            style='background: {{backgroundColor3}}; color: {{textColor2}};' 
+                            style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
                             {{/ifEquals}}
                             href="/audio-archiver" class='navbarItem'>audio-archiver</a>
                     </li>
@@ -460,7 +459,7 @@
                     <!-- popularify.site -->
                     <li>
                         <a {{#ifEquals popularify 'active'}}
-                            style='background: {{backgroundColor3}}; color: {{textColor2}};' 
+                            style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
                             {{/ifEquals}}
                             href="/popularify" class='navbarItem'>popularify.biz</a>
 
@@ -482,7 +481,7 @@
                 " id="blogSubmenu">
                     {{#each posts}}
                     <a {{#ifEquals activeTab 'true'}}
-                        style='background: {{activeTabColor}}!important; color: {{activeTabTextColor}};' {{/ifEquals}}
+                        style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}' {{/ifEquals}}
                         class='navbarItem' href="/posts/{{id}}">{{title}}</a>
                     {{/each}}
                 </ul>
@@ -516,8 +515,10 @@
         <!-- sidenav bottom img source info -->
         <div id="pageColorsText" class='sidebar-footer'>
             <div class="sidebar-footer imageDetails">
-                <!-- refresh colors button -->
-                <button style="font-size:14px; cursor:pointer;" id="refreshButton">Refresh colors</button>
+                <!-- refresh colors button 
+                <button style="font-size:14px; cursor:pointer;" id="refreshButton">(old) Refresh colors</button> -->
+                <!-- refresh colors2 button -->
+                <button style="font-size:14px; cursor:pointer;" id="newRefreshButton"onclick="refreshColors('newRefreshButton')">Refresh Colors</button>
                 <!-- img display -->
                 <img id="colorImageDisplay" src="{{imgPath}}" style="display: block;" class="responsive"
                     alt="image alt descr">
@@ -608,98 +609,54 @@
 </div>
 
 <script type="text/javascript">
-    setHoverColor();
-    //setColors()
+    //get initial load css data
+    var colorsObjStr='{{colorsStr}}';
+    //console.log('colorsObjStr=', colorsObjStr)
+    var colorsObj = JSON.parse(colorsObjStr.replace(/&quot;/g,'"'));
+    console.log('colorsObj=', colorsObj)
+    //set initial hover Color
+    setHoverColor(colorsObj.hoverColors)
 
-    async function setHoverColor() {
+    async function setHoverColor(cssValues) {
+        //colorData = JSON.parse(colorData);
+        console.log('setHoverColor() cssValues=', cssValues)
         var sheet = document.createElement('style')
         //create css style rule for on-hover tab and on hover github url
         let innerHTMLHoverColorStyle = `
             /* hoverUrl hover */
             #hoverUrl:hover{
-                color:{{LightVibrant}};
+                color:${cssValues.hoverUrl1}; 
             }
             .hoverURLClass:hover{
-                color:{{LightVibrant}};
+                color:${cssValues.hoverUrl1}; 
             }
             .hoverURLClassBody:hover{
-                color:{{Vibrant}};
+                color:${cssValues.hoverUrl2};      
             }
             #sidebar ul li a:hover { 
-                background: {{backgroundColor4}}; 
-                color: {{textColor3}};
+                background: ${cssValues.sidebarHoverColor}; 
+                color: ${cssValues.sidebarHoverText};           
             } `;
         sheet.innerHTML = innerHTMLHoverColorStyle
         document.head.appendChild(sheet);
     }
 
-    async function setColors() {
-        console.log('setcolors()')
-        let colors = await getColors()
+    async function setColors(colors) {
+        console.log('setColors() colors=', colors)
         let imgPath = colors.imgPath
-        //6 possible colors: 
-        //Vibrant
-        //LightVibrant
-        //DarkVibrant
-        //Muted
-        //LightMuted
-        //DarkMuted
 
-        //get high contrast colors for text
-        /*
-        let sidebarColorBackground = colors.colors['DarkVibrant']
-        console.log("sidebarColorBackground = ", sidebarColorBackground)
-        sidebarColorBackground = sidebarColorBackground.substring(4, sidebarColorBackground.length-1);
-        console.log("sidebarColorBackground = ", sidebarColorBackground)
-        sidebarColorBackground = sidebarColorBackground.split(',');
-        console.log("sidebarColorBackground = ", sidebarColorBackground)
-        sidebarColorBackground_hex = rgbToHex(213, 23, 36)
-        console.log("sidebarColorBackground_hex = ", sidebarColorBackground_hex)
-        let sidebarColorBackground_text = invertColor(sidebarColorBackground_hex)
-        console.log("sidebarColorBackground_text = ", sidebarColorBackground_text)
-        */
+        //remove pre-existing colors css
+        if(document.createElement('style')){
+            //color style already exists so delete it
+            var elem = document.querySelector('#style');
+            elem.parentNode.removeChild(elem);
+        }
 
-        //change color display text and set color box hex value
-        //make all colors visible 
-        //document.getElementById('pageColorsText').style.display = "block";
-        /*
-        //color 1
-        var color1 = colors.colors['Vibrant']
-        var color1_hex = rgbToHex(color1)
-        document.getElementById("color1Hex").innerText = `Color 1: ${color1_hex}`
-        //color 2
-        var color2 = colors.colors['LightVibrant']
-        var color2_hex = rgbToHex(color2)
-        document.getElementById("color2Hex").innerText = `Color 2: ${color2_hex}`
-        //color 3
-        var color3 = colors.colors['DarkVibrant']
-        var color3_hex = rgbToHex(color3)
-        document.getElementById("color3Hex").innerText = `Color 3: ${color3_hex}`
-        //color 4
-        var color4 = colors.colors['Muted']
-        var color4_hex = rgbToHex(color4)
-        document.getElementById("color4Hex").innerText = `Color 4: ${color4_hex}`
-        //color 5
-        var color5 = colors.colors['LightMuted']
-        var color5_hex = rgbToHex(color5)
-        document.getElementById("color5Hex").innerText = `Color 5: ${color5_hex}`
-        //color 6
-        var color6 = colors.colors['DarkMuted']
-        var color6_hex = rgbToHex(color6)
-        document.getElementById("color6Hex").innerText = `Color 6: ${color6_hex}`
-        */
-
-        //change display image source
-        //document.getElementById('colorImageDisplay').src=`${imgPath}`
-
-        //setup image modal popup
-        //imageModalSetup()
-
-        //change colors
+        //create new colors css
         var sheet = document.createElement('style')
 
+        //set text hover color
         let hoverColor = `{{Vibrant}}`;
-
         let innerHTMLHoverColorStyle = `#sidebar ul li a:hover { background: ${hoverColor}; } `;
         sheet.innerHTML = innerHTMLHoverColorStyle
         document.head.appendChild(sheet);
@@ -804,16 +761,59 @@
         }
     }
 
+    async function refreshColors(buttonId){
+        console.log('refreshColors() buttonid=', buttonId)
+        //disable button
+        document.getElementById(buttonId).disabled = true;
+        //change button text
+        document.getElementById(buttonId).innerText = "Refreshing...";
+
+        //get new colorData and update display
+        let colorData = await refreshPageColors();
+
+        //enable button
+        document.getElementById(buttonId).disabled = false;
+        //change button text
+        document.getElementById(buttonId).innerText = "Refresh Colors";
+    }
+
+    async function refreshPageColors(){
+        return new Promise(async function (resolve, reject) {
+            //get new page color data
+            let colorData = await getColors();
+            console.log('refreshPageColors() colorData = ', colorData)
+
+            //for each class to set:
+            for (const [key, value] of Object.entries(colorData.cssClassElements)) {
+                console.log(`colorData ${key}: value=`, value);
+                if(String(key)=='hovers'){
+                    setHoverColor(value) 
+                }else{
+                    //set all elements with class=key to have style=value
+                    let cssValueStr = '';
+                    for(var x = 0; x < value.length; x++){
+                        $(`.${key}`).css(value[x]['attribute'], value[x]['value']);
+                    }
+                }
+            }
+
+            //update image display
+            document.querySelector("#colorImageDisplay").src = colorData.imgPath;
+            /*
+                imgPath: 'static/assets/aesthetic-images/tumblr_ntguryB8fv1ttxfeno1_500.jpg',
+                filename: 'tumblr_ntguryB8fv1ttxfeno1_500.jpg',
+            */
+
+            resolve();
+        });
+
+    }
+
     $(document).ready(function () {
 
-        //refresh button 
-        const refreshButton = document.getElementById('refreshButton');
-        const refreshPage = () => {
-            location.reload();
-        }
-        refreshButton.addEventListener('click', refreshPage)
-
-
+        //if refresh colors button 2 is clicked
+        //const refreshButton = document.getElementById('refreshButton2');
+        //refreshButton.addEventListener('click', refreshPage)
 
         //if clicking outside modal, close modal
         $(document).click(function (e) {
@@ -837,7 +837,7 @@
     });
 
     //make request to colors backend
-    function getColors() {
+    async function getColors() {
         return new Promise(async function (resolve, reject) {
             $.ajax({
                 type: 'POST',
