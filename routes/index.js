@@ -347,35 +347,6 @@ app.get('/digify', async function (req, res) {
 
 //tagger route
 app.get('/tagger', async function (req, res) {
-
-
-  /*
-textColor1: getReadableTextColor(colorData.colors['DarkMuted'].rgb),
-backgroundColor1: colorData.colors['DarkMuted'].hex,
-textColor2: getReadableTextColor(colorData.colors['LightMuted'].rgb), //active tab text color
-backgroundColor2: colorData.colors['LightVibrant'].hex,
-textColor6: getReadableTextColor(colorData.colors['LightVibrant'].rgb),
-backgroundColor3: colorData.colors['LightMuted'].hex,
-textColor7: getReadableTextColor(colorData.colors['DarkVibrant'].rgb),
-backgroundColor7: colorData.colors['DarkVibrant'].hex,
-textColor3: getReadableTextColor(colorData.colors['Vibrant'].rgb), //navbar hover tab text color
-backgroundColor4: colorData.colors['Vibrant'].hex,
-textColor4: getReadableTextColor(colorData.colors['Muted'].rgb),
-backgroundColor6: colorData.colors['Muted'].hex,
-textColor5: getReadableTextColor(colorData.colors['LightMuted'].rgb),
-backgroundColor5: colorData.colors['LightMuted'].hex,
-Vibrant: colorData.colors['Vibrant'].hex,
-LightVibrant: colorData.colors['LightVibrant'].hex,
-DarkVibrant: colorData.colors['DarkVibrant'].hex,
-Muted: colorData.colors['Muted'].hex,
-LightMuted: colorData.colors['LightMuted'].hex,
-DarkMuted: colorData.colors['DarkMuted'].hex,
-  */
-  //get mainTemplate data
-  //let mainTemplateData = await getMainTemplateData(req.params.id)
-  //let displayPosts = mainTemplateData.postsDisplay;
-
-
   //get color Data
   let colorData = await getColorData();
   //get blog posts
@@ -406,30 +377,12 @@ DarkMuted: colorData.colors['DarkMuted'].hex,
     pageBodyNavGithub: 'https://github.com/MartinBarker/martinbarker/blob/master/views/tagger.handlebars',
     //list to display for navbar 'Blog' options
     posts: displayPosts,
-    //new colorData
+    //color info
     colorsObj:colorsObj,
     colorsStr:JSON.stringify(colorsObj),
-    //old color data
     imgPath: '/' + colorData.imgPath,
     imgSrcUrl: colorData.imgSrc,
     imgListen: colorData.imgListen,
-    /*  
-    textColor1: mainTemplateData.colorData.textColor1, //'Martin Barker' Navbar Header text color
-    backgroundColor1: mainTemplateData.colorData.backgroundColor1, //'Martin Barker' Navbar Header Background Color
-    textColor6: mainTemplateData.colorData.textColor6, //sidebar un-active tab text color
-    backgroundColor2: mainTemplateData.colorData.backgroundColor2, //sidebar un-active tab background color
-    textColor2: mainTemplateData.colorData.textColor2, //sidebar active tab
-    backgroundColor3: mainTemplateData.colorData.backgroundColor3, //sidebar active tab
-    textColor7: mainTemplateData.colorData.textColor7, //sidebar lower background
-    backgroundColor7: mainTemplateData.colorData.backgroundColor7, //sidebar lower background
-    textColor3: mainTemplateData.colorData.textColor3, //sidebar hover tab color
-    backgroundColor4: mainTemplateData.colorData.backgroundColor4, //sidebar hover tab color
-    textColor4: mainTemplateData.colorData.textColor4, //body header title color
-    backgroundColor6: mainTemplateData.colorData.backgroundColor6, //body header title color
-    textColor5: mainTemplateData.colorData.textColor5, //body color
-    backgroundColor5: mainTemplateData.colorData.backgroundColor5, //body color
-  */
-    //img color display boxes
     Vibrant: colorData.colors['Vibrant'].hex,
     LightVibrant: colorData.colors['LightVibrant'].hex,
     DarkVibrant: colorData.colors['DarkVibrant'].hex,
@@ -791,6 +744,28 @@ async function createColorObj(colorData){
             "value": `${getReadableTextColor(colorData.colors['LightMuted'].rgb)}`
           },
         ],
+        'pageContentStyle':[
+          {
+            "attribute": 'background',
+            "value": `${colorData.colors['LightMuted'].hex}`
+          }
+        ],
+        'pageContentBodyText':[
+          {
+            "attribute": 'color',
+            "value": `${getReadableTextColor(colorData.colors['LightMuted'].rgb)}`
+          },
+        ],
+        'pageContentTitleCardStyle':[
+          {
+            "attribute": 'background',
+            "value": `${colorData.colors['Muted'].hex}`
+          },
+          {
+            "attribute": 'color',
+            "value": `${getReadableTextColor(colorData.colors['Muted'].rgb)}`
+          }
+        ]
       },
       'imgPath':`${colorData.imgPath}`,
       'filename':`${colorData.filename}`,
@@ -799,6 +774,14 @@ async function createColorObj(colorData){
         'hoverUrl2':`${colorData.colors['Vibrant'].hex}`,
         'sidebarHoverColor':`${colorData.colors['Vibrant'].hex}`,
         'sidebarHoverText':`${getReadableTextColor(colorData.colors['Vibrant'].rgb)}`,
+      },
+      'colors':{
+        'Vibrant':`${colorData.colors['Vibrant'].hex}`,
+        'LightVibrant':`${colorData.colors['LightVibrant'].hex}`,
+        'DarkVibrant':`${colorData.colors['DarkVibrant'].hex}`,
+        'Muted':`${colorData.colors['Muted'].hex}`,
+        'LightMuted':`${colorData.colors['LightMuted'].hex}`,
+        'DarkMuted':`${colorData.colors['DarkMuted'].hex}`,
       }
       
     }

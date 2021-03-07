@@ -262,17 +262,17 @@
 
     <!-- Img Source -->
     <div style='text-align:center; color:white;'>
-        <a target="_blank" href='{{imgSrcUrl}}'>{{imgSrcUrl}}</a>
+        <a target="_blank" href='{{colorsObj.imgSrcUrl}}'>{{colorsObj.imgSrcUrl}}</a>
     </div>
     
     <!-- YouTube vid (if possible)
-    {{imgListen}}
-    {{#if imgListen}}
+    {{colorsObj.imgListen}}
+    {{#if colorsObj.imgListen}}
     <iframe style="display:block; display: block; margin-right: auto; margin-left: auto;" width="420" height="345" src="https://www.youtube.com/embed/wNFaAn-AkPc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>  
     {{/if}} -->
 
     <!-- Modal Content (The Image) -->
-    <img class="modal-content" id="img01" src="{{imgPath}}">
+    <img class="modal-content" id="img01" src="{{colorsObj.imgPath}}">
 
     
 </div>
@@ -426,7 +426,7 @@
                 " id="projectsSubmenu">
                     <!-- tagger.site -->
                     <li>
-                        <a {{#ifEquals tagger 'active'}} activetagger
+                        <a class='sidebarActiveItem' {{#ifEquals tagger 'active'}} activetagger
                             style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}' 
                             {{/ifEquals}}
                             href="/tagger" class='navbarItem'>tagger.site</a>
@@ -520,19 +520,14 @@
                 <!-- refresh colors2 button -->
                 <button style="font-size:14px; cursor:pointer;" id="newRefreshButton"onclick="refreshColors('newRefreshButton')">Refresh Colors</button>
                 <!-- img display -->
-                <img id="colorImageDisplay" src="{{imgPath}}" style="display: block;" class="responsive"
-                    alt="image alt descr">
+                <img id="colorImageDisplay" src="{{imgPath}}" style="display: block;" class="responsive" alt="image alt descr">
                 <!-- img colors -->
-                <div title="Vibrant: {{Vibrant}}" class="colorBox colorBox1" style="background: {{Vibrant}}"></div>
-                <div title="LightVibrant: {{LightVibrant}}" class="colorBox colorBox2"
-                    style='background: {{LightVibrant}}'></div>
-                <div title="DarkVibrant: {{DarkVibrant}}" class="colorBox colorBox3"
-                    style='background: {{DarkVibrant}}'></div>
-                <div title="Muted: {{Muted}}" class="colorBox colorBox4" style='background: {{Muted}}'></div>
-                <div title="LightMuted: {{LightMuted}}" class="colorBox colorBox5" style='background: {{LightMuted}}'>
-                </div>
-                <div title="DarkMuted: {{DarkMuted}}" class="colorBox colorBox6" style='background: {{DarkMuted}}'>
-                </div>
+                <div id='VibrantColor' title="Vibrant: {{Vibrant}}" class="colorBox colorBox1" style="background: {{Vibrant}}"></div>
+                <div id='LightVibrantColor' title="LightVibrant: {{LightVibrant}}" class="colorBox colorBox2" style='background: {{LightVibrant}}'></div>
+                <div id='DarkVibrantColor' title="DarkVibrant: {{DarkVibrant}}" class="colorBox colorBox3" style='background: {{DarkVibrant}}'></div>
+                <div id='MutedColor' title="Muted: {{Muted}}" class="colorBox colorBox4" style='background: {{Muted}}'></div>
+                <div id='LightMutedColor' title="LightMuted: {{LightMuted}}" class="colorBox colorBox5" style='background: {{LightMuted}}'></div>
+                <div id='DarkMutedColor' title="DarkMuted: {{DarkMuted}}" class="colorBox colorBox6" style='background: {{DarkMuted}}'> </div>
 
             </div>
 
@@ -541,14 +536,13 @@
     </nav>
 
     <!-- Page Content -->
-    <div id="content" style='background: {{backgroundColor5}};'>
+    <div id="content" class='pageContentStyle' style='{{#colorsObj.cssClassElements.pageContentStyle }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.pageContentStyle}}'>
 
 
         <div class="col-sm-12">
 
             <div class="col">
-                <div class="row"
-                    style=' overflow: auto; margin: auto; background: {{backgroundColor6}}; color: {{textColor4}}'>
+                <div class="row pageContentTitleCardStyle" style='{{#colorsObj.cssClassElements.pageContentTitleCardStyle }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.pageContentTitleCardStyle}}'>
                     <div class="col" style=''>
                         <h1 class="widgettitle"><strong>{{pageBodyNavTitle}}</strong></h1>
                     </div>
@@ -565,7 +559,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col">
+            <div class="col pageContentBodyText" style='{{#colorsObj.cssClassElements.pageContentBodyText }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.pageContentBodyText}}'>
                 <br>
                 <br>
                 <div class="row" style=' margin: auto;'>
@@ -613,13 +607,10 @@
     var colorsObjStr='{{colorsStr}}';
     //console.log('colorsObjStr=', colorsObjStr)
     var colorsObj = JSON.parse(colorsObjStr.replace(/&quot;/g,'"'));
-    console.log('colorsObj=', colorsObj)
     //set initial hover Color
     setHoverColor(colorsObj.hoverColors)
 
     async function setHoverColor(cssValues) {
-        //colorData = JSON.parse(colorData);
-        console.log('setHoverColor() cssValues=', cssValues)
         var sheet = document.createElement('style')
         //create css style rule for on-hover tab and on hover github url
         let innerHTMLHoverColorStyle = `
@@ -642,7 +633,6 @@
     }
 
     async function setColors(colors) {
-        console.log('setColors() colors=', colors)
         let imgPath = colors.imgPath
 
         //remove pre-existing colors css
@@ -762,7 +752,6 @@
     }
 
     async function refreshColors(buttonId){
-        console.log('refreshColors() buttonid=', buttonId)
         //disable button
         document.getElementById(buttonId).disabled = true;
         //change button text
@@ -781,7 +770,6 @@
         return new Promise(async function (resolve, reject) {
             //get new page color data
             let colorData = await getColors();
-            console.log('refreshPageColors() colorData = ', colorData)
 
             //for each class to set:
             for (const [key, value] of Object.entries(colorData.cssClassElements)) {
@@ -796,13 +784,17 @@
                     }
                 }
             }
+            //update image colors
+            for (const [key, value] of Object.entries(colorData.colors)) {
+                document.querySelector(`#${key}Color`).title=`${key}:${value}`;
+                $(`#${key}Color`).css('background', value);
+            }
 
             //update image display
             document.querySelector("#colorImageDisplay").src = colorData.imgPath;
-            /*
-                imgPath: 'static/assets/aesthetic-images/tumblr_ntguryB8fv1ttxfeno1_500.jpg',
-                filename: 'tumblr_ntguryB8fv1ttxfeno1_500.jpg',
-            */
+
+            //update hover color
+            setHoverColor(colorData.hoverColors)
 
             resolve();
         });

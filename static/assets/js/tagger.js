@@ -4,7 +4,7 @@ $(document).ready(function () {
     checkFileAPI();
     //Check for the various File API support.
     function checkFileAPI() {
-        console.log('checkFileAPI()')
+        //console.log('checkFileAPI()')
         if (window.File && window.FileReader && window.FileList && window.Blob) {
             reader = new FileReader();
             return true;
