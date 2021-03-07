@@ -272,12 +272,9 @@
     {{/if}} -->
 
     <!-- Modal Content (The Image) -->
-    <img class="modal-content" id="img01" src="{{colorsObj.imgPath}}">
-
+    <img class="modal-content" id="img01" src="{{imgPath}}">
     
 </div>
-
-
 
 <style>
     /* Style the Image Used to Trigger the Modal */
@@ -409,7 +406,7 @@
         <ul class="list-unstyled components sideBarOption sidebarItemsStyle" style='{{#colorsObj.cssClassElements.sidebarItemsStyle }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarItemsStyle}}'>
             <!-- about page -->
             <li>
-                <a {{#ifEquals about 'active'}} style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
+                <a  {{#ifEquals about 'active'}} class='sidebarActiveItem' style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
                     {{/ifEquals}} href="/" class='navbarItem'>About
                 </a>
             </li>
@@ -426,7 +423,7 @@
                 " id="projectsSubmenu">
                     <!-- tagger.site -->
                     <li>
-                        <a class='sidebarActiveItem' {{#ifEquals tagger 'active'}} activetagger
+                        <a {{#ifEquals tagger 'active'}} class='sidebarActiveItem' 
                             style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}' 
                             {{/ifEquals}}
                             href="/tagger" class='navbarItem'>tagger.site</a>
@@ -435,7 +432,7 @@
                     <!-- Unix Timestamp Converter -->
                     <li>
                         <a {{#ifEquals unix 'active'}}
-                            style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}' 
+                            class='sidebarActiveItem' style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}' 
                             {{/ifEquals}}
                             href="/unix" class='navbarItem'>Unix Timestamp Converter</a>
                     </li>
@@ -443,7 +440,7 @@
                     <!-- Digify -->
                     <li>
                         <a {{#ifEquals digify 'active'}}
-                            style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
+                            class='sidebarActiveItem' style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
                             {{/ifEquals}}
                             href="/digify" class='navbarItem'>digify</a>
                     </li>
@@ -451,7 +448,7 @@
                     <!-- audio-archiver -->
                     <li>
                         <a {{#ifEquals audioarchiver 'active'}}
-                            style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
+                            class='sidebarActiveItem' style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
                             {{/ifEquals}}
                             href="/audio-archiver" class='navbarItem'>audio-archiver</a>
                     </li>
@@ -459,7 +456,7 @@
                     <!-- popularify.site -->
                     <li>
                         <a {{#ifEquals popularify 'active'}}
-                            style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
+                            class='sidebarActiveItem' style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}'
                             {{/ifEquals}}
                             href="/popularify" class='navbarItem'>popularify.biz</a>
 
@@ -479,11 +476,31 @@
                         show
                     {{/ifEquals}} 
                 " id="blogSubmenu">
-                    {{#each posts}}
-                    <a {{#ifEquals activeTab 'true'}}
-                        style='{{#colorsObj.cssClassElements.sidebarActiveItem }} {{attribute}}:{{value}};{{/colorsObj.cssClassElements.sidebarActiveItem}}' {{/ifEquals}}
-                        class='navbarItem' href="/posts/{{id}}">{{title}}</a>
+
+
+                    {{#each posts}} 
+                    
+                        <a 
+                            class='navbarItem {{#ifEquals activeTab 'true'}}sidebarActiveItem{{/ifEquals}}'
+                                {{#if activeTab}}
+                                    style='background: {{activeTabColor}}; color: {{activeTabTextColor}};'
+                                {{/if}}
+                            href="/posts/{{id}}">{{title}}
+                        </a>
+
                     {{/each}}
+
+                  
+<!--
+                    {{#posts}}
+                        
+                        <a 
+                            class='navbarItem {{#ifEquals activeTab 'true'}}sidebarActiveItem{{/ifEquals}}'
+                           
+                            href="/posts/{{id}}">{{title}}
+                        </a>
+                    {{/posts}}
+-->
                 </ul>
             </li>
 
@@ -751,6 +768,19 @@
         }
     }
 
+    async function waitSeconds(iMilliSeconds) {
+        return new Promise(async function (resolve, reject) {
+            var counter= 0
+                , start = new Date().getTime()
+                , end = 0;
+            while (counter < iMilliSeconds) {
+                end = new Date().getTime();
+                counter = end - start;
+            }
+            resolve();
+        })
+    }
+
     async function refreshColors(buttonId){
         //disable button
         document.getElementById(buttonId).disabled = true;
@@ -789,9 +819,8 @@
                 document.querySelector(`#${key}Color`).title=`${key}:${value}`;
                 $(`#${key}Color`).css('background', value);
             }
-
             //update image display
-            document.querySelector("#colorImageDisplay").src = colorData.imgPath;
+            document.querySelector("#colorImageDisplay").src = `/${colorData.imgPath}`;
 
             //update hover color
             setHoverColor(colorData.hoverColors)
