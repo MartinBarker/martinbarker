@@ -287,6 +287,55 @@ app.get('/rendertune', async function (req, res) {
   });
 })
 
+//legacy digify route
+app.get('/digify', async function (req, res) {
+  //get color Data
+  let colorData = await getColorData();
+  //get blog posts
+  let displayPosts = await getPostsDisplay(colorData.colors['LightMuted'].hex, req.params.id, getReadableTextColor(colorData.colors['LightMuted'].rgb))
+  //create colorObj
+  let colorsObj = await createColorObj(colorData);
+
+  res.render('RenderTune', {
+    //template layout to use
+    layout: 'mainTemplate',
+    //page title of tab
+    pageTitle: 'RenderTune',
+    //page tab icon
+    icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
+    //shareable preview-cart metadata
+    /*
+    previewCardTitle:'Timestamped Tracklist Generator',
+    previewCardUrl:'http://www.tagger.site',
+    previewCardWebsite:'website',
+    previewCardDescription:'Generate tags using files or a Discogs URL',
+    previewCardImage:'https://i.imgur.com/f0xepPT.jpg',
+    */
+    //expand projects tab
+    projects: 'active',
+    //set active current tab
+    RenderTune: 'active',
+    //body content title 
+    pageBodyNavTitle: 'RenderTune',
+    //body content github link
+    pageBodyNavGithub: 'https://github.com/MartinBarker/',
+    //list to display for navbar 'Blog' options
+    posts: displayPosts,
+    //color info
+    colorsObj:colorsObj,
+    colorsStr:JSON.stringify(colorsObj),
+    imgPath: '/' + colorData.imgPath,
+    imgSrcUrl: colorData.imgSrc,
+    imgListen: colorData.imgListen,
+    Vibrant: colorData.colors['Vibrant'].hex,
+    LightVibrant: colorData.colors['LightVibrant'].hex,
+    DarkVibrant: colorData.colors['DarkVibrant'].hex,
+    Muted: colorData.colors['Muted'].hex,
+    LightMuted: colorData.colors['LightMuted'].hex,
+    DarkMuted: colorData.colors['DarkMuted'].hex,
+  });
+})
+
 
 //tagger route
 app.get('/tagger', async function (req, res) {
