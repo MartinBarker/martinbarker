@@ -238,8 +238,8 @@ app.get('/discogstagger', async function (req, res) {
   res.redirect('/tagger');
 })
 
-//digify route
-app.get('/digify', async function (req, res) {
+//RenderTune route
+app.get('/rendertune', async function (req, res) {
   //get color Data
   let colorData = await getColorData();
   //get blog posts
@@ -247,11 +247,11 @@ app.get('/digify', async function (req, res) {
   //create colorObj
   let colorsObj = await createColorObj(colorData);
 
-  res.render('digify', {
+  res.render('RenderTune', {
     //template layout to use
     layout: 'mainTemplate',
     //page title of tab
-    pageTitle: 'digify',
+    pageTitle: 'RenderTune',
     //page tab icon
     icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
     //shareable preview-cart metadata
@@ -265,11 +265,11 @@ app.get('/digify', async function (req, res) {
     //expand projects tab
     projects: 'active',
     //set active current tab
-    digify: 'active',
+    RenderTune: 'active',
     //body content title 
-    pageBodyNavTitle: 'digify',
+    pageBodyNavTitle: 'RenderTune',
     //body content github link
-    pageBodyNavGithub: 'https://github.com/MartinBarker/martinbarker/blob/master/views/tagger.handlebars',
+    pageBodyNavGithub: 'https://github.com/MartinBarker/',
     //list to display for navbar 'Blog' options
     posts: displayPosts,
     //color info
@@ -692,7 +692,7 @@ async function createColorObj(colorData){
       'imgPath':`${colorData.imgPath}`,
       'filename':`${colorData.filename}`,
       'hoverColors':{
-        'hoverUrl1':`${colorData.colors['LightVibrant'].hex}`,
+        'hoverUrl1':`${colorData.colors['DarkMuted'].hex}`,
         'hoverUrl2':`${colorData.colors['Vibrant'].hex}`,
         'sidebarHoverColor':`${colorData.colors['Vibrant'].hex}`,
         'sidebarHoverText':`${getReadableTextColor(colorData.colors['Vibrant'].rgb)}`,

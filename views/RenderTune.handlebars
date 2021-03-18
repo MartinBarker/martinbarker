@@ -1,0 +1,70 @@
+<script type="text/javascript" src="/static/assets/js/tagger.js"></script>
+<script src="https://unpkg.com/moment"></script>
+<!-- mediainfo.js for getting length of audio files like m4a/aif -->
+<script src="https://unpkg.com/mediainfo.js@0.1.4/dist/mediainfo.min.js"></script>
+
+<!-- page main content -->
+<div class="container-fluid" style='color: {{textColor5}}' onload='checkFileAPI();'>
+
+    <div style="margin-top:-30px;">
+
+        <!-- Header Text -->
+        <h6 class="widgettitle">
+        RenderTune is a free open-source electron app that uses ffmpeg to render videos by combining audio and image files.
+        <br>You can render videos from just a single audio file, or combine multiple audio files into a specific order and concatenate them into a single video. 
+        <br>RenderTune also offers options such as setting the output video resolution, output location, and you can add black/white padding to the image frame if you wish.
+        <br>To see examples of videos rendered with RenderTune, check out my YouTube channel martinradio; where I use RenderTune for all my videos:
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/g9rPNsw2cL0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <hr>
+        Github: <a id='hoverUrl' href="https://github.com/MartinBarker/rendertune">https://github.com/MartinBarker/rendertune</a></h6>
+        <h6>Windows Store: <a id='hoverUrl' target="_blank"  href="https://www.microsoft.com/en-us/p/rendertune/9n5710msppf1">https://www.microsoft.com/en-us/p/rendertune/9n5710msppf1</a></h6>
+        <h6>Mac Apple Store: <a id='hoverUrl' target="_blank"  href="https://appstoreconnect.apple.com/apps/1552674375/appstore/platform/osx/resolutioncenter?m=">https://appstoreconnect.apple.com/apps/1552674375/appstore/platform/osx/resolutioncenter?m=</a></h6>
+
+        <hr>
+
+
+        <!-- Tutorial -->
+        <h6>To use RenderTune, download and open it. You will start on the Home page with a tutorial for if you ever get lost. To begin creating videos, click the "New Upload" button icon in the left sidebar.</h6>
+        <img style="width: 60%; height: auto;" src="../static/assets/img/rendertune-tutorial1.png">
+<br><br><br>
+
+        <h6>Drag your audio + image files into the window or click "Choose Files" to pick multiple files, click "Create" to create a new upload with your files.</h6>
+        <img style="width: 100%; height: auto;" src="../static/assets/img/rendertune-tutorial2.gif">
+<br><br><br>
+        
+        <h6>When the upload is created, you will see a Files Table, Options, and Renders. RenderTune currently provides the following options:</h6>
+        <img style="width: 30%; height: auto;" src="../static/assets/img/rendertune-options.png">
+        <h6>Image: Choose which image you want to render the video with.</h6>
+        <h6>Padding: Choose if you want to pad the resolution of your video with a white or black background.</h6>
+        <h6>Resolution: Change which output resolution for your video.</h6>
+        <h6>Output Dir: Change which folder you want your videos to be outputted to (by default this will output to the folder where your image is located).</h6>
+        <br>
+
+        <h6>If you want to combine multiple audio files into one video, reorganize the songs in the table to any order you would like by sorting them based on the columns, or organize them manually by clicking and dragging. Use the checkboxes to select which songs you want to include in your video, change any options you want, and then click the "Render" button under the "Combine x songs into 1 video" box.</h6>
+        <img style="width: 100%; height: auto;" src="../static/assets/img/rendertune-tutorial3.gif">
+<br><br><br>
+
+        <h6>When your render has started, click the 'Renders' sidebar tab to view the render progress.</h6>
+        <img style="width: 100%; height: auto;" src="../static/assets/img/rendertune-tutorial4.gif">
+<br><br><br>
+        
+        <h6>If you want to render one or multiple single song videos, select the audio file from the table, change any options under the "Render x individual videos" box, and click the 'Render x individual files button'.</h6>
+        <img style="width: 100%; height: auto;" src="../static/assets/img/rendertune-tutorial5.gif">
+<br><br><br>
+
+        <h6>Below is an example showing the difference between padding and no padding on the output video file.</h6>
+        <img style="width: 100%; height: auto;" src="../static/assets/img/rendertune-padding.png">
+<br><br><br>
+         <!--
+        <h6>When the render has finished, you will see the output video file in the same location as the audio/image files you chose.</h6>
+        <img style="width: 100%; height: auto;" src="../static/assets/img/digify-tutorial5.png">
+<br><br><br>
+        
+
+        
+        -->
+        
+
+    </div>
+</div>
+
