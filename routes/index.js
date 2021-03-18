@@ -255,13 +255,13 @@ app.get('/rendertune', async function (req, res) {
     //page tab icon
     icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
     //shareable preview-cart metadata
-    /*
-    previewCardTitle:'Timestamped Tracklist Generator',
-    previewCardUrl:'http://www.tagger.site',
+   
+    previewCardTitle:'RenderTune Free Video Rendering App',
+    previewCardUrl:'http://www.martinbarker.me/rendertune',
     previewCardWebsite:'website',
-    previewCardDescription:'Generate tags using files or a Discogs URL',
-    previewCardImage:'https://i.imgur.com/f0xepPT.jpg',
-    */
+    previewCardDescription:'Combine audio + image file(s) into video files',
+    previewCardImage:'https://i.imgur.com/c3yaWWZ.png',
+   
     //expand projects tab
     projects: 'active',
     //set active current tab
@@ -304,13 +304,13 @@ app.get('/digify', async function (req, res) {
     //page tab icon
     icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
     //shareable preview-cart metadata
-    /*
-    previewCardTitle:'Timestamped Tracklist Generator',
-    previewCardUrl:'http://www.tagger.site',
+
+    previewCardTitle:'RenderTune Free Video Rendering App',
+    previewCardUrl:'http://www.martinbarker.me/rendertune',
     previewCardWebsite:'website',
-    previewCardDescription:'Generate tags using files or a Discogs URL',
-    previewCardImage:'https://i.imgur.com/f0xepPT.jpg',
-    */
+    previewCardDescription:'Combine audio + image file(s) into video files',
+    previewCardImage:'https://i.imgur.com/c3yaWWZ.png',
+
     //expand projects tab
     projects: 'active',
     //set active current tab
