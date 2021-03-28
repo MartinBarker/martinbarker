@@ -253,7 +253,7 @@ app.get('/rendertune', async function (req, res) {
     //page title of tab
     pageTitle: 'RenderTune',
     //page tab icon
-    icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
+    icon: './static/assets/img/icon.png',
     //shareable preview-cart metadata
    
     previewCardTitle:'RenderTune Free Video Rendering App',
@@ -302,7 +302,7 @@ app.get('/digify', async function (req, res) {
     //page title of tab
     pageTitle: 'RenderTune',
     //page tab icon
-    icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
+    icon: './static/assets/img/icon.png',
     //shareable preview-cart metadata
 
     previewCardTitle:'RenderTune Free Video Rendering App',
