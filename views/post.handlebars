@@ -1,9 +1,15 @@
+
 <div class="container-fluid" style='color: {{textColor5}}'>
-    Posted:{{postDate}}
 
-    Description: {{postDescription}}
+    {{postDate}} - {{postDescription}}
+    <br>
+    <div style="margin-right: 200px;" id='postContent'>
 
-    Content: <div id='postContent'></div>
+
+
+
+
+    </div>
 </div>
 
 <script>
@@ -11,3 +17,4 @@
         document.getElementById('postContent').innerHTML = `{{{postContent}}}`
     })
 </script>
+
