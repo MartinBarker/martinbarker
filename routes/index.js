@@ -40,7 +40,7 @@ app.get('/posts/:id', async (req, res) => {
     previewCardUrl:'http://www.martinbarker.me',
     previewCardWebsite:'website',
     previewCardDescription:'Blog Post',
-    previewCardImage:'https://i.imgur.com/bQ3W6mO.jpg',
+    previewCardImage:'../static/assets/img/headshot.jpg',
     pageBodyNavTitle: `${post.title}`,
     pageBodyNaavGithub: '',
     postTitle: post.title,
@@ -86,7 +86,7 @@ app.get('/', async function (req, res) {
     previewCardUrl:'http://www.martinbarker.me',
     previewCardWebsite:'website',
     previewCardDescription:'',
-    previewCardImage:'https://i.imgur.com/bQ3W6mO.jpg',
+    previewCardImage:'../static/assets/img/headshot.jpg', 
     //set active current tab
     about: 'active',
     //body content title 
@@ -135,7 +135,7 @@ app.get('/audio-archiver', async function (req, res) {
     previewCardUrl:'http://www.martinbarker.me/audio-archiver',
     previewCardWebsite:'website',
     previewCardDescription:'',
-    previewCardImage:'https://i.imgur.com/bQ3W6mO.jpg',
+    previewCardImage:'../static/assets/img/headshot.jpg',
     //expand projects tab
     projects: 'active',
     //set active current tab
@@ -182,7 +182,7 @@ app.get('/popularify', async function (req, res) {
     previewCardUrl:'http://www.popularify.site',
     previewCardWebsite:'website',
     previewCardDescription:'',
-    previewCardImage:'https://i.imgur.com/bQ3W6mO.jpg',
+    previewCardImage:'../static/assets/img/headshot.jpg',
     //expand projects tab
     projects: 'active',
     //set active current tab
