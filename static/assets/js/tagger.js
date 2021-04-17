@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    
+
     var reader;
     checkFileAPI();
     //Check for the various File API support.
@@ -37,6 +37,9 @@ $(document).ready(function () {
     }
     dropArea.addEventListener('drop', handleDrop, false)
     async function handleDrop(e) {
+
+        document.querySelector('#loading').style.display = "flex";
+
         let dt = e.dataTransfer
         let files = e.dataTransfer.files; //dt.files
 
@@ -62,6 +65,7 @@ $(document).ready(function () {
         $("#tagsCharCount").text(`Copy 85 Chars to Clipboard`);
         //let discogsTaggerData = await generateDiscogsFileTags(files) 
         //displayMetadataTags(discogsTaggerData)
+        document.querySelector('#loading').style.display = "none";
     }
 
     //function to make sure hitting 'enter' key submits input box
@@ -107,21 +111,21 @@ $(document).ready(function () {
     });
 
     //get length of audio file
-    async function getLength(file){
+    async function getLength(file) {
         return new Promise(async function (resolve, reject) {
             //console.log('getLength file=', file)
-            try{
-                const mediainfo = await new Promise( (res) => MediaInfo(null, res) );
+            try {
+                const mediainfo = await new Promise((res) => MediaInfo(null, res));
                 const getSize = () => file.size;
                 const readChunk = async (chunkSize, offset) =>
-                    new Uint8Array( await file.slice(offset, offset + chunkSize).arrayBuffer() );
-        
+                    new Uint8Array(await file.slice(offset, offset + chunkSize).arrayBuffer());
+
                 const info = await mediainfo.analyzeData(getSize, readChunk);
                 // assumes we are only interested in audio duration
-                const audio_track = info.media.track.find( (track) => track[ "@type" ] === "Audio" );
+                const audio_track = info.media.track.find((track) => track["@type"] === "Audio");
                 let duration = parseFloat(audio_track.Duration);
                 resolve(duration);
-            }catch(err){
+            } catch (err) {
                 console.log('err getting file length = ', err);
                 resolve(0)
             }
@@ -130,6 +134,7 @@ $(document).ready(function () {
 
     //if files are selected functions
     $("#file").change(async function (e) {
+        document.querySelector('#loading').style.display = "flex";
         var firstFile = e.currentTarget.files[0];
         let taggerData;
         //if first file filename ends with '.cue'
@@ -153,6 +158,7 @@ $(document).ready(function () {
         displayMetadataTags(discogsTaggerData)
         document.getElementById('tagsBox').value = "Metadata tags generation via files not currently supported :( Try using a Discogs URL"
         $("#tagsCharCount").text(`Copy 85 Chars to Clipboard`);
+        document.querySelector('#loading').style.display = "none";
     });
 
     function readText(filePath) {
@@ -230,23 +236,23 @@ $(document).ready(function () {
                     }
                     //x is track number i am on
                     //console.log('tempStartTimeSeconds=', tempStartTimeSeconds, ` (${convertSecondsToTimestamp(tempStartTimeSeconds)})`)
-                   
-                    var trackData = { 
-                        title: trackTitle, 
-                        startTime: convertSecondsToTimestamp(tempStartTimeSeconds), 
-                        endTime: convertSecondsToTimestamp(0) 
+
+                    var trackData = {
+                        title: trackTitle,
+                        startTime: convertSecondsToTimestamp(tempStartTimeSeconds),
+                        endTime: convertSecondsToTimestamp(0)
                     }
                     taggerData.push(trackData);
                     //console.log('before taggerData.length', taggerData.length, 'taggerData=', taggerData, '\n')
                     //if we have already pushed a track to taggerData:
-                    if(cueFileTrackCount>0){
+                    if (cueFileTrackCount > 0) {
                         //console.log('set value of taggerData[', cueFileTrackCount-1, '].endTime = taggerData[', cueFileTrackCount, '].startTime')
-                        taggerData[cueFileTrackCount-1].endTime = taggerData[cueFileTrackCount].startTime
+                        taggerData[cueFileTrackCount - 1].endTime = taggerData[cueFileTrackCount].startTime
                     }
 
 
                     //startTimeSeconds = endTimeSeconds;
-                    cueFileTrackCount+=1;
+                    cueFileTrackCount += 1;
                     //console.log(" . ")
                 }
 
@@ -254,7 +260,7 @@ $(document).ready(function () {
 
             }
             //console.log('taggerData.length-1 = ', taggerData.length-1, ', taggerData=', taggerData)
-            taggerData[taggerData.length-1].endTime = ""
+            taggerData[taggerData.length - 1].endTime = ""
             resolve(taggerData)
             //resolve([{title: "04 Lifting 2nd Resurrection", startTime: "06:29", endTime: "10:15"},{title: "02 Lifting 2nd Resurrection", startTime: "06:29", endTime: "10:15"}])
         })
@@ -477,24 +483,38 @@ async function getDiscogsTaggerData(tracklistData) {
 
 //call this function when the user clicks 'Submit' on the Discogs URL Form input
 async function submitDiscogsURL(input) {
+    //display loading spinner
+    document.querySelector('#loading').style.display = "flex";
+
     //parse release id from url
     var urlArr = input.split('/');
     var discogsListingType = urlArr[urlArr.length - 2];
     var discogsListingCode = urlArr[urlArr.length - 1];
-    //get data from discogs API
-    try {
-        let discogsData = await getDiscogsData(discogsListingType, discogsListingCode)
 
-        //generate discogs tags
-        generateDiscogsURLTags(discogsData)
+    try {
+        //get data from discogs API
+        let discogsData = await getDiscogsData(discogsListingType, discogsListingCode);
+
+        //format discogs tags data (old method)
+        //let formattedTags = await generateDiscogsURLTags(discogsData)
+        let formattedTags = await generateDiscogsURLTagsNEW(discogsData)
+
+        //display formatted tags
+        displayMetadataTags(formattedTags)
 
         //get tracklist from discogsData
         let discogsTracklist = discogsData.tracklist
-        //if tracklistData is valid, get taggerData
+
+        //if tracklistData is valid:
         if (discogsTracklist != 'error') {
+            //get taggerData
             let taggerData = await getDiscogsTaggerData(discogsTracklist)
+
+            //display taggerData
             displayData(taggerData)
         }
+
+        //clear error display
         document.getElementById('taggerErrDisplay').innerText = ''
 
     } catch (err) {
@@ -502,7 +522,166 @@ async function submitDiscogsURL(input) {
         document.getElementById('taggerErrDisplay').innerText = 'Discogs API can only handle so many requests.. please wait a couple seconds and try again.'
     }
 
+    //hide loading spinner
+    document.querySelector('#loading').style.display = "none";
+
 }
+
+//generate metadata tags from a discogs api json response
+async function generateDiscogsURLTagsNEW(discogsReleaseData) {
+    return new Promise(async function (resolve, reject) {
+
+        /* Artist Data */
+        let artistTags = [];
+        let artistsObj = {};
+        let artists = discogsReleaseData.artists || [];
+        let artistsSort = discogsReleaseData.artists_sort || "";
+        if (artistsSort != "") {
+            let sanitizedArtistsSort = sanitizeTag(artistsSort);
+            //if sanitizedArtistsSort is not already in artistTags, add it
+            !artistTags.includes(sanitizedArtistsSort) ? artistTags.push(sanitizedArtistsSort) : null;
+        };
+        //for each artist in 'artists[]' object
+        for (var i = 0; i < artists.length; i++) {
+            //create artist name if it doesnt already exist
+            if (!artistsObj[artists[i].name]) {
+                artistsObj[artists[i].name] = [];
+            }
+
+            //add artist name if it 
+            artistsObj[artists[i].name].push(sanitizeTag(artists[i].name))
+
+            //if anv (variation) exists, push that
+            if (artists[i].anv) {
+                artistsObj[artists[i].name].push(sanitizeTag(artists[i].anv))
+            }
+
+            //if artist is not 'Various', get more info
+            if (artists[i].name != "Various" && artists[i].resource_url) {
+
+                //get artist data from discogs API
+                try {
+                    let artistData = await getDiscogsData('artist', artists[i].id)
+
+                    //if namevariations exist, add those to artistTags
+                    if (artistData.namevariations) {
+                        //artistTags = artistTags.concat(artistData.namevariations)
+                        artistsObj[artists[i].name].push(sanitizeTag(artistData.namevariations))
+                    }
+
+                    //if groups exist
+                    if (artistData.groups) {
+                        for (var q = 0; q < artistData.groups.length; q++) {
+                            //add group name to artistsObj if it doesn't exist already
+                            if (!artistsObj[artistData.groups[q].name]) {
+                                artistsObj[artistData.groups[q].name] = [];
+                            }
+                            artistsObj[artistData.groups[q].name].push(sanitizeTag(artistData.groups[q].name))
+
+                            //if anv exists, push that
+                            if (artistData.groups[q].anv) {
+                                artistsObj[artistData.groups[q].name].push(sanitizeTag(artistData.groups[q].anv))
+                            }
+                        }
+                    }
+
+                    //if members exist
+                    if (artistData.members) {
+                        //for each member
+                        for (var z = 0; z < artistData.members.length; z++) {
+                            //add name to artistsObj if it doesn't already exist
+                            if (!artistsObj[artistData.members[z].name]) {
+                                artistsObj[artistData.members[z].name] = [];
+                            }
+                            //push name
+                            artistsObj[artistData.members[z].name].push(sanitizeTag(artistData.members[z].name))
+
+                            //push anv if it exists
+                            if (artistData.members[z].anv) {
+                                artistsObj[artistData.members[z].name].push(sanitizeTag(artistData.members[z].anv))
+                            }
+
+                            //get more info on that member if possible
+                            if (artistData.members[z].resource_url) {
+                                let memberArtistData = await discogsAPIQuery(artistData.members[z].resource_url)
+                                //if namevariations exist, add that to artistTags
+                                if (memberArtistData.namevariations) {
+                                    artistsObj[artistData.members[z].name].push(sanitizeTag(memberArtistData.namevariations))
+                                }
+                                //if groups exist, add that 
+                                if (memberArtistData.groups) {
+                                    //for each group
+                                    for (var x = 0; x < memberArtistData.groups.length; x++) {
+                                        //push group name
+                                        artistsObj[artistData.members[z].name].push(sanitizeTag(memberArtistData.groups[x].name))
+                                    }
+                                }
+                                //if aliases exist
+                                if (memberArtistData.aliases) {
+                                    for (var y = 0; y < memberArtistData.aliases.length; y++) {
+                                        artistsObj[artistData.members[z].name].push(sanitizeTag(memberArtistData.aliases[y].name))
+                                        if (memberArtistData.aliases[y].anv) {
+                                            artistsObj[artistData.members[z].name].push(sanitizeTag(memberArtistData.aliases[y].anv))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    //if aliases exist
+                    if (artistData.aliases) {
+                        for (var y = 0; y < artistData.aliases.length; y++) {
+                            artistsObj[artists[i].name].push(sanitizeTag(artistData.aliases[y].name))
+                            if (artistData.aliases[y].anv) {
+                                artistsObj[artists[i].name].push(sanitizeTag(artistData.aliases[y].anv))
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log('err getting artist data = ', err)
+                }
+            }
+
+        }
+
+        //construct artistTags from artistsObj
+        let maxLength = 0;
+        for (const [key, value] of Object.entries(artistsObj)) {
+            if (value.length > maxLength) maxLength = value.length;
+        }
+
+        for (i = 0; i < maxLength; i++) {
+            for (const [key, value] of Object.entries(artistsObj)) {
+                if (value[i]) artistTags.push(value[i]); //push if exists
+            }
+        }
+
+        //get releaseInfo tags
+        let releaseInfoTags = await getReleaseInfoTags(discogsReleaseData)
+
+        //get tracklist tags
+        let tracklistTags = await getTracklistTags(discogsReleaseData)
+
+        //get combinations tags
+        let combinationsTags = await getCombinationTags(discogsReleaseData)
+
+        //combine tags into json results
+        var jsonResults = {
+            'tags': {
+                'releaseArtist': artistTags,
+                'releaseInfo': releaseInfoTags,
+                'tracklist': tracklistTags,
+                'combinations': combinationsTags
+            }
+        };
+
+        //return json results
+        resolve(jsonResults)
+    })
+
+}
+
 //make discogs api call
 async function getDiscogsData(discogsListingType, discogsListingCode) {
     return new Promise(function (resolve, reject) {
@@ -525,6 +704,42 @@ async function getDiscogsData(discogsListingType, discogsListingCode) {
             reject(err)
         });
     });
+}
+
+
+//generate metadata tags from a discogs api json response
+async function generateDiscogsURLTags(discogsReleaseData) {
+    return new Promise(async function (resolve, reject) {
+        //get releaseArtist tags
+        let releaseArtistTags = await getArtistTags(discogsReleaseData)
+        console.log('releaseArtistTags=', releaseArtistTags)
+
+        //get releaseInfo tags
+        let releaseInfoTags = await getReleaseInfoTags(discogsReleaseData)
+        console.log('releaseInfoTags=', releaseInfoTags)
+
+        //get tracklist tags
+        let tracklistTags = await getTracklistTags(discogsReleaseData)
+        console.log('tracklistTags=', tracklistTags)
+
+        //get combinations tags
+        let combinationsTags = await getCombinationTags(discogsReleaseData)
+        console.log('combinationsTags=', combinationsTags)
+
+        //combine tags into json results
+        var jsonResults = {
+            'tags': {
+                'releaseArtist': releaseArtistTags,
+                'releaseInfo': releaseInfoTags,
+                'tracklist': tracklistTags,
+                'combinations': combinationsTags
+            }
+        };
+
+        //return json results
+        resolve(jsonResults)
+    })
+
 }
 
 //curl request to discogs api (rate limit: 3 requests per minute)
@@ -576,33 +791,6 @@ async function generateDiscogsFileTags(songs) {
             }
         })
     })
-}
-
-//discogstagger url submit generate tags
-async function generateDiscogsURLTags(discogsReleaseData) {
-    //get releaseArtist tags
-    let releaseArtistTags = await getArtistTags(discogsReleaseData)
-
-    //get releaseInfo tags
-    let releaseInfoTags = await getReleaseInfoTags(discogsReleaseData)
-
-    //get tracklist tags
-    let tracklistTags = await getTracklistTags(discogsReleaseData)
-
-    //get combinations tags
-    let combinationsTags = await getCombinationTags(discogsReleaseData)
-
-    //combine tags into json results
-    var jsonResults = {
-        'tags': {
-            'releaseArtist': releaseArtistTags,
-            'releaseInfo': releaseInfoTags,
-            'tracklist': tracklistTags,
-            'combinations': combinationsTags
-        }
-    };
-
-    displayMetadataTags(jsonResults)
 }
 
 //discogstagger: generate comma seperated tags from a json object
@@ -725,6 +913,42 @@ function removeNumberParenthesesAndComma(input) {
             //console.log(`nonmatched return|${input}|`)
             return input
         }
+
+    } else {
+        return ''
+    }
+
+}
+
+//remove numbers and parenthesis from string
+function sanitizeTag(input) {
+
+    if (input) {
+
+        //if input is object (discogs api only returns objects that are lists)
+        if (typeof input == 'object') {
+            input = input.join(', ')
+        }
+
+        //convert to string
+        input = input.toString()
+        //remove commas
+        input = input.replace(/,/g, '')
+        //remove all numbers within parentheses
+        var regEx = /\(([\d)]+)\)/;
+        var matches = regEx.exec(input);
+        if (matches) {
+            //remove parentheses number
+            var ret = input.replace(matches[0], '')
+            //remove last char
+            ret = ret.slice(0, -1);
+            //console.log('matched return:', ret)
+            input = ret;
+        } else {
+            //console.log(`nonmatched return|${input}|`)
+            return input
+        }
+        return input;
 
     } else {
         return ''

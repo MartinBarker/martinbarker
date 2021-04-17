@@ -41,6 +41,24 @@
             </div>
         </div>
 
+       <!-- loading spinner -->
+        <div style='display: none;' id='loading'><div class="loader"></div><a>Loading...</a></div>
+        <style>
+            .loader {
+                border: 10px solid #f3f3f3; /* Light grey */
+                border-top: 10px solid #3498db; /* Blue */
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                animation: spin 1s linear infinite;
+                }
+
+                @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+                }
+        </style>
+
         <!-- new tagger output -->
         <hr>
         <h3>Timestamped Tracklist:</h3>
@@ -293,6 +311,7 @@
         <h3>Changelog:</h3>
         <div class="container" style='padding-right:0;margin-left:0;margin-right:0;'>
             <ul>
+                <li>04/17/2021: Added loading spinner when tags are being generated, changed artist tags generation system so that tags for each artist are organized smarter.</li>
                 <li>11/18/2020: tagger.site now accepts a Discogs URL as input by appending the Discogs URL after tagger.site. So If you visit <a class='hoverURLClassBody' href='https://tagger.site/https://www.discogs.com/New-Golden-Wings-Its-Rough-Its-Tough/release/5390422'>https://tagger.site/https://www.discogs.com/New-Golden-Wings-Its-Rough-Its-Tough/release/5390422</a> it will have the Discogs data already generated when the page loads.</li>
                 <li>11/17/2020: .cue files now work for generating a timestamped tracklist, and I improved the error handling for <a class='hoverURLClassBody' href='https://www.discogs.com/New-Golden-Wings-Its-Rough-Its-Tough/release/5390422'>release URLs like this</a> which have a broken artist page. </li>
             </ul>
