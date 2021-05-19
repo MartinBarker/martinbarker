@@ -161,6 +161,86 @@ app.get('/audio-archiver', async function (req, res) {
   });
 })
 
+
+
+//betterspotify routes
+
+
+app.get(/^\/betterspotify(.*)/, async function (req, res) {
+  var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+  var lastRoute = fullUrl.substr(fullUrl.lastIndexOf('/')+1)
+  //console.log('fullUrl = ', fullUrl, ', lastRoute=', lastRoute)
+
+  if(lastRoute=='login'){
+    //console.log('redirect to /login/ route')
+    var scopes = 'user-read-playback-position user-read-currently-playing user-modify-playback-state user-read-playback-state streaming app-remote-control user-library-modify user-library-read playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative';
+    var my_client_id = '199c96b7d70f4dd28f188f9c6bc86045';
+    var redirect_uri = 'http://localhost:8080/betterspotify';
+    
+    res.redirect('https://accounts.spotify.com/authorize' +
+      '?response_type=code' +
+      '&client_id=' + my_client_id +
+      (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
+      '&redirect_uri=' + encodeURIComponent(redirect_uri));
+
+  }else{
+    let spotifyAuthCode = '';
+    if(fullUrl.includes('?code=')){
+      spotifyAuthCode = fullUrl.substr(fullUrl.lastIndexOf('?code=')+7);
+      console.log('spotifyAuthCode=',spotifyAuthCode);
+      spotifyAPex(spotifyAuthCode)
+    }
+
+    res.render('betterspotify', {
+      spotifyAuthCode:spotifyAuthCode,
+      layout: '',
+    });
+  }
+})
+
+app.get('/api/:version', function(req, res) {
+  res.send(req.params.version);
+});
+
+app.get('/login', function(req, res) {
+  var scopes = 'user-read-playback-position user-read-currently-playing user-modify-playback-state user-read-playback-state streaming app-remote-control user-library-modify user-library-read playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative';
+  var my_client_id = '199c96b7d70f4dd28f188f9c6bc86045';
+  var redirect_uri = 'http://localhost:8080/betterspotify';
+  
+  res.redirect('https://accounts.spotify.com/authorize' +
+    '?response_type=code' +
+    '&client_id=' + my_client_id +
+    (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
+    '&redirect_uri=' + encodeURIComponent(redirect_uri));
+
+  });
+
+async function spotifyAPex(token){
+  var SpotifyWebApi = require('spotify-web-api-node');
+
+  var spotifyApi = new SpotifyWebApi();
+  
+  // Set all credentials at the same time
+  spotifyApi.setCredentials({
+    accessToken: `${token}`,
+    redirectUri: 'https://localhost:8080/betterspotify',
+    'clientId ': '199c96b7d70f4dd28f188f9c6bc86045',
+    clientSecret: '7402b3a32bf14e6dbef22204dece674c'
+  });
+
+  spotifyApi.setAccessToken(`${token}`);
+
+  // Get Elvis' albums
+  spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE').then(
+    function(data) {
+      console.log('Artist albums', data.body);
+    },
+    function(err) {
+      console.error(err);
+    }
+  );
+}
+
 //popularify route
 app.get('/popularify', async function (req, res) {
   //get color Data
