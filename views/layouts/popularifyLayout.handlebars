@@ -49,7 +49,11 @@
     <!--{{{body}}}-->
     <h3>Login:</h3><a href="/spotifyLogin" class="button">Login</a>
 
+    <br>
     loggedIn={{loggedIn}}
+    <br>
+    access_token=<div id='access_token'>{{access_token}}</div>
+    <br>
 
     <h3>Enter Spotify Artist URI</h3>
     <input size="22" type="text" placeholder='Spotify URI' name="url" id="uriInput">
@@ -79,6 +83,7 @@
                 url: '/spotifyApi',
                 data: {
                     uri: uri,
+                    access_token: document.getElementById('access_token').innerText
                 },
             }).then((resp) => {
                 //if (resp.status == 400) {

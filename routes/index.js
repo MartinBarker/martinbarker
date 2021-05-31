@@ -479,10 +479,13 @@ app.get('/callback', async (req, res) => {
   const code = req.query.code;
   const state = req.query.state;
   
+  //log user in, get access_token and refresh_code
   let resp = await spotifyApiLogic.authenticate(error, code, state)
+
   res.render('popularifyBody', {
     layout: 'popularifyLayout',
-    loggedIn: 'true'
+    loggedIn: 'true',
+    access_token: resp.access_token
   });
 
 });
@@ -490,14 +493,18 @@ app.get('/callback', async (req, res) => {
 //spotifyAPI
 app.post('/spotifyApi', async function (req, res) {
   //get vars 
-  let uri = req.body.uri;
-  console.log('/spotifyApi uri=',uri)
-
-  //authenticate
-  let access_token="BQDwBHOOcFhBK56rjjcSWO4BRISenGkasCAfi3fEx_IktKpz0vkJ13YRtNmRpq_YCqMAG6HrFJa_RtFnT95IjAX7SrnRbuyMz_7L5cqZT0Zw8ZJEpIoB7zx8l3NS4jZBX3Ie1iJ5WrWRy8LttTHhGBF114g1Z9d3idlqvWMW77BPx1usLmytIQtu-gMc4pzt0UsNvtRVTy-VChtMoDAwbjbZyVkSpbCLNEhdH283W6z5VyQmzfoLqhQrvxGCGtvtNYlvr-gROL7BTTc0NBSJeqZpldU0VvNrKA"
-  let refresh_token="AQAqHqFsc6O-fsqvgIIqb5w83pULWOyAb0TyCet_C27iGEGD9IOlrhfAxpcdUHJwPv3ldmz7vpwuRXRG0b2AyA_dVwS7pFUiMpxyiaZA6o-_Qgvs_uGAsp9hzIub2dF0akg"
-
-  res.status(200).send(['a','b','c'])
+  let uri = req.body.uri.replace('spotify:artist:', '');
+  let access_token = req.body.access_token;
+  //use api to get data
+  let artistAlbums=[]
+  try{
+    //uri='spotify:artist:0IbLwpihllhH3E9bRPCOmJ'
+    artistAlbums = await spotifyApiLogic.getAllArtistAlbums(uri)
+    //artistAlbums = await spotifyApiLogic.createPlaylist('myPlaylistName', "description", "public", access_token)
+  }catch(err){
+    artistAlbums=[];
+  }
+  res.status(200).send(artistAlbums)
 });
 
 //get discogs api info
