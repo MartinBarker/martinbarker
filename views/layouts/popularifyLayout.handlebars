@@ -17,7 +17,11 @@
     <meta property="og:image" content='{{ previewCardImage }}'/>
     -->
 
-    <!-- jQuery CDN - Slim version (=without AJAX) -->
+    <!-- jquery 
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script> -->
+    
+    <!-- jQuery CDN - Slim version (=without AJAX) --> 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
@@ -36,7 +40,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <!-- jQuery -->
+    <!-- jQuery  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
     <!-- font-awesome -->
@@ -44,9 +48,61 @@
 
 </head>
 
+<style>
+    .border {
+        border-style:solid;
+        border-color:#000000;
+    }
+
+    .artistOption:hover{
+        background:red;
+        cursor: pointer;
+
+    }
+</style>
+
 <!-- Page Content -->
-<div>
-    <!--{{{body}}}-->
+<div style='text-align:center'>
+    <h3>Search For An Artist:</h3>
+    <br>
+    <input type="text" id="artistSearch"><button id='artistSearchButton'>Search</button>
+    <!-- artist search results -->
+    <div id="artistSearchResults" class="container">
+        Search for an artist
+        <!--
+        <div class="row">
+
+            <div class='col w-100 border' style='' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/20e9df2d06b192592c59517f7b5995be152c23cb">  
+                </div> 
+               
+                <div style="font-size:2vh; float:left;" >
+                    <p>Kraftwerk, Popularity: 92</p>  
+                </div>
+                             
+            </div>
+            
+            <div class="w-100"></div>
+         
+            <div class='col w-100 border' style='' artistid="2F0lJ2JWs5nQovexPrd0nl">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="../../static/assets/img/spotifyArtistUnknown.jpg">  
+                </div> 
+            
+                <div style="text-align:left" >
+                    <h6>Kraftwerk2, Popularity: 2</h6>  
+                </div>
+                  
+            </div>
+            
+        
+        </div>
+        -->
+    </div>
+    
+
+    <br>
     <h3>Login:</h3><a href="/spotifyLogin" class="button">Login</a>
 
     <br>
@@ -97,8 +153,98 @@
         });
     }
 
+    //search spotify for artist, and get dropdown results
+    async function getArtistSearchResults(input){
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                type: 'POST',
+                url: '/spotifySearch',
+                data: {
+                    input: input,
+                },
+            }).then((resp) => {
+                resolve(resp)
+            }).catch((err) => {
+                reject(err)
+            });
+        });
+    }
+
+    //await formatArtistResultsAsHTML(artistSearchResults)
+    async function formatArtistResultsAsHTML(artistSearchResults){
+        return new Promise(function (resolve, reject) {
+            //sort data via popularity
+            artistSearchResults = artistSearchResults.sort((a, b) => parseFloat(b.popularity) - parseFloat(a.popularity));
+
+            //create row div
+            var rowDiv = document.createElement("div");
+            rowDiv.setAttribute('class', 'row')
+
+            //create col element for each artist search result
+            for(var x = 0; x < artistSearchResults.length; x++){
+                //get important data variables
+                let artistName = artistSearchResults[x].name;
+                let artistImg = "../../static/assets/img/spotifyArtistUnknown.jpg";
+                if(artistSearchResults[x].images.length >= 1){
+                    artistImg = artistSearchResults[x].images[0].url
+                }
+                let artistPopularity = artistSearchResults[x].popularity;
+                let artistId = artistSearchResults[x].id;
+                //construct html
+                
+                var colDiv = document.createElement("div");
+                colDiv.setAttribute('class', 'artistOption')
+                //colDiv.setAttribute('class', 'col-md-4')
+                colDiv.innerHTML = `
+                    <div onClick='chosenArtist("${artistId}")' class='col w-100 border' style='background:yellow;' artistId='${artistId}'>
+                        
+                        <div style="float:left;" >
+                            <img style='width:100px; height:100px;' class='img-fluid' src="${artistImg}">  
+                        </div> 
+
+                        <div style="font-size:2vh; float:left;" >
+                            <p>${artistName}, Popularity: ${artistPopularity}</p>  
+                        </div> 
+                                   
+                    </div>`;
+
+                var dividerDiv = document.createElement('div')
+                dividerDiv.setAttribute('class', 'w-100')
+                
+                //add col element to row element
+                rowDiv.appendChild(colDiv)
+                //add divider element
+                rowDiv.appendChild(dividerDiv)
+            }
+            //return constructed html
+            resolve(rowDiv)
+        })
+    }
+
+    async function chosenArtist(input){
+        console.log('chosenArtist = ', input)
+    }
+
     $(document).ready(function () {
-        console.log('page ready')
+
+        //artist search button is clicked
+        $( "#artistSearchButton" ).click(async function() {
+            
+            //get input text
+            let textInputField = document.getElementById('artistSearch').value;
+            console.log('searching for artists with name:', textInputField);
+
+            //make spotify api query for artists
+            let artistSearchResults = await getArtistSearchResults(textInputField)
+            console.log('artistSearchResults = ', artistSearchResults)
+            
+            //format artist results as html
+            let artistResultsHTML = await formatArtistResultsAsHTML(artistSearchResults)
+            console.log('artistResultsHTML=',artistResultsHTML)
+            //display html on page
+            document.getElementById('artistSearchResults').innerHTML = '';
+            document.getElementById('artistSearchResults').appendChild(artistResultsHTML)
+        });
     });
 
 </script>

@@ -507,6 +507,20 @@ app.post('/spotifyApi', async function (req, res) {
   res.status(200).send(artistAlbums)
 });
 
+//spotifySearch
+app.post('/spotifySearch', async function (req, res) {
+  //get vars 
+  let input = req.body.input;
+  //use api to get data
+  let searchResults = []
+  try{
+    searchResults = await spotifyApiLogic.searchForArtists(input); 
+  }catch(err){
+    searchResults=[];
+  }
+  res.status(200).send(searchResults)
+});
+
 //get discogs api info
 app.post('/discogsAPI', async function (req, res) {
   //get vars 

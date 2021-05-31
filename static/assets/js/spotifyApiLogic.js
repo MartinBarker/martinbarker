@@ -1,28 +1,78 @@
-//console.log('spotifyApiLogic.js')
-
 var SpotifyWebApi = require('spotify-web-api-node');
+const fs = require('fs');
+
+//api client for user
 var spotifyApi = new SpotifyWebApi({
-    clientId: 'f98aecb59dfa4336921925b2ea14857c',
-    clientSecret: '--',
-    redirectUri: 'http://localhost:8080/callback'
-  });
+  clientId: 'f98aecb59dfa4336921925b2ea14857c',
+  clientSecret: '--',
+  redirectUri: 'http://localhost:8080/callback'
+});
 
-//keep refreshing martinbarker credentials
-//keepRefreshingMyCredentials()
-async function keepRefreshingMyCredentials(){
-  let martin_access_token = 'BQDyJ5limQu_Vzie6FvGyaHrlHjlBEeZDwSgvInXNMhwKcx4cNS4JmaxMRN7iX2nyTSmRuofIBYU2MpVu51hUOZrkcgbIxHdNlkUucLb1szwTda9uUk1DrF0oW2VNGQOr-QQXY34CkCvN7MYwgr-BoLAQ01WRFcaq1jW3qrB5vPX2MnPaEUtS23zi43TvFiGoUUMD6xJAoJqHXxPTHr002JlUU4XF1wBe4L87bvrlHKBv2eN0KB1zpLc5OQHz51eAaRneRtfUr2LE4WQnaaojV-yTR3lZ90Fgg'
-  let martin_refresh_token = 'AQDorlz41LATgAuGj81nuYw3Z7EnPFzuxsCfMU2PjbJlTMHmfChEJZUbQUv5FEljFiftuCZxGnto8RAtnVJt__UL4nGVQ1lc-xnYZoYvfxilz1ubeUPDvu9wh0HVbx2GINo'
-  setInterval(async () => {
-    const data = await spotifyApi.refreshAccessToken();
-    const access_token = data.body['access_token'];
+//api client for me (martin) that always works and is always refreshed
+var spotifyApiMartin = new SpotifyWebApi({
+  clientId: 'f98aecb59dfa4336921925b2ea14857c',
+  clientSecret: '--',
+  redirectUri: 'http://localhost:8080/callback'
+});
+//store access_token and refresh_token for martin spotify auth in json file
+let spotifyApiMartinCredsRaw = fs.readFileSync('static/assets/json/spotifyApiMartinCreds.json');
+let spotifyApiMartinCreds = JSON.parse(spotifyApiMartinCredsRaw);
 
-    console.log('The access token has been refreshed!');
-    console.log('access_token:', access_token);
-    spotifyApi.setAccessToken(access_token);
-  }, expires_in / 2 * 1000);
-
+var spotifyApiMartinCreds_old = {
+  access_token: 'BQAme9I2Hwwgdf2NUXmGxx7YqdzkeutU0BUJfUPe0V4fpCR__Ap82xaaWKhdnbEeJ2HccQVewcb2plqGsh75LwjFlXg_Qvmk9a_4GQl4sFikOfnV_AtnOssbG4zR2hwrBNmy3XaijabWJV-xmwmq1D0OR9LoMk5jeBICyLzQdl01CLLa1ZTbMyLHAlxMxzIDt5_4CCzUUcIlHlQ6MCWstXUbb6Ekw0Wj62E6_sl9sgB12rCxnECQULH86eggeEePA0beH7MRU0tCAEpV-XT9qWcyF50z5tXSzA',
+  refresh_token: 'AQCTq48SwYmrtgeqZ6YgP4Gcusa6czcS7D-VugMKMHFxxdxvGfgIDiG-TVjg2jRDm5zLx_qIHYCLNHRQzIeK7SHAtizhHwXimW6_kFILPh8WO1jqDV4UZderNj740a-v0kE',
 }
 
+//keep refreshing spotifyApiMartin credentials
+keepRefreshingMyCredentials()
+async function keepRefreshingMyCredentials(){
+  try{
+    spotifyApiMartin.setAccessToken(spotifyApiMartinCreds.access_token);
+    spotifyApiMartin.setRefreshToken(spotifyApiMartinCreds.refresh_token);
+    var expires_in = 60
+    setInterval(async () => {
+      const data = await spotifyApiMartin.refreshAccessToken();
+      expires_in = data.body['expires_in'];
+      const access_token = data.body['access_token'];
+
+      //console.log('spotifyApiMartin() The access token has been refreshed!');
+      //console.log('spotifyApiMartin() access_token:', access_token);
+      //console.log('spotifyApiMartin() expires_in:', expires_in);
+      spotifyApiMartinCreds.access_token = access_token;
+      spotifyApiMartin.setAccessToken(access_token);
+
+    }, expires_in / 2 * 1000);
+  }catch(err){
+    console.log(`There was an error authenticating spotifyApiMartin, maybe update spotifyApiMartinCreds. err=`, err)
+    reAuthenticateMartin()
+  }
+}
+
+async function reAuthenticateMartin(){
+  const data = await spotifyApiMartin.refreshAccessToken();
+  console.log('reAuthenticateMartin()')
+  expires_in = data.body['expires_in'];
+  const access_token = data.body['access_token'];
+  //const refresh_token = data.body['refresh_token'];
+
+  console.log('reAuthenticateMartin() expires_in:', expires_in);
+  console.log('reAuthenticateMartin() access_token:', access_token);
+  //console.log('reAuthenticateMartin() refresh_token:', refresh_token);
+
+  //write new access_token in json file
+  //spotifyApiMartinCreds.access_token = access_token;
+
+  let spotifyApiMartinCredsNew = {
+    "access_token": access_token,
+    "refresh_token": spotifyApiMartinCreds.refresh_token
+  }
+  let spotifyApiMartinCredsNewJson = JSON.stringify(spotifyApiMartinCredsNew);
+  fs.writeFileSync('static/assets/json/spotifyApiMartinCreds.json', spotifyApiMartinCredsNewJson);
+  
+  spotifyApiMartin.setAccessToken(access_token);
+}
+
+//authenticate user who wants to sign in 
 async function authenticate(error, code, state){
   return new Promise(async function (resolve, reject) {
     if (error) {
@@ -152,7 +202,6 @@ async function getAlbumTracks(albumURI, offset=0){
   })
 }
 
-
 async function getArtistAlbums(artistURI, offset=0){
   return new Promise(async function (resolve, reject) {
     // Get albums by a certain artist
@@ -166,8 +215,32 @@ async function getArtistAlbums(artistURI, offset=0){
   })
 }
 
+async function searchForArtists(input){
+  console.log('searchForArtists() ', input)
+  return new Promise(async function (resolve, reject) {
+
+    spotifyApiMartin.searchArtists(input)
+    .then(function(data) {
+      //console.log('Search artists:', data.body);
+      resolve(data.body.artists.items)
+    }, async function(err) {
+      console.error('searchForArtists(): ', err);
+      if(err.statusCode==401){
+        console.log('reauthenticate needed')
+        reAuthenticateMartin()
+        resolve(await searchForArtists(input))
+        //let queryAgain = await searchForArtists(input)
+        //resolve(queryAgain)
+      }
+      reject(err)
+    });
+
+  })
+}
+
 module.exports = {
     authenticate: authenticate,
     createRedirectURL: createRedirectURL,
     getAllArtistAlbums: getAllArtistAlbums,
+    searchForArtists: searchForArtists
 };
