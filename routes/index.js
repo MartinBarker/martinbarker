@@ -8,6 +8,8 @@ const Post = require('../database/models/Post.js');
 //connect to mongodb
 var mongodbutil = require('../static/assets/js/mongodbutils');
 var db = mongodbutil.getDb();
+//spotify api file
+var spotifyApiLogic = require('../static/assets/js/spotifyApiLogic');
 
 //global vars
 allBlogPosts = []
@@ -160,78 +162,6 @@ app.get('/audio-archiver', async function (req, res) {
     DarkMuted: colorData.colors['DarkMuted'].hex,
   });
 })
-
-//popularify route
-app.get('/popularify', async function (req, res) {
-  //get color Data
-  let colorData = await getColorData();
-  //get blog posts
-  let displayPosts = await getPostsDisplay(colorData.colors['LightMuted'].hex, req.params.id, getReadableTextColor(colorData.colors['LightMuted'].rgb))
-  //create colorObj
-  let colorsObj = await createColorObj(colorData);
-
-  res.render('popularify', {
-    //template layout to use
-    layout: 'mainTemplate',
-    //page title of tab
-    pageTitle: 'popularify.site',
-    //page tab icon
-    icon: 'https://cdn4.iconfinder.com/data/icons/48-bubbles/48/06.Tags-512.png',
-    //shareable preview-cart metadata
-    previewCardTitle:'Popularify',
-    previewCardUrl:'http://www.popularify.site',
-    previewCardWebsite:'website',
-    previewCardDescription:'',
-    previewCardImage:'../static/assets/img/headshot.jpg',
-    //expand projects tab
-    projects: 'active',
-    //set active current tab
-    popularify: 'active',
-    //body content title 
-    pageBodyNavTitle: 'Popularify',
-    //body content github link
-    pageBodyNavGithub: 'https://github.com/MartinBarker/martinbarker/pull/10',
-    //list to display for navbar 'Blog' options
-    posts: displayPosts,
-    //color info
-    colorsObj:colorsObj,
-    colorsStr:JSON.stringify(colorsObj),
-    imgPath: '/' + colorData.imgPath,
-    imgSrcUrl: colorData.imgSrc,
-    imgListen: colorData.imgListen,
-    Vibrant: colorData.colors['Vibrant'].hex,
-    LightVibrant: colorData.colors['LightVibrant'].hex,
-    DarkVibrant: colorData.colors['DarkVibrant'].hex,
-    Muted: colorData.colors['Muted'].hex,
-    LightMuted: colorData.colors['LightMuted'].hex,
-    DarkMuted: colorData.colors['DarkMuted'].hex,
-  });
-})
-
-//popularify spotify api route
-app.post('/popularifyRequest', async function (req, res) {
-  console.log("/popularifyRequest req.body=", req.body)
-
-  var SpotifyWebApi = require('spotify-web-api-node');
-
-  // credentials are optional
-  var spotifyApi = new SpotifyWebApi({
-    clientId: 'f80489d0401f431b9ce0b7bff0244248',
-    clientSecret: 'b7ec06f77e2340ec939882b267a3f178',
-    redirectUri: 'https://masterb-j2xzapyrnq-uc.a.run.app/popularify'
-  });
-
-  // Get Elvis' albums
-  spotifyApi.getArtistAlbums('5fAix5NwfNgHQqYRrHIPxo').then(
-    function (data) {
-      res.send(data.body);
-    },
-    function (err) {
-      res.send(err);
-    }
-  );
-
-});
 
 //redirect discogstagger to tagger
 app.get('/discogstagger', async function (req, res) {
@@ -527,6 +457,47 @@ app.post('/getColors', async function (req, res) {
   //create colorObj
   let colorsObj = await createColorObj(colorData);
   res.send(colorsObj)
+});
+
+/*
+  Popularify / Spotify API routes
+*/
+//popularify route
+app.get('/popularify', async function (req, res) {
+  res.render('popularifyBody', {
+    layout: 'popularifyLayout',
+  });
+})
+
+app.get('/spotifyLogin', async function (req, res) {
+  let redirectURL = await spotifyApiLogic.createRedirectURL()
+  res.redirect(redirectURL);
+})
+
+app.get('/callback', async (req, res) => {
+  const error = req.query.error;
+  const code = req.query.code;
+  const state = req.query.state;
+  
+  let resp = await spotifyApiLogic.authenticate(error, code, state)
+  res.render('popularifyBody', {
+    layout: 'popularifyLayout',
+    loggedIn: 'true'
+  });
+
+});
+
+//spotifyAPI
+app.post('/spotifyApi', async function (req, res) {
+  //get vars 
+  let uri = req.body.uri;
+  console.log('/spotifyApi uri=',uri)
+
+  //authenticate
+  let access_token="BQDwBHOOcFhBK56rjjcSWO4BRISenGkasCAfi3fEx_IktKpz0vkJ13YRtNmRpq_YCqMAG6HrFJa_RtFnT95IjAX7SrnRbuyMz_7L5cqZT0Zw8ZJEpIoB7zx8l3NS4jZBX3Ie1iJ5WrWRy8LttTHhGBF114g1Z9d3idlqvWMW77BPx1usLmytIQtu-gMc4pzt0UsNvtRVTy-VChtMoDAwbjbZyVkSpbCLNEhdH283W6z5VyQmzfoLqhQrvxGCGtvtNYlvr-gROL7BTTc0NBSJeqZpldU0VvNrKA"
+  let refresh_token="AQAqHqFsc6O-fsqvgIIqb5w83pULWOyAb0TyCet_C27iGEGD9IOlrhfAxpcdUHJwPv3ldmz7vpwuRXRG0b2AyA_dVwS7pFUiMpxyiaZA6o-_Qgvs_uGAsp9hzIub2dF0akg"
+
+  res.status(200).send(['a','b','c'])
 });
 
 //get discogs api info

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Popularify</title>
+
+    <!--<link rel='icon' href='{{ icon }}' type='image/x-icon' />
+    <meta property="og:title" content='{{ previewCardTitle }}'/>
+    <meta property="og:url" content='{{ previewCardUrl }}'/>
+    <meta property="og:type" content='{{ previewCardWebsite }}'/>
+    <meta property="og:description" content='{{ previewCardDescription }}'/> 
+    <meta property="og:image" content='{{ previewCardImage }}'/>
+    -->
+
+    <!-- jQuery CDN - Slim version (=without AJAX) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
+        integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+        crossorigin="anonymous"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
+        integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+        crossorigin="anonymous"></script>
+
+    <!-- bootstrap css-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+    <!-- font-awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<!-- Page Content -->
+<div>
+    <!--{{{body}}}-->
+    <h3>Login:</h3><a href="/spotifyLogin" class="button">Login</a>
+
+    loggedIn={{loggedIn}}
+
+    <h3>Enter Spotify Artist URI</h3>
+    <input size="22" type="text" placeholder='Spotify URI' name="url" id="uriInput">
+    <button style="cursor: pointer;" name="data" type="button" onclick="submitUri(document.getElementById('uriInput').value); ">Submit</button>
+
+</div>
+
+<script type="text/javascript">
+
+    //when uri button is submitted
+    async function submitUri(uri){
+        uri='spotify:artist:3x3jSlhyv5CiCZDZlaTq0M'
+        console.log('submitUri() uri = ', uri)
+        try{
+            let artistData = await getArtistData(uri)
+            console.log('submitUri() artistData=',artistData)
+        }catch(err){
+            console.log('submitUri() err=',err)
+        }
+    }
+
+    //get artist data sorted by popularitty
+    async function getArtistData(uri){
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                type: 'POST',
+                url: '/spotifyApi',
+                data: {
+                    uri: uri,
+                },
+            }).then((resp) => {
+                //if (resp.status == 400) {
+                //    console.log('/discogsAPI res.status=400, resp = ', resp)
+                //}
+                resolve(resp)
+            }).catch((err) => {
+                console.log('getArtistData() err = ', err)
+                reject(err)
+            });
+        });
+    }
+
+    $(document).ready(function () {
+        console.log('page ready')
+    });
+
+</script>
+
+</html>
