@@ -4,14 +4,14 @@ const fs = require('fs');
 //api client for user
 var spotifyApi = new SpotifyWebApi({
   clientId: 'f98aecb59dfa4336921925b2ea14857c',
-  clientSecret: '--',
+  clientSecret: '-',
   redirectUri: 'http://localhost:8080/callback'
 });
 
 //api client for me (martin) that always works and is always refreshed
 var spotifyApiMartin = new SpotifyWebApi({
   clientId: 'f98aecb59dfa4336921925b2ea14857c',
-  clientSecret: '--',
+  clientSecret: '-',
   redirectUri: 'http://localhost:8080/callback'
 });
 //store access_token and refresh_token for martin spotify auth in json file

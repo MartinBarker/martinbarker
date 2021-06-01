@@ -59,61 +59,259 @@
         cursor: pointer;
 
     }
+
+    .artistRowText{
+        font-size:25px;
+    }
+
+    .artistColText{
+        text-align: center;
+    }
+
+    .artistCol:hover{
+        background:rgb(206, 205, 205);
+        cursor: pointer;
+    }
+
 </style>
 
 <!-- Page Content -->
 <div style='text-align:center'>
-    <h3>Search For An Artist:</h3>
-    <br>
-    <input type="text" id="artistSearch"><button id='artistSearchButton'>Search</button>
+
+    <!-- header -->
+    <div id='header' style='display:block;'>
+        <h3>Search For An Artist:</h3>
+        <br>
+        <input type="text" id="artistSearch"><button id='artistSearchButton'>Search</button>
+        <br> <br>
+    </div>
+    
     <!-- artist search results -->
-    <div id="artistSearchResults" class="container">
-        Search for an artist
-        <!--
+    <div id="artistSearchResults" class="container" style='display:block;'>
+        
         <div class="row">
 
-            <div class='col w-100 border' style='' artistid="0dmPX6ovclgOy8WWJaFEUU">
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
                 <div style="float:left;" >
-                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/20e9df2d06b192592c59517f7b5995be152c23cb">  
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
                 </div> 
-               
-                <div style="font-size:2vh; float:left;" >
-                    <p>Kraftwerk, Popularity: 92</p>  
-                </div>
-                             
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
+            </div>
+            
+            <div class="w-100"></div>
+
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                </div> 
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
             </div>
             
             <div class="w-100"></div>
          
-            <div class='col w-100 border' style='' artistid="2F0lJ2JWs5nQovexPrd0nl">
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
                 <div style="float:left;" >
-                    <img style='width:100px; height:100px;' class='img-fluid' src="../../static/assets/img/spotifyArtistUnknown.jpg">  
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
                 </div> 
-            
-                <div style="text-align:left" >
-                    <h6>Kraftwerk2, Popularity: 2</h6>  
-                </div>
-                  
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
+            </div>
+            <div class="w-100"></div>
+
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                </div> 
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
             </div>
             
-        
+            <div class="w-100"></div>
+         
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                </div> 
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
+            </div>
+            
+            <div class="w-100"></div>
+
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                </div> 
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
+            </div>
+            
+            <div class="w-100"></div>
+         
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                </div> 
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
+            </div>
+            <div class="w-100"></div>
+
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                </div> 
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
+            </div>
+            
+            <div class="w-100"></div>
+         
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                </div> 
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
+            </div>
+            <div class="w-100"></div>
+
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                </div> 
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
+            </div>
+            
+            <div class="w-100"></div>
+         
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                </div> 
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
+            </div>
+            
+            <div class="w-100"></div>
+
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                </div> 
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
+            </div>
+            
+            <div class="w-100"></div>
+         
+            <div class='col w-100 border artistCol' artistid="0dmPX6ovclgOy8WWJaFEUU">
+                <div style="float:left;" >
+                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                </div> 
+                <div class='col artistColText'>
+                    <div class='row artistRowText' >
+                        Pink Floyd
+                    </div>
+                    <div class='row artistRowText'>
+                        Popularity: 77
+                    </div>
+                </div>         
+            </div>
+            
         </div>
-        -->
     </div>
     
+    <!-- footer -->
+    <div id='footer' style='display:block;'>
+        <br>
+        <h3>Login:</h3><a href="/spotifyLogin" class="button">Login</a>
 
-    <br>
-    <h3>Login:</h3><a href="/spotifyLogin" class="button">Login</a>
+        <br>
+        loggedIn={{loggedIn}}
+        <br>
+        access_token=<div id='access_token'>{{access_token}}</div>
+        <br>
 
-    <br>
-    loggedIn={{loggedIn}}
-    <br>
-    access_token=<div id='access_token'>{{access_token}}</div>
-    <br>
-
-    <h3>Enter Spotify Artist URI</h3>
-    <input size="22" type="text" placeholder='Spotify URI' name="url" id="uriInput">
-    <button style="cursor: pointer;" name="data" type="button" onclick="submitUri(document.getElementById('uriInput').value); ">Submit</button>
+        <h3>Enter Spotify Artist URI</h3>
+        <input size="22" type="text" placeholder='Spotify URI' name="url" id="uriInput">
+        <button style="cursor: pointer;" name="data" type="button" onclick="submitUri(document.getElementById('uriInput').value); ">Submit</button>
+    </div>
 
 </div>
 
@@ -217,6 +415,8 @@
                 rowDiv.appendChild(dividerDiv)
             }
             //return constructed html
+            //var tempReturn = document.createElement("div");
+            //tempReturn.innerText = 'temp'
             resolve(rowDiv)
         })
     }
@@ -226,6 +426,10 @@
     }
 
     $(document).ready(function () {
+        //artist row is clicked
+        $('.artistCol').click(function(e){
+            console.log('artistCol() clicked, artistid=', $(this).attr('artistid'))
+        });
 
         //artist search button is clicked
         $( "#artistSearchButton" ).click(async function() {
