@@ -507,7 +507,7 @@ app.post('/spotifyApi', async function (req, res) {
   res.status(200).send(artistAlbums)
 });
 
-//spotifySearch
+//search spotify for artist, return results
 app.post('/spotifySearch', async function (req, res) {
   //get vars 
   let input = req.body.input;
@@ -519,6 +519,20 @@ app.post('/spotifySearch', async function (req, res) {
     searchResults=[];
   }
   res.status(200).send(searchResults)
+});
+
+//get all tracks for an artist sorted by popularity
+app.post('/generatePopularifyData', async function (req, res) {
+  //get artist id
+  let id = req.body.id;
+  //use api to get data
+  let popularifyData = []
+  try{
+    popularifyData = await spotifyApiLogic.generatePopularifyData(id); 
+  }catch(err){
+    popularifyData=[];
+  }
+  res.status(200).send(popularifyData)
 });
 
 //get discogs api info

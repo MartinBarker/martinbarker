@@ -1,17 +1,19 @@
 var SpotifyWebApi = require('spotify-web-api-node');
 const fs = require('fs');
 
+var userIsAuthenticated = false;
+
 //api client for user
 var spotifyApi = new SpotifyWebApi({
   clientId: 'f98aecb59dfa4336921925b2ea14857c',
-  clientSecret: '-',
+  clientSecret: process.env.clientSecret,
   redirectUri: 'http://localhost:8080/callback'
 });
 
 //api client for me (martin) that always works and is always refreshed
 var spotifyApiMartin = new SpotifyWebApi({
   clientId: 'f98aecb59dfa4336921925b2ea14857c',
-  clientSecret: '-',
+  clientSecret: process.env.clientSecret,
   redirectUri: 'http://localhost:8080/callback'
 });
 //store access_token and refresh_token for martin spotify auth in json file
@@ -180,9 +182,9 @@ async function getAllArtistAlbums(artistURI){
 async function getTrackInfo(trackId){
   return new Promise(async function (resolve, reject) {
   /* Get Audio Features for a Track */
-  spotifyApi.getTrack(trackId)
+  spotifyApiMartin.getTrack(trackId)
     .then(function(data) {
-      console.log(data.body);
+      //console.log(data.body);
       resolve(data.body)
     }, function(err) {
       done(err);
@@ -192,9 +194,9 @@ async function getTrackInfo(trackId){
 
 async function getAlbumTracks(albumURI, offset=0){
   return new Promise(async function (resolve, reject) {
-    spotifyApi.getAlbumTracks(albumURI, { offset: offset })
+    spotifyApiMartin.getAlbumTracks(albumURI, { offset: offset })
     .then(function(data) {
-      console.log('album tracks:', data.body);
+      //console.log('album tracks:', data.body);
       resolve(data.body)
     }, function(err) {
       console.log('Something went wrong!', err);
@@ -205,7 +207,14 @@ async function getAlbumTracks(albumURI, offset=0){
 async function getArtistAlbums(artistURI, offset=0){
   return new Promise(async function (resolve, reject) {
     // Get albums by a certain artist
-    spotifyApi.getArtistAlbums(artistURI, { offset : offset }).then(function(data) {
+    var useThisSpotifyApi;
+    if(userIsAuthenticated){
+      useThisSpotifyApi = spotifyApi;
+    }else{
+      useThisSpotifyApi = spotifyApiMartin
+    }
+    //spotifyApi or spotifyApiMartin ?
+    useThisSpotifyApi.getArtistAlbums(artistURI, { offset : offset }).then(function(data) {
       resolve(data.body)
     }, function(err) {
       console.error(err);
@@ -238,9 +247,32 @@ async function searchForArtists(input){
   })
 }
 
+//generate popularify data (sort all tracks from artist by popularity)
+async function generatePopularifyData(id){
+  return new Promise(async function (resolve, reject) {
+    let popularifyData = []
+    try{
+      popularifyData=['temp']
+      //get every album / release / single  / appearance from artist 
+      let artistAlbums = await getAllArtistAlbums(id, 0) //spotify:artist:42tN6kVgx34E0Oqk2nef4g
+      
+      //get all tracks sorted by popularity
+
+      //return formatted data
+      popularifyData=artistAlbums;
+      
+    }catch(err){
+      popularifyData=['err']
+    }
+
+    resolve(popularifyData)
+  })
+}
+
 module.exports = {
     authenticate: authenticate,
     createRedirectURL: createRedirectURL,
     getAllArtistAlbums: getAllArtistAlbums,
-    searchForArtists: searchForArtists
+    searchForArtists: searchForArtists,
+    generatePopularifyData: generatePopularifyData
 };
