@@ -1,5 +1,6 @@
 var SpotifyWebApi = require('spotify-web-api-node');
 const fs = require('fs');
+const { Console } = require('console');
 
 var userIsAuthenticated = false;
 
@@ -169,13 +170,24 @@ async function getAllArtistAlbums(artistURI){
       body = await getArtistAlbums(artistURI, albums.length)
       albums = albums.concat(body.items)
     }
-    console.log('getAllArtistAlbums() finished, found all albums:', albums.length)
+    console.log(`getAllArtistAlbums() found ${albums.length} albums`)
 
-    let albumTracks = await getAlbumTracks(albums[0].id, 0)
+    //get all tracks for each album
+    var allAlbumsAllTracks = []
+    for(var x = 0; x < albums.length; x++){
+      let albumTracks = await getAllAlbumTracks(albums[0].id)
+      allAlbumsAllTracks=allAlbumsAllTracks.concat(albumTracks)
+    }
 
-    let trackInfo = await getTrackInfo(albumTracks.items[0].id)
+    //for each track, get additional track info (popularity)
+    let allTracks = [];
+    for(var z = 0; z < allAlbumsAllTracks.length; z++){
+      console
+      let trackInfo = await getTrackInfo(allAlbumsAllTracks[0].id)
+      allTracks=allTracks.concat(trackInfo)
+    }
 
-    resolve(trackInfo)
+    resolve(allTracks)
   })
 }
 
@@ -187,8 +199,25 @@ async function getTrackInfo(trackId){
       //console.log(data.body);
       resolve(data.body)
     }, function(err) {
-      done(err);
+      reject(err);
     });
+  })
+}
+
+async function getAllAlbumTracks(albumURI){
+  return new Promise(async function (resolve, reject) {
+    //make initial query to get tracks in an album
+    let body = await getAlbumTracks(albumURI, 0)
+    //get tracks
+    let tracks = body.items
+    //get total number of tracks in this album
+    let total = body.total;
+    //while there are more tracks to get from an album
+    while(tracks.length < total){
+      let moreTracks = await getAlbumTracks(albumURI, tracks.length)
+      tracks = tracks.concat(moreTracks.items)
+    }
+    resolve(tracks)
   })
 }
 
@@ -260,7 +289,7 @@ async function generatePopularifyData(id){
 
       //return formatted data
       popularifyData=artistAlbums;
-      
+
     }catch(err){
       popularifyData=['err']
     }

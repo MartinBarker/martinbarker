@@ -392,6 +392,7 @@
             searchVal=searchVal.trim();
             //verify search value is not blank
             if(searchVal != "" && searchVal != " " && searchVal != null){
+                $('#artistSearchResults').show();
                 console.log('text input changed: ', searchVal);
                 //display loading 
                 $("#artistSearchLoading").show();
@@ -401,6 +402,10 @@
                 //once query is done, hide loading and set artistSearchInProgress = false
                 $("artistSearchLoading").hide();
                 artistSearchInProgress=false;
+            }else{
+                console.log('empty?')
+                //search box is empty so hide search results
+                $('#artistSearchResults').hide();
             }
         });
 
