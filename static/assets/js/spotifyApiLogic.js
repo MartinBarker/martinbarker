@@ -159,66 +159,130 @@ async function createRedirectURL(){
 
 async function getAllArtistAlbums(artistURI){
   return new Promise(async function (resolve, reject) {
-    // make initial request to Get albums by a certain artist
+    ////////////////////////////////////
+    // Get all artist album ids
+    ////////////////////////////////////
     let total, itemsCount, count, totalCount = 0;
-    let albums = []
-
+    //make initial query to get artist album ids
     let body = await getArtistAlbums(artistURI, 0)
-    albums = body.items
+    let albumIds = body.items
     itemsCount = body.items.length;
     count = itemsCount + totalCount;
     total = body.total;
-
+    //make additional queries if needed
     console.log(`getAllArtistAlbums() Need to get data for ${total} albums`);
-    while(albums.length < total){
-      //console.log(`getAllArtistAlbums() need to get more. albums.length=${albums.length}, total=${total}`)
-      body = await getArtistAlbums(artistURI, albums.length)
-      albums = albums.concat(body.items)
+    while(albumIds.length < total){
+      body = await getArtistAlbums(artistURI, albumIds.length)
+      albumIds = albumIds.concat(body.items)
     }
-    console.log(`getAllArtistAlbums() found data for ${albums.length} albums`)
+    console.log(`getAllArtistAlbums() found data for ${albumIds.length} albums`)
 
-    //get all tracks for each album 20 albums at a time
+    ////////////////////////////////////
+    // Get info for each album 20 ids at a time
+    ////////////////////////////////////
     const promises=[];
-    var allAlbumsAllTracks = []
-    for(var x = 0; x < albums.length; x+=20){
+    let multipleAlbumsQueryLimit = 20;
+    for(var x = 0; x < albumIds.length; x+=multipleAlbumsQueryLimit){
       let start=x;
-      let end=x+20;
-      if(end>albums.length){
-        end=albums.length;
+      let end=x+multipleAlbumsQueryLimit;
+      if(end>albumIds.length){
+        end=albumIds.length;
       }
-      console.log(` getAllArtistAlbums()get data for albums ${start} to ${end}`)
       //slice list of albums we want to get info about
-      var albumsSliced = albums.slice(start, end).map(i => {
+      var albumsSliced = albumIds.slice(start, end).map(i => {
         return i.id;
       });
-      console.log(' getAllArtistAlbums() albumsSliced.length=',albumsSliced.length)
+      
+      //console.log(` getAllArtistAlbums() get data for ${albumsSliced.length} albums: ${start} to ${end}`)
       promises.push(await getMultipleAlbums(albumsSliced));
-      //var albumsInfo = await getMultipleAlbums(albumsSliced)
-      //console.log('getAllArtistAlbums() albumsInfo.length=',albumsInfo.length)
-
-  //    let albumTracks = await getAllAlbumTracks(albums[x].id)
-  //    allAlbumsAllTracks=allAlbumsAllTracks.concat(albumTracks)
     }
     //run promises to get album info
-    var promisesFinished = [];
-    promisesFinished = await Promise.all(promises);
-    //console.log('promisesFinished=',promisesFinished)
+    var promisesFinished = await Promise.all(promises);
+    //concatenate results into single list since getMultipleAlbums() returns 20 at a time
+    var albums = [];
+    for(var i = 0; i < promisesFinished.length; i++){
+      albums = albums.concat(promisesFinished[i])
+    }
 
-    //for each track, get additional track info (popularity)
-    let allTracks = [];
-    //for(var z = 0; z < allAlbumsAllTracks.length; z++){
-//      let trackInfo = await getTrackInfo(allAlbumsAllTracks[0].id)
-//      allTracks=allTracks.concat(trackInfo)
-    //}
-    console.log(`getAllArtistAlbums() allTracks.length: ${allTracks.length}`)
-    let albumsInfo = []
+    ////////////////////////////////////
+    // Get trackID of every track on album
+    // Make sure we have full complete tracklist for every album since spotify api will only return 50 tracks at a time
+    ////////////////////////////////////
+    let trackIDs = [];
+    let albumInfoPromises = [];
+    for(var x = 0; x < albums.length; x++){
+      var currentTracks = albums[x].tracks.items.length;
+      var totalTracks = albums[x].tracks.total;
+      if(totalTracks > currentTracks){
+        console.log(`tracks: current=${currentTracks}, total=${totalTracks}, need to get rest of tracks`)
+        //let allAlbumTracks = await getAllAlbumTracks(albums[x].id)
+        albumInfoPromises.push(await getAllAlbumTracks(albums[x].id));
+
+        //albums[x].tracks.items = allAlbumTracks;
+      }
+      
+      /*
+      //get track ids
+      var tempTrackIDs = albums[x].tracks.items.map(function(item) {
+        return item.id;
+      });
+      trackIDs=trackIDs.concat(tempTrackIDs)
+      */
+
+    }
+    
+    var albumInfoPromisesFinished = await Promise.all(albumInfoPromises);
+
+    ////////////////////////////////////
+    // Get popularity for each track (50 at a time)
+    ////////////////////////////////////
+    /*
+    const trackInfoPromises=[];
+    let multipleTracksQueryLimit = 50;
+    for(var x = 0; x < trackIDs.length; x+=multipleTracksQueryLimit){
+      let start=x;
+      let end=x+multipleTracksQueryLimit;
+      if(end>trackIDs.length){
+        end=trackIDs.length;
+      }
+      //slice list of albums we want to get info about
+      var tracksSliced = trackIDs.slice(0, 50).map(i => {
+        return i;
+      });
+      trackInfoPromises.push(await getTracks(tracksSliced));
+    }
+    //run promises to get album info
+    var trackInfoPromisesFinished = await Promise.all(trackInfoPromises);
+    //concatenate results into single list since getTracks() returns 50 at a time
+    var tracks = [];
+    for(var i = 0; i < trackInfoPromisesFinished.length; i++){
+      tracks = tracks.concat(trackInfoPromisesFinished[i])
+    }
+    */
+  
     resolve({
-      albums:albums || null, 
-      allAlbumsAllTracks:allAlbumsAllTracks || null, 
-      allTracks:allTracks || null,
-      albumsInfo: albumsInfo || null,
-      promisesFinished: promisesFinished || null,
+      //albumIds:albumIds, 
+      //albums:albums,
+      //trackIDs:trackIDs,
+      //trackInfoPromisesFinished:trackInfoPromisesFinished,
+      //tracks: tracks,
+
+      albumInfoPromisesFinished:albumInfoPromisesFinished,
+
     })
+  })
+}
+async function getTracks(tracks){
+  return new Promise(async function (resolve, reject) {
+  /* Get Audio Features for a Track */
+  spotifyApiMartin.getTracks(tracks)
+    .then(function(data) {
+      //console.log(data.body);
+      resolve(data.body)
+    }, function(err) {
+      console.log(err)
+      reject(err);
+    });
   })
 }
 
@@ -235,10 +299,10 @@ async function getTrackInfo(trackId){
   })
 }
 
-async function getAllAlbumTracks(albumURI){
+async function getAllAlbumTracks(albumURI, offset=0){
   return new Promise(async function (resolve, reject) {
     //make initial query to get tracks in an album
-    let body = await getAlbumTracks(albumURI, 0)
+    let body = await getAlbumTracks(albumURI, offset)
     //get tracks
     let tracks = body.items
     //get total number of tracks in this album
