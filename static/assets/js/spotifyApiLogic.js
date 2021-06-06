@@ -1,6 +1,6 @@
 var SpotifyWebApi = require('spotify-web-api-node');
 const fs = require('fs');
-const { Console } = require('console');
+//const { Console } = require('console');
 
 var userIsAuthenticated = false;
 
@@ -32,8 +32,10 @@ async function keepRefreshingMyCredentials(){
   try{
     spotifyApiMartin.setAccessToken(spotifyApiMartinCreds.access_token);
     spotifyApiMartin.setRefreshToken(spotifyApiMartinCreds.refresh_token);
-    var expires_in = 60
+    var expires_in = 3600
     setInterval(async () => {
+      console.log('keepRefreshingMyCredentials()')
+      try{
       const data = await spotifyApiMartin.refreshAccessToken();
       expires_in = data.body['expires_in'];
       const access_token = data.body['access_token'];
@@ -41,9 +43,12 @@ async function keepRefreshingMyCredentials(){
       //console.log('spotifyApiMartin() The access token has been refreshed!');
       //console.log('spotifyApiMartin() access_token:', access_token);
       //console.log('spotifyApiMartin() expires_in:', expires_in);
+      
       spotifyApiMartinCreds.access_token = access_token;
       spotifyApiMartin.setAccessToken(access_token);
-
+      }catch(err){
+        console.log('eeeer=',err)
+      }
     }, expires_in / 2 * 1000);
   }catch(err){
     console.log(`There was an error authenticating spotifyApiMartin, maybe update spotifyApiMartinCreds. err=`, err)
@@ -164,30 +169,56 @@ async function getAllArtistAlbums(artistURI){
     count = itemsCount + totalCount;
     total = body.total;
 
-    console.log(`getAllArtistAlbums() total=${total}`);
+    console.log(`getAllArtistAlbums() Need to get data for ${total} albums`);
     while(albums.length < total){
       //console.log(`getAllArtistAlbums() need to get more. albums.length=${albums.length}, total=${total}`)
       body = await getArtistAlbums(artistURI, albums.length)
       albums = albums.concat(body.items)
     }
-    console.log(`getAllArtistAlbums() found ${albums.length} albums`)
+    console.log(`getAllArtistAlbums() found data for ${albums.length} albums`)
 
-    //get all tracks for each album
+    //get all tracks for each album 20 albums at a time
+    const promises=[];
     var allAlbumsAllTracks = []
-    for(var x = 0; x < albums.length; x++){
-      let albumTracks = await getAllAlbumTracks(albums[0].id)
-      allAlbumsAllTracks=allAlbumsAllTracks.concat(albumTracks)
+    for(var x = 0; x < albums.length; x+=20){
+      let start=x;
+      let end=x+20;
+      if(end>albums.length){
+        end=albums.length;
+      }
+      console.log(` getAllArtistAlbums()get data for albums ${start} to ${end}`)
+      //slice list of albums we want to get info about
+      var albumsSliced = albums.slice(start, end).map(i => {
+        return i.id;
+      });
+      console.log(' getAllArtistAlbums() albumsSliced.length=',albumsSliced.length)
+      promises.push(await getMultipleAlbums(albumsSliced));
+      //var albumsInfo = await getMultipleAlbums(albumsSliced)
+      //console.log('getAllArtistAlbums() albumsInfo.length=',albumsInfo.length)
+
+  //    let albumTracks = await getAllAlbumTracks(albums[x].id)
+  //    allAlbumsAllTracks=allAlbumsAllTracks.concat(albumTracks)
     }
+    //run promises to get album info
+    var promisesFinished = [];
+    promisesFinished = await Promise.all(promises);
+    //console.log('promisesFinished=',promisesFinished)
 
     //for each track, get additional track info (popularity)
     let allTracks = [];
-    for(var z = 0; z < allAlbumsAllTracks.length; z++){
-      console
-      let trackInfo = await getTrackInfo(allAlbumsAllTracks[0].id)
-      allTracks=allTracks.concat(trackInfo)
-    }
-
-    resolve(allTracks)
+    //for(var z = 0; z < allAlbumsAllTracks.length; z++){
+//      let trackInfo = await getTrackInfo(allAlbumsAllTracks[0].id)
+//      allTracks=allTracks.concat(trackInfo)
+    //}
+    console.log(`getAllArtistAlbums() allTracks.length: ${allTracks.length}`)
+    let albumsInfo = []
+    resolve({
+      albums:albums || null, 
+      allAlbumsAllTracks:allAlbumsAllTracks || null, 
+      allTracks:allTracks || null,
+      albumsInfo: albumsInfo || null,
+      promisesFinished: promisesFinished || null,
+    })
   })
 }
 
@@ -229,6 +260,19 @@ async function getAlbumTracks(albumURI, offset=0){
       resolve(data.body)
     }, function(err) {
       console.log('Something went wrong!', err);
+    });
+  })
+}
+
+async function getMultipleAlbums(albums){
+  return new Promise(async function (resolve, reject){
+    // Get multiple albums
+    spotifyApiMartin.getAlbums(albums)
+    .then(function(data) {
+      resolve(data.body.albums)
+    }, function(err) {
+      console.error(err);
+      reject(err)
     });
   })
 }

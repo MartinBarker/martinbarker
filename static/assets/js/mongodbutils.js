@@ -9,6 +9,9 @@ var url = `mongodb+srv://${usr}:${pw}@cluster0.qotrh.gcp.mongodb.net/node-blog?r
 module.exports = {
   connectToServer: function( callback ) {
     MongoClient.connect( url, {useUnifiedTopology: true}, function( err, client ) {
+      if(err){
+        console.log("MongoClient.connect err=", err)
+      }
       _db = client.db('node-blog');
       return callback( err );
     } );

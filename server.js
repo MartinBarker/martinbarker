@@ -12,7 +12,9 @@ const port = 8080;
 var mongodbutil = require( './static/assets/js/mongodbutils' );
 mongodbutil.connectToServer(function (err) {
     //app goes online once this callback occurs
-
+    if(err){
+        console.log('mongodbutil.connectToServer err=', err)
+    }
     // error handler
     app.use(function (err, req, res, next) {
         res.status(err.status || 500);
