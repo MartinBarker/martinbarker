@@ -160,6 +160,8 @@ async function createRedirectURL(){
 async function getAllArtistAlbums(artistURI){
   return new Promise(async function (resolve, reject) {
     ////////////////////////////////////
+    // Create 'albumIds' list[] object which contains albumId strings of entire discography
+    // Store this in file for faster searching?
     // Get all artist album ids
     ////////////////////////////////////
     let total, itemsCount, count, totalCount = 0;
@@ -170,15 +172,15 @@ async function getAllArtistAlbums(artistURI){
     count = itemsCount + totalCount;
     total = body.total;
     //make additional queries if needed
-    console.log(`getAllArtistAlbums() Need to get data for ${total} albums`);
+    console.log(`getAllArtistAlbums() Artist has ${total} albums. We got ${itemsCount} and need to get the rest`);
     while(albumIds.length < total){
       body = await getArtistAlbums(artistURI, albumIds.length)
       albumIds = albumIds.concat(body.items)
     }
-    console.log(`getAllArtistAlbums() found data for ${albumIds.length} albums`)
+    console.log(`getAllArtistAlbums() found ids for ${albumIds.length} albums`)
 
     ////////////////////////////////////
-    // Get info for each album 20 ids at a time
+    // Create query promise for each albumId 20 IDs at a time
     ////////////////////////////////////
     const promises=[];
     let multipleAlbumsQueryLimit = 20;
@@ -198,8 +200,91 @@ async function getAllArtistAlbums(artistURI){
     }
     //run promises to get album info
     var promisesFinished = await Promise.all(promises);
-    //concatenate results into single list since getMultipleAlbums() returns 20 at a time
-    var albums = [];
+
+    ////////////////////////////////////
+    // Create 'albums' object{} which contains an artist's entire discography 
+    // getMultipleAlbums() returns a list of 20 albums so we need to organize the data
+    // Organize by album_type (album , single , compilation, appears_on, ..., n-string)
+    ////////////////////////////////////
+    var albumsObj = {};
+    for(var i = 0; i < promisesFinished.length; i++){
+      for(var z = 0; z < promisesFinished[i].length; z++){
+        var album_type=promisesFinished[i][z].album_type;
+        if( `${album_type}` in albumsObj ) {
+        }else{
+          albumsObj[`${album_type}`]=[]
+        }
+        albumsObj[`${album_type}`].push(promisesFinished[i][z])
+
+      }
+    }
+
+    ////////////////////////////////////
+    // so now we have albumsObj
+    // go through each key/value pair, so for each key(single, album, compilation, or `other` potential random strings)
+      // in this order: single
+      // for each album in key/value pair (q):
+        // check if we have all the tracks
+          // if we are missing tracks:
+            // add getMissingTracks await call to getMissingTracksPromises[]
+            // call promises.all, concat to getMissingTracksPromisesResults[]
+
+          // get id for each track that is there already, add id to trackIdsList[]
+    ////////////////////////////////////
+    //new:
+    // get ids in order of single, album, compilation, other
+    let rankingList=['single', 'album', 'compilation']
+    for(var i = 0; i < rankingList.length; i++){
+      //get index values closer starting at 0 
+      if(albumsObj[`${rankingList[i]}`]){
+        //remove categoryObj from albumsObj{}
+        let tempCategoryObj=albumsObj[`${rankingList[i]}`]
+        albumsObj[`${rankingList[i]}`]=null;
+        //let newPromiseTempName=await parseCategoryForData(tempCategoryObj)
+        /* // take these functions and move them outn //
+        async function parseCategoryForData(input){
+          //promise thing:
+            //for each item in input
+            //if we are missing tracks, make additional querys (push to fetchTracklistPromises[]: await fetchTracklist()  )
+            //add present number of track's trackIDs to trackIDsList[]
+        }
+
+        async function fetchTracklist(albumId, start, end){
+          //promise start
+
+        }
+
+        */
+      }
+    }
+
+
+    //old:
+    let albumsObjCopy=albumsObj;
+    
+    //create list of promises
+    let albumQueryPromises = [];
+    //for each key value pair rankingList in albumsObj (i)
+    for (const [key, value] of Object.entries(albumsObj)) {
+      console.log(`key=${key}`);
+      //for each string in rankingList (q)
+      for(var i = 0; i < rankingList.length; i++){
+        //if key value pair string == rankingList[q]
+        if(rankingList[i][`${key}`]){
+          //add promise to on first priority
+          console.log(`adding ${key} to list of promises`)
+          //albumQueryPromises.push()
+        }
+      }
+    }
+    //run promises to get album info
+    var albumQueryPromisesFinished = []
+    albumQueryPromisesFinished = await Promise.all(albumQueryPromises);
+    
+    //run list of promises
+    
+
+    /*
     for(var i = 0; i < promisesFinished.length; i++){
       albums = albums.concat(promisesFinished[i])
     }
@@ -214,29 +299,26 @@ async function getAllArtistAlbums(artistURI){
       var currentTracks = albums[x].tracks.items.length;
       var totalTracks = albums[x].tracks.total;
       if(totalTracks > currentTracks){
-        console.log(`tracks: current=${currentTracks}, total=${totalTracks}, need to get rest of tracks`)
+        //console.log(`tracks: current=${currentTracks}, total=${totalTracks}, need to get rest of tracks`)
         //let allAlbumTracks = await getAllAlbumTracks(albums[x].id)
-        albumInfoPromises.push(await getAllAlbumTracks(albums[x].id));
+        //albumInfoPromises.push(await getAllAlbumTracks(albums[x].id));
 
         //albums[x].tracks.items = allAlbumTracks;
       }
       
-      /*
       //get track ids
-      var tempTrackIDs = albums[x].tracks.items.map(function(item) {
-        return item.id;
-      });
-      trackIDs=trackIDs.concat(tempTrackIDs)
-      */
+      //var tempTrackIDs = albums[x].tracks.items.map(function(item) {
+      //  return item.id;
+      //});
+      //trackIDs=trackIDs.concat(tempTrackIDs)
+     
 
     }
-    
-    var albumInfoPromisesFinished = await Promise.all(albumInfoPromises);
+    //var albumInfoPromisesFinished = await Promise.all(albumInfoPromises);
 
     ////////////////////////////////////
     // Get popularity for each track (50 at a time)
     ////////////////////////////////////
-    /*
     const trackInfoPromises=[];
     let multipleTracksQueryLimit = 50;
     for(var x = 0; x < trackIDs.length; x+=multipleTracksQueryLimit){
@@ -258,16 +340,18 @@ async function getAllArtistAlbums(artistURI){
     for(var i = 0; i < trackInfoPromisesFinished.length; i++){
       tracks = tracks.concat(trackInfoPromisesFinished[i])
     }
+    
     */
-  
-    resolve({
-      //albumIds:albumIds, 
-      //albums:albums,
-      //trackIDs:trackIDs,
-      //trackInfoPromisesFinished:trackInfoPromisesFinished,
-      //tracks: tracks,
 
-      albumInfoPromisesFinished:albumInfoPromisesFinished,
+    resolve({
+ //     albumIds:albumIds, 
+ //     albums:albums,
+ //     trackIDs:trackIDs,
+      //trackInfoPromisesFinished:trackInfoPromisesFinished,
+  //    tracks: tracks,
+      //albumInfoPromisesFinished:albumInfoPromisesFinished,
+      albumsObj:albumsObj,
+      albumQueryPromisesFinished:albumQueryPromisesFinished
 
     })
   })
