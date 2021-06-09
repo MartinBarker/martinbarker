@@ -517,8 +517,8 @@ app.post('/spotifySearch', async function (req, res) {
   //use api to get data
   let searchResults = []
   try{
-    let spotifyApiSession = spotifyAuth.getSession()
-    searchResults = await spotifyApiLogic.searchForArtists(input, spotifyApiSession); 
+    //let spotifyApiSession = spotifyAuth.getSession()
+    searchResults = await spotifyAuth.searchArtists(input); 
   }catch(err){
     searchResults=[];
     console.log('/spotifySearch err=',err)
@@ -533,7 +533,7 @@ app.post('/generatePopularifyData', async function (req, res) {
   //use api to get data
   let popularifyData = []
   try{
-    popularifyData = await spotifyApiLogic.generatePopularifyData(id); 
+    popularifyData = await spotifyAuth.generatePopularifyData(id); 
   }catch(err){
     popularifyData=[];
   }

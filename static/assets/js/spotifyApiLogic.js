@@ -451,12 +451,12 @@ async function getArtistAlbums(artistURI, offset=0){
   })
 }
 
-async function searchForArtists(input){
+async function searchForArtists(input, useThisApiObj){
   console.log('searchForArtists() ', input)
   return new Promise(async function (resolve, reject) {
-    let getSpotifyApiObj = await spotifyAuth.getSession()
+    //let getSpotifyApiObj = await spotifyAuth.getSession()
 
-    getSpotifyApiObj.searchArtists(input)
+    useThisApiObj.searchArtists(input)
     .then(function(data) {
       //console.log('Search artists:', data.body);
       resolve(data.body.artists.items)
