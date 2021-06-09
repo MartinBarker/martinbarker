@@ -370,6 +370,7 @@
     //make a query to search for artists 
     async function searchForArtists(artistStr){
         return new Promise(async function (resolve, reject) {
+            console.log(`searchForArtists(${artistStr})`)
             //make spotify api query for artists
             let artistSearchResults = await getArtistSearchResults(artistStr)
             //format artist results as html
@@ -393,7 +394,6 @@
             //verify search value is not blank
             if(searchVal != "" && searchVal != " " && searchVal != null){
                 $('#artistSearchResults').show();
-                console.log('text input changed: ', searchVal);
                 //display loading 
                 $("#artistSearchLoading").show();
                 //begin search for artist

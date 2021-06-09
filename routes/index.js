@@ -10,6 +10,8 @@ var mongodbutil = require('../static/assets/js/mongodbutils');
 var db = mongodbutil.getDb();
 //spotify api file
 var spotifyApiLogic = require('../static/assets/js/spotifyApiLogic');
+//spotify auth file
+var spotifyAuth = require('../static/assets/js/spotifyAuth');
 
 //global vars
 allBlogPosts = []
@@ -509,14 +511,17 @@ app.post('/spotifyApi', async function (req, res) {
 
 //search spotify for artist, return results
 app.post('/spotifySearch', async function (req, res) {
+  console.log('/spotifySearch')
   //get vars 
   let input = req.body.input;
   //use api to get data
   let searchResults = []
   try{
-    searchResults = await spotifyApiLogic.searchForArtists(input); 
+    let spotifyApiSession = spotifyAuth.getSession()
+    searchResults = await spotifyApiLogic.searchForArtists(input, spotifyApiSession); 
   }catch(err){
     searchResults=[];
+    console.log('/spotifySearch err=',err)
   }
   res.status(200).send(searchResults)
 });

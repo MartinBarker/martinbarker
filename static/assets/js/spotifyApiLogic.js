@@ -1,6 +1,9 @@
 var SpotifyWebApi = require('spotify-web-api-node');
 const fs = require('fs');
 //const { Console } = require('console');
+//spotifyAuth api file
+var spotifyAuth = require('./spotifyAuth');
+const { Console } = require('console');
 
 var userIsAuthenticated = false;
 
@@ -159,13 +162,38 @@ async function createRedirectURL(){
 
 async function getAllArtistAlbums(artistURI){
   return new Promise(async function (resolve, reject) {
+
+    //
+    //  Make initial request to get artist albums (does not include tracklists so parse album_type)
+    //  Setup artistAlbumsObj{}
+    //
+    //retrieve spotifyApiObj 
+    let getSpotifyApiObj = await spotifyAuth.getSession()
+    console.log('getSpotifyApiObj=',getSpotifyApiObj)
+
+    let artistAlbums;
+    try{
+      //make query to get albums by artist
+      artistAlbums = await getArtistAlbums(artistURI, 0)
+
+    }catch(err){
+      //if query failed because of 401(?) too many requests rate limit 
+        //fetch new spotifyApiObj and retry
+      //else real error
+      console.log('errrrrrxzy=',err)
+    }
+
+  
+
+    // If there are more albums, get the rest 
+
+    /*
     ////////////////////////////////////
     // Create 'albumIds' list[] object which contains albumId strings of entire discography
     // Store this in file for faster searching?
     // Get all artist album ids
     ////////////////////////////////////
     let total, itemsCount, count, totalCount = 0;
-    //make initial query to get artist album ids
     let body = await getArtistAlbums(artistURI, 0)
     let albumIds = body.items
     itemsCount = body.items.length;
@@ -220,18 +248,8 @@ async function getAllArtistAlbums(artistURI){
     }
 
     ////////////////////////////////////
-    // so now we have albumsObj
-    // go through each key/value pair, so for each key(single, album, compilation, or `other` potential random strings)
-      // in this order: single
-      // for each album in key/value pair (q):
-        // check if we have all the tracks
-          // if we are missing tracks:
-            // add getMissingTracks await call to getMissingTracksPromises[]
-            // call promises.all, concat to getMissingTracksPromisesResults[]
-
-          // get id for each track that is there already, add id to trackIdsList[]
+    // use albumsObj to 
     ////////////////////////////////////
-    //new:
     // get ids in order of single, album, compilation, other
     let rankingList=['single', 'album', 'compilation']
     for(var i = 0; i < rankingList.length; i++){
@@ -241,20 +259,6 @@ async function getAllArtistAlbums(artistURI){
         let tempCategoryObj=albumsObj[`${rankingList[i]}`]
         albumsObj[`${rankingList[i]}`]=null;
         //let newPromiseTempName=await parseCategoryForData(tempCategoryObj)
-        /* // take these functions and move them outn //
-        async function parseCategoryForData(input){
-          //promise thing:
-            //for each item in input
-            //if we are missing tracks, make additional querys (push to fetchTracklistPromises[]: await fetchTracklist()  )
-            //add present number of track's trackIDs to trackIDsList[]
-        }
-
-        async function fetchTracklist(albumId, start, end){
-          //promise start
-
-        }
-
-        */
       }
     }
 
@@ -280,7 +284,7 @@ async function getAllArtistAlbums(artistURI){
     //run promises to get album info
     var albumQueryPromisesFinished = []
     albumQueryPromisesFinished = await Promise.all(albumQueryPromises);
-    
+    */
     //run list of promises
     
 
@@ -344,14 +348,16 @@ async function getAllArtistAlbums(artistURI){
     */
 
     resolve({
+      artistAlbums:artistAlbums,
+            //artistAlbumsBody:body,
  //     albumIds:albumIds, 
  //     albums:albums,
  //     trackIDs:trackIDs,
       //trackInfoPromisesFinished:trackInfoPromisesFinished,
   //    tracks: tracks,
       //albumInfoPromisesFinished:albumInfoPromisesFinished,
-      albumsObj:albumsObj,
-      albumQueryPromisesFinished:albumQueryPromisesFinished
+            //albumsObj:albumsObj,
+            //albumQueryPromisesFinished:albumQueryPromisesFinished
 
     })
   })
@@ -448,8 +454,9 @@ async function getArtistAlbums(artistURI, offset=0){
 async function searchForArtists(input){
   console.log('searchForArtists() ', input)
   return new Promise(async function (resolve, reject) {
+    let getSpotifyApiObj = await spotifyAuth.getSession()
 
-    spotifyApiMartin.searchArtists(input)
+    getSpotifyApiObj.searchArtists(input)
     .then(function(data) {
       //console.log('Search artists:', data.body);
       resolve(data.body.artists.items)
