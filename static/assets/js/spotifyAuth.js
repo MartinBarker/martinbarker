@@ -83,15 +83,23 @@ async function generatePopularifyData(artistURI) {
             //make initial request for albums
             let initialAlbums = await getArtistAlbums(artistURI, 0, false)
             total = initialAlbums.total;
+            albumIds.push(initialAlbums.items)
             
             //make additional queries if needed
             console.log(`\ngetAllArtistAlbums() Artist has ${total} albums. We have ${initialAlbums.items.length} so far and need to get ${total-(initialAlbums.items.length)} more`);
             let artistAlbumsPromises = [];
             for(var x = 20; x < total; x+=20){
-                artistAlbumsPromises.push(await getArtistAlbums(artistURI, x, true))
-                //getArtistAlbums(artistURI, x, true) //method2
+                artistAlbumsPromises.push(await getArtistAlbums(artistURI, x, true)) //method1
+                //getArtistAlbumsBackground(artistURI, x, true) //method2
             }
             
+            /*
+            while(albumIds.length !=total ){
+                console.log(`albumIds.length=${albumIds.length}, total=${total}, wait`)
+            }
+            console.log(`all finished: `,albumIds.length, ' albums found' )
+            */
+
             //complete promises
             let finishedArtistAlbumsPromises = await Promise.all(artistAlbumsPromises);
 
@@ -100,11 +108,11 @@ async function generatePopularifyData(artistURI) {
             for(var x = 0; x < finishedArtistAlbumsPromises.length; x++){
                 //finishedArtistAlbumsPromises is a list of objects where each object contains a list of albums, so we need to extract and concat them into one list 
                 allAlbums = allAlbums.concat(finishedArtistAlbumsPromises[x])
-            }
+            } 
     
             returnObj={
                 initialAlbums:initialAlbums.items,
-                finishedArtistAlbumsPromises:finishedArtistAlbumsPromises,
+                //finishedArtistAlbumsPromises:finishedArtistAlbumsPromises,
                 allAlbums:allAlbums
             }
             console.log(`getAllArtistAlbums() found ${allAlbums.length} albums in total`)
@@ -154,7 +162,17 @@ async function getArtistAlbums(artistURI, offset=0, returnTracks=false) {
         let useThisSession = await getSession()
         //run query
         useThisSession.getArtistAlbums(artistURI, { offset: offset }).then(function (data) {
-            returnTracks ? resolve(data.body.items) : resolve(data.body)
+            if(returnTracks){
+                //fetch complete tracklist for each album
+
+                //fetch popularity for each track (50 track ids at a time)
+
+
+                resolve(data.body.items)
+            }else{
+                resolve(data.body)
+            }
+
         }, function (err) {
             console.error(" getArtistAlbums() err=", err, ", offset=", offset );
             reject(err)
