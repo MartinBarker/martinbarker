@@ -95,7 +95,7 @@
     <!-- Chosen Artist Display Box (Hidden By Default) -->
     <div id='chosenArtistDisplay' class='hidden'>
         Generating Data For Artist:<br>
-        <button id='cancelButton' class='hoverCursor'>Cancel</button>
+        <button id='cancelButton' onClick="cancel()" class='hoverCursor'>Cancel</button>
         <!-- -->
         <div id='artistDisplay' class="container" style='display:flex; width:fit-content;'>
             <div class='row border'>
@@ -314,6 +314,15 @@
         $("#artistSearchLoading").hide();
 
         console.log('popularifyData compelted: ', popularifyData)
+    }
+
+    //if cancel button is clicked
+    function cancel(){
+        //remove preexisting artist display element from page
+        var artistDisplayObj = document.getElementById('artistDisplay')
+        artistDisplayObj.remove();
+        //clear popularifyDisplay
+        document.getElementById('popularifyDisplay').innerHTML = '';
     }
 
     //display popularify data to the user

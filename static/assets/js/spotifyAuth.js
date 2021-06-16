@@ -69,21 +69,56 @@ async function getSession(dontUseTheseCreds = []) {
 
 }
 
-//
-// Utility Functions
-//
-async function generatePopularifyData(id) {
+let albumIds = [];
+let albumQueryFinished = false;
+async function generatePopularifyData(artistURI) {
     return new Promise(async function (resolve, reject) {
-        //get id of every album in artist's discography
-        
-        //fetch tracklist for every single album (20 album ids at a time)
+        try{
+            let returnObj = {};
 
-        //make sure we have complete tracklist for any large albums
+            ////////////////////////////////////////////////////
+            // Get albums 20 ids at a time
+            ////////////////////////////////////////////////////
+            
+            //make initial request for albums
+            let initialAlbums = await getArtistAlbums(artistURI, 0, false)
+            total = initialAlbums.total;
+            
+            //make additional queries if needed
+            console.log(`\ngetAllArtistAlbums() Artist has ${total} albums. We have ${initialAlbums.items.length} so far and need to get ${total-(initialAlbums.items.length)} more`);
+            let artistAlbumsPromises = [];
+            for(var x = 20; x < total; x+=20){
+                artistAlbumsPromises.push(await getArtistAlbums(artistURI, x, true))
+                //getArtistAlbums(artistURI, x, true) //method2
+            }
+            
+            //complete promises
+            let finishedArtistAlbumsPromises = await Promise.all(artistAlbumsPromises);
 
-        //fetch additional info on each track (50 track ids at a time)
-
-
-        resolve('ababa')
+            //combine initial query with additional queries
+            let allAlbums = initialAlbums.items
+            for(var x = 0; x < finishedArtistAlbumsPromises.length; x++){
+                //finishedArtistAlbumsPromises is a list of objects where each object contains a list of albums, so we need to extract and concat them into one list 
+                allAlbums = allAlbums.concat(finishedArtistAlbumsPromises[x])
+            }
+    
+            returnObj={
+                initialAlbums:initialAlbums.items,
+                finishedArtistAlbumsPromises:finishedArtistAlbumsPromises,
+                allAlbums:allAlbums
+            }
+            console.log(`getAllArtistAlbums() found ${allAlbums.length} albums in total`)
+            //fetch tracklist for every single album (20 album ids at a time)
+    
+            //make sure we have complete tracklist for any large albums
+    
+            //fetch additional info on each track (50 track ids at a time)
+    
+    
+            resolve(returnObj)
+        }catch(err){
+            console.log('generatePopularifyData() err=', err)
+        }
     })
 }
 
@@ -96,6 +131,7 @@ async function searchArtists(searchStr) {
     return new Promise(async function (resolve, reject) {
         //get session
         let useThisSession = await getSession()
+        //run query
         useThisSession.searchArtists(searchStr)
             .then(function (data) {
                 console.log(`searchArtists() found ${data.body.artists.items.length} results`);
@@ -108,13 +144,23 @@ async function searchArtists(searchStr) {
                 }
             });
     });
-
 }
 
-
-
-
-
+// Get albums by a certain artist
+async function getArtistAlbums(artistURI, offset=0, returnTracks=false) {
+    console.log(`   getArtistAlbums() offset=${offset}`)
+    return new Promise(async function (resolve, reject) {
+        //get session
+        let useThisSession = await getSession()
+        //run query
+        useThisSession.getArtistAlbums(artistURI, { offset: offset }).then(function (data) {
+            returnTracks ? resolve(data.body.items) : resolve(data.body)
+        }, function (err) {
+            console.error(" getArtistAlbums() err=", err, ", offset=", offset );
+            reject(err)
+        });
+    })
+}
 
 
 module.exports = {
