@@ -1,5 +1,5 @@
 module.exports = { 
-        "Popularify-session3":{
+        "Popularify-app3":{
             "clientId":"61114a378b154bee9221344b6de35ecb",
             "clientSecret": process.env.PopularifySessionThreeClientSecret,
             "sessions":{
@@ -9,7 +9,7 @@ module.exports = {
                 }
             }
         },
-        "Popularify-session2":{
+        "Popularify-app2":{
             "clientId":"14cbfb066e7b4e3895575bef52808b5b",
             "clientSecret":process.env.PopularifySessionTwoClientSecret,
             "sessions":{
@@ -19,7 +19,7 @@ module.exports = {
                 }
             }
         },
-        "Popularify-session1":{
+        "Popularify-app1":{
             "clientId":"0073a7f25706462a8850c97796960e87",
             "clientSecret":process.env.PopularifySessionOneClientSecret,
             "sessions":{

@@ -515,7 +515,6 @@ app.post('/spotifyApi', async function (req, res) {
 
 //search spotify for artist, return results
 app.post('/spotifySearch', async function (req, res) {
-  console.log('/spotifySearch')
   //get vars 
   let input = req.body.input;
   //use api to get data
