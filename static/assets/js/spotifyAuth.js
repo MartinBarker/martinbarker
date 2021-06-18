@@ -6,6 +6,7 @@ let spotifyTokensJSON = JSON.parse(spotifyTokensObj);
 
 //create object for active sessions the user can use without logging in
 let sessions = {}
+let sessionsStatus = {}
 
 //
 // Authentication Functions
@@ -37,6 +38,7 @@ async function authenticateSession(sessionCredsName) {
     console.log('authenticateSession1() expires_in:', expires_in);
 
     sessions[`${sessionCredsName}`] = spotifyApiMartin;
+    sessionsStatus[`${sessionCredsName}`] = 'active';
 
     setInterval(async () => {
         console.log('keepRefreshingMyCredentials()')
@@ -49,8 +51,6 @@ async function authenticateSession(sessionCredsName) {
             console.log('authenticateSession1() access_token:', access_token);
             console.log('authenticateSession1() expires_in:', expires_in);
 
-            //spotifyApiMartinCreds.access_token = access_token;
-            //spotifyApiMartin.setAccessToken(access_token);
         } catch (err) {
             console.log('eeeer=', err)
         }
@@ -61,9 +61,22 @@ async function authenticateSession(sessionCredsName) {
 //retrieve session 
 async function getSession(dontUseTheseCreds = []) {
     return new Promise(async function (resolve, reject) {
-        console.log('getSession() getting first session, no checking')
-        for (const [key, value] of Object.entries(sessions)) {
-            resolve(value)
+        //find a session to use
+        let activeSessionFound = false;
+        for (const [key, value] of Object.entries(sessionsStatus)) {
+            if(value=='active'){
+                console.log(`       getSession() ${key} session is active, so return it`)
+                activeSessionFound=true;
+                resolve({
+                    session:sessions[`${key}`],
+                    name:`${key}`
+                })
+            }else if(value=='cooldown'){
+                console.log(`       getSession() ${key} session is cooldown, so DONT return it`)
+            }
+        }
+        if(!activeSessionFound){
+            console.log(`getSession() no active session found`)
         }
     })
 
@@ -73,58 +86,123 @@ let albumIds = [];
 let albumQueryFinished = false;
 async function generatePopularifyData(artistURI) {
     return new Promise(async function (resolve, reject) {
-        try{
+        try {
             let returnObj = {};
 
             ////////////////////////////////////////////////////
             // Get albums 20 ids at a time
             ////////////////////////////////////////////////////
-            
+
             //make initial request for albums
             let initialAlbums = await getArtistAlbums(artistURI, 0, false)
             total = initialAlbums.total;
             albumIds.push(initialAlbums.items)
-            
+
             //make additional queries if needed
-            console.log(`\ngetAllArtistAlbums() Artist has ${total} albums. We have ${initialAlbums.items.length} so far and need to get ${total-(initialAlbums.items.length)} more`);
+            console.log(`\ngetAllArtistAlbums() Artist has ${total} albums. We have ${initialAlbums.items.length} so far and need to get ${total - (initialAlbums.items.length)} more`);
             let artistAlbumsPromises = [];
-            for(var x = 20; x < total; x+=20){
-                artistAlbumsPromises.push(await getArtistAlbums(artistURI, x, true)) //method1
-                //getArtistAlbumsBackground(artistURI, x, true) //method2
+            for (var x = 20; x < total; x += 20) {
+                artistAlbumsPromises.push(getArtistAlbums(artistURI, x, true))
             }
-            
-            /*
-            while(albumIds.length !=total ){
-                console.log(`albumIds.length=${albumIds.length}, total=${total}, wait`)
-            }
-            console.log(`all finished: `,albumIds.length, ' albums found' )
-            */
 
             //complete promises
             let finishedArtistAlbumsPromises = await Promise.all(artistAlbumsPromises);
 
             //combine initial query with additional queries
             let allAlbums = initialAlbums.items
-            for(var x = 0; x < finishedArtistAlbumsPromises.length; x++){
+            for (var x = 0; x < finishedArtistAlbumsPromises.length; x++) {
                 //finishedArtistAlbumsPromises is a list of objects where each object contains a list of albums, so we need to extract and concat them into one list 
                 allAlbums = allAlbums.concat(finishedArtistAlbumsPromises[x])
-            } 
-    
-            returnObj={
-                initialAlbums:initialAlbums.items,
+            }
+
+            returnObj = {
+                initialAlbums: initialAlbums.items,
                 //finishedArtistAlbumsPromises:finishedArtistAlbumsPromises,
-                allAlbums:allAlbums
+                allAlbums: allAlbums
             }
             console.log(`getAllArtistAlbums() found ${allAlbums.length} albums in total`)
-            //fetch tracklist for every single album (20 album ids at a time)
-    
-            //make sure we have complete tracklist for any large albums
-    
-            //fetch additional info on each track (50 track ids at a time)
-    
-    
+
+            ////////////////////////////////////
+            // Get tracklist data for each albumId 20 albumIds at a time
+            ////////////////////////////////////
+            const albumTracklistPromises = [];
+            let multipleAlbumsQueryLimit = 20;
+            for (var x = 0; x < allAlbums.length; x += multipleAlbumsQueryLimit) {
+                let start = x;
+                let end = x + multipleAlbumsQueryLimit;
+                if (end > allAlbums.length) {
+                    end = allAlbums.length;
+                }
+                //slice list of albums we want to get info about
+                var albumsSliced = allAlbums.slice(start, end).map(i => {
+                    return i.id;
+                });
+
+                //console.log(` getAllArtistAlbums() get data for ${albumsSliced.length} albums: ${start} to ${end}`)
+                albumTracklistPromises.push(getAlbums(albumsSliced));
+            }
+            //run promises to get album info
+            var albumTracklistPromisesFinished = await Promise.all(albumTracklistPromises);
+            returnObj.albumTracklistPromisesFinished = albumTracklistPromisesFinished
+
+            ////////////////////////////////////
+            // make sure we have complete tracklist for every album
+            ////////////////////////////////////
+            let allAlbumTracks = []
+            for (var x = 0; x < albumTracklistPromisesFinished.length; x++) {
+                for (var y = 0; y < albumTracklistPromisesFinished[x].length; y++) {
+                    let currentAlbumId = albumTracklistPromisesFinished[x][y].id;
+                    let currentAlbumTracks = albumTracklistPromisesFinished[x][y].tracks.items;
+                    let tracksTotal = albumTracklistPromisesFinished[x][y].tracks.total;
+                    while (currentAlbumTracks.length < tracksTotal) {
+                        //console.log(`currentAlbumId=${currentAlbumId}, tracksTotal=${tracksTotal}, currentAlbumTracks.length=${currentAlbumTracks.length} so get more tracks`)
+                        let additionalAlbumInfo = await getAlbumTracks(currentAlbumId, currentAlbumTracks.length)
+                        currentAlbumTracks = currentAlbumTracks.concat(additionalAlbumInfo.items)
+                    }
+                    //console.log(`album needs ${tracksTotal} tracks in total, we have ${currentAlbumTracks.length}`)
+                    allAlbumTracks = allAlbumTracks.concat(currentAlbumTracks)
+                }
+            }
+            console.log(`found ${allAlbumTracks.length} tracks`)
+            returnObj.allAlbumTracks = allAlbumTracks;
+
+
+            ////////////////////////////////////
+            // Fetch additional data (popularity) for each track (50 at a time)
+            ////////////////////////////////////
+            let tempSlices=[]
+
+            const trackInfoPromises=[];
+            let multipleTracksQueryLimit = 50;
+            for(var x = 0; x < allAlbumTracks.length; x+=multipleTracksQueryLimit){
+                let start=x;
+                let end=x+multipleTracksQueryLimit;
+                if(end>allAlbumTracks.length){
+                    end=allAlbumTracks.length;
+                }
+                //slice list of albums we want to get info about
+                //console.log(`slice tracks from ${start} to ${end}`)
+                var tracksSliced = allAlbumTracks.slice(start, end).map(i => {
+                    return i.id;
+                });
+                tempSlices.push(tracksSliced)
+
+                //returnObj.tracksSliced = returnObj.tracksSliced.push(tracksSliced)
+                trackInfoPromises.push(getTracks(tracksSliced));
+            }
+            //run promises to get album info
+            var trackInfoPromisesFinished = await Promise.all(trackInfoPromises);
+            //concatenate results into single list since getTracks() returns 50 at a time
+            var tracks = [];
+            for(var i = 0; i < trackInfoPromisesFinished.length; i++){
+                tracks = tracks.concat(trackInfoPromisesFinished[i])
+            }
+            
+            returnObj.tempSlices = tempSlices
+            returnObj.tracks=tracks
+
             resolve(returnObj)
-        }catch(err){
+        } catch (err) {
             console.log('generatePopularifyData() err=', err)
         }
     })
@@ -138,48 +216,153 @@ async function generatePopularifyData(artistURI) {
 async function searchArtists(searchStr) {
     return new Promise(async function (resolve, reject) {
         //get session
-        let useThisSession = await getSession()
+        let useThisSessionRsp = await getSession()
+        let useThisSession = useThisSessionRsp.session
+        let useThisSessionName = useThisSessionRsp.name
         //run query
         useThisSession.searchArtists(searchStr)
             .then(function (data) {
-                console.log(`searchArtists() found ${data.body.artists.items.length} results`);
+                //console.log(`searchArtists() found ${data.body.artists.items.length} results using session:${useThisSessionName}`);
                 resolve(data.body.artists.items)
             }, async function (err) {
-                reject(err)
                 console.error('searchArtists() err: ', err);
-                if (err.statusCode == 401) {
-                    console.log('demoQuery err')
+                if(err.statusCode==429){
+                    await handle429Err(useThisSessionName, 'searchArtists()')
+                    //rerun function
+                    return await searchArtists(searchStr);
                 }
+                //reject(err)
             });
     });
 }
 
+async function handle429Err(sessionName, debugFunctionName){
+    return new Promise(async function (resolve, reject) {
+        console.log(`handle429Err() ${debugFunctionName} too many requests, need to set this session as "cooldown" for 30 seconds`)
+        //mark this session as in cooldown mode
+        console.log(`handle429Err() ${debugFunctionName} setting ${sessionName} session to cooldown`)
+        sessionsStatus[`${sessionName}`]='cooldown'
+        //after 30 seconds, mark session as 'active'
+        setTimeout(function(){
+            console.log(`handle429Err() ${debugFunctionName} setting ${sessionName} session to active`)
+            sessionsStatus[`${sessionName}`]='active'
+        }, 3000); 
+        resolve()
+    })
+}
+
 // Get albums by a certain artist
-async function getArtistAlbums(artistURI, offset=0, returnTracks=false) {
-    console.log(`   getArtistAlbums() offset=${offset}`)
+async function getArtistAlbums(artistURI, offset = 0, returnTracks = false) {
+    //console.log(`   getArtistAlbums() offset=${offset}`)
     return new Promise(async function (resolve, reject) {
         //get session
-        let useThisSession = await getSession()
+        let useThisSessionRsp = await getSession()
+        let useThisSession = useThisSessionRsp.session
+        let useThisSessionName = useThisSessionRsp.name
         //run query
         useThisSession.getArtistAlbums(artistURI, { offset: offset }).then(function (data) {
-            if(returnTracks){
-                //fetch complete tracklist for each album
-
-                //fetch popularity for each track (50 track ids at a time)
-
-
+            if (returnTracks) {
                 resolve(data.body.items)
-            }else{
+            } else {
                 resolve(data.body)
             }
 
-        }, function (err) {
-            console.error(" getArtistAlbums() err=", err, ", offset=", offset );
-            reject(err)
+        }, async function (err) {
+            console.error('getArtistAlbums() err: ', err);
+            if(err.statusCode==429){
+                await handle429Err(useThisSessionName, 'getArtistAlbums()')
+                //rerun function
+                return await getArtistAlbums(artistURI, offset, returnTracks);
+            }
+            //reject(err)
         });
     })
 }
 
+//get more info for an album or multiple albums at once (20 at a time)
+async function getAlbums(albums) {
+    return new Promise(async function (resolve, reject) {
+        //get session
+        let useThisSessionRsp = await getSession()
+        let useThisSession = useThisSessionRsp.session
+        let useThisSessionName = useThisSessionRsp.name
+        //run query 
+        useThisSession.getAlbums(albums)
+            .then(function (data) {
+                resolve(data.body.albums)
+            }, async function (err) {
+                console.error('getAlbums() err: ', err);
+                if(err.statusCode==429){
+                    await handle429Err(useThisSessionName, 'getAlbums()')
+                    //rerun function
+                    return await getAlbums(albums);
+                }
+                //reject(err)
+            });
+    })
+}
+
+async function getAlbum(album, offset = 0) {
+    return new Promise(async function (resolve, reject) {
+        //get session
+        let useThisSessionRsp = await getSession()
+        let useThisSession = useThisSessionRsp.session
+        let useThisSessionName = useThisSessionRsp.name
+        //run query 
+        useThisSession.getAlbum(album, { offset: offset })
+            .then(function (data) {
+                resolve(data.body)
+            }, function (err) {
+                console.error(err);
+                reject(err)
+            });
+    })
+}
+
+async function getAlbumTracks(album, offset=0, limit=50) {
+    return new Promise(async function (resolve, reject) {
+        //get session
+        let useThisSessionRsp = await getSession()
+        let useThisSession = useThisSessionRsp.session
+        let useThisSessionName = useThisSessionRsp.name
+        //run query 
+        useThisSession.getAlbumTracks(album, { offset: offset, limit:limit })
+            .then(function (data) {
+                resolve(data.body)
+            }, async function (err) {
+                console.error('getAlbumTracks() err: ', err);
+                if(err.statusCode==429){
+                    await handle429Err(useThisSessionName, 'getAlbumTracks()')
+                    //rerun function
+                    return await getAlbumTracks(album, offset, limit);
+                }
+                //reject(err)
+            });
+    })
+}
+
+async function getTracks(tracks){
+    return new Promise(async function (resolve, reject) {
+    //get session
+    let useThisSessionRsp = await getSession()
+    let useThisSession = useThisSessionRsp.session
+    let useThisSessionName = useThisSessionRsp.name
+    //run query 
+    useThisSession.getTracks(tracks)
+      .then(function(data) {
+        //console.log(data.body);
+        resolve(data.body)
+    }, async function (err) {
+        console.error('getTracks() err: ', err);
+        if(err.statusCode==429){
+            await handle429Err(useThisSessionName, 'getTracks()')
+            //rerun function
+            return await getTracks(tracks);
+        }
+        //reject(err)
+    });
+    })
+  }
 
 module.exports = {
     getSession: getSession,
