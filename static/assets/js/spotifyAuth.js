@@ -4,6 +4,12 @@ const fs = require('fs');
 let spotifyTokensObj = fs.readFileSync('static/assets/json/spotifyTokens.json');
 let spotifyTokensJSON = JSON.parse(spotifyTokensObj);
 
+let spotifyTokensObj2 = fs.readFileSync('static/assets/json/spotifyTokens2.json');
+let spotifyTokensJSON2 = JSON.parse(spotifyTokensObj2);
+
+//spotify tokens
+//let spotifyTokens = require("static/assets/js/spotifyToken")
+var spotifyTokens = require('../js/spotifyTokens');
 //create object for active sessions the user can use without logging in
 let sessions = {}
 let sessionsStatus = {}
@@ -12,12 +18,146 @@ let sessionsStatus = {}
 // Authentication Functions
 //
 
+//create spotify applications
+createSpotifyApplications()
+let spotifyApps = {}
+async function createSpotifyApplications() {
+    for (const [key, value] of Object.entries(spotifyTokens)) {
+        let clientId = value.clientId
+        let clientSecret = value.clientSecret
+        var spotifyApp = await new SpotifyWebApi({
+            clientId: clientId,
+            clientSecret: clientSecret,
+            redirectUri: 'http://localhost:8080/callback'
+        });
+        spotifyApps[`${key}`] = spotifyApp
+    }
+    authenticateAllSessions2()
+}
+
+//create redirect url
+async function createRedirectURL() {
+    return new Promise(async function (resolve, reject) {
+        //create scopes
+        const scopes = [
+            'ugc-image-upload',
+            'user-read-playback-state',
+            'user-modify-playback-state',
+            'user-read-currently-playing',
+            'streaming',
+            'app-remote-control',
+            'user-read-email',
+            'user-read-private',
+            'playlist-read-collaborative',
+            'playlist-modify-public',
+            'playlist-read-private',
+            'playlist-modify-private',
+            'user-library-modify',
+            'user-library-read',
+            'user-top-read',
+            'user-read-playback-position',
+            'user-read-recently-played',
+            'user-follow-read',
+            'user-follow-modify'
+        ];
+        //get spotify app
+        let spotifyApp = spotifyApps[`Popularify-session3`]
+        resolve(spotifyApp.createAuthorizeURL(scopes));
+    })
+}
+
+//authenticate callback for user signing in
+async function authCallback(error, code, state) {
+    return new Promise(async function (resolve, reject) {
+        if (error) {
+            console.error('Callback Error:', error);
+            reject(`Callback Error: ${error}`);
+        }
+
+        //get spotify app object
+        let spotifyApp = spotifyApps[`Popularify-session3`]
+
+        spotifyApp
+            .authorizationCodeGrant(code)
+            .then(data => {
+                const access_token = data.body['access_token'];
+                const refresh_token = data.body['refresh_token'];
+                const expires_in = data.body['expires_in'];
+
+                //spotifyApp.setAccessToken(access_token);
+                //spotifyApp.setRefreshToken(refresh_token);
+                console.log(`user logged in: access_token=${access_token}, refresh_token=${refresh_token}`)
+                resolve({
+                    access_token: access_token,
+                    refresh_token: refresh_token
+                });
+
+                /*
+                setInterval(async () => {
+                    const data = await spotifyApi.refreshAccessToken();
+                    const access_token = data.body['access_token'];
+
+                    console.log('The access token has been refreshed!');
+                    console.log('access_token:', access_token);
+                    spotifyApi.setAccessToken(access_token);
+                }, expires_in / 2 * 1000);
+                */
+            })
+            .catch(error => {
+                console.error('Error getting Tokens:', error);
+                reject(`Error getting Tokens: ${error}`);
+            });
+
+    })
+}
+
 //authenticate all sessions
-authenticateAllSessions()
+//authenticateAllSessions()
 async function authenticateAllSessions() {
     for (const [key, value] of Object.entries(spotifyTokensJSON)) {
         authenticateSession(key)
     }
+}
+
+async function authenticateAllSessions2() {
+    for (const [key, value] of Object.entries(spotifyTokens)) {
+        await authSession(key, value['sessions']['martinbarker99']['refresh_token'], "martinbarker99")
+
+    }
+}
+
+//auth a session(2)
+async function authSession(spotifyAppName, refreshToken, sessionCredsName) {
+    return new Promise(async function (resolve, reject) {
+        console.log(`authSession()`)
+        try {
+            //get spotifyApp
+            let spotifyApp=spotifyApps[`${spotifyAppName}`]
+            spotifyApp.setRefreshToken(refreshToken);
+            const data = await spotifyApp.refreshAccessToken();
+            var accessToken = data.body['access_token'];
+            var expiresIn = data.body['expires_in'];
+            spotifyApp.setAccessToken(accessToken);
+
+            sessions[`${sessionCredsName}`] = spotifyApp;
+            sessionsStatus[`${sessionCredsName}`] = 'active';
+
+            setInterval(async () => {
+                try {
+                    const data = await spotifyApp.refreshAccessToken();
+                    expiresIn = data.body['expires_in'];
+                    accessToken = data.body['access_token'];
+                    console.log('authSession() The access token has been refreshed!');
+
+                } catch (err) {
+                    console.log('authSession() interval auth err=', err)
+                }
+            }, expiresIn / 2 * 1000);
+            resolve()
+        } catch (err) {
+            console.log('authSession() initial auth err=', err)
+        }
+    })
 }
 
 //authenticate a session
@@ -64,18 +204,18 @@ async function getSession(dontUseTheseCreds = []) {
         //find a session to use
         let activeSessionFound = false;
         for (const [key, value] of Object.entries(sessionsStatus)) {
-            if(value=='active'){
+            if (value == 'active') {
                 console.log(`       getSession() ${key} session is active, so return it`)
-                activeSessionFound=true;
+                activeSessionFound = true;
                 resolve({
-                    session:sessions[`${key}`],
-                    name:`${key}`
+                    session: sessions[`${key}`],
+                    name: `${key}`
                 })
-            }else if(value=='cooldown'){
+            } else if (value == 'cooldown') {
                 console.log(`       getSession() ${key} session is cooldown, so DONT return it`)
             }
         }
-        if(!activeSessionFound){
+        if (!activeSessionFound) {
             console.log(`getSession() no active session found`)
         }
     })
@@ -170,15 +310,15 @@ async function generatePopularifyData(artistURI) {
             ////////////////////////////////////
             // Fetch additional data (popularity) for each track (50 at a time)
             ////////////////////////////////////
-            let tempSlices=[]
+            let tempSlices = []
 
-            const trackInfoPromises=[];
+            const trackInfoPromises = [];
             let multipleTracksQueryLimit = 50;
-            for(var x = 0; x < allAlbumTracks.length; x+=multipleTracksQueryLimit){
-                let start=x;
-                let end=x+multipleTracksQueryLimit;
-                if(end>allAlbumTracks.length){
-                    end=allAlbumTracks.length;
+            for (var x = 0; x < allAlbumTracks.length; x += multipleTracksQueryLimit) {
+                let start = x;
+                let end = x + multipleTracksQueryLimit;
+                if (end > allAlbumTracks.length) {
+                    end = allAlbumTracks.length;
                 }
                 //slice list of albums we want to get info about
                 //console.log(`slice tracks from ${start} to ${end}`)
@@ -194,12 +334,12 @@ async function generatePopularifyData(artistURI) {
             var trackInfoPromisesFinished = await Promise.all(trackInfoPromises);
             //concatenate results into single list since getTracks() returns 50 at a time
             var tracks = [];
-            for(var i = 0; i < trackInfoPromisesFinished.length; i++){
+            for (var i = 0; i < trackInfoPromisesFinished.length; i++) {
                 tracks = tracks.concat(trackInfoPromisesFinished[i])
             }
-            
+
             returnObj.tempSlices = tempSlices
-            returnObj.tracks=tracks
+            returnObj.tracks = tracks
 
             resolve(returnObj)
         } catch (err) {
@@ -226,7 +366,7 @@ async function searchArtists(searchStr) {
                 resolve(data.body.artists.items)
             }, async function (err) {
                 console.error('searchArtists() err: ', err);
-                if(err.statusCode==429){
+                if (err.statusCode == 429) {
                     await handle429Err(useThisSessionName, 'searchArtists()')
                     //rerun function
                     return await searchArtists(searchStr);
@@ -236,17 +376,17 @@ async function searchArtists(searchStr) {
     });
 }
 
-async function handle429Err(sessionName, debugFunctionName){
+async function handle429Err(sessionName, debugFunctionName) {
     return new Promise(async function (resolve, reject) {
         console.log(`handle429Err() ${debugFunctionName} too many requests, need to set this session as "cooldown" for 30 seconds`)
         //mark this session as in cooldown mode
         console.log(`handle429Err() ${debugFunctionName} setting ${sessionName} session to cooldown`)
-        sessionsStatus[`${sessionName}`]='cooldown'
+        sessionsStatus[`${sessionName}`] = 'cooldown'
         //after 30 seconds, mark session as 'active'
-        setTimeout(function(){
+        setTimeout(function () {
             console.log(`handle429Err() ${debugFunctionName} setting ${sessionName} session to active`)
-            sessionsStatus[`${sessionName}`]='active'
-        }, 3000); 
+            sessionsStatus[`${sessionName}`] = 'active'
+        }, 3000);
         resolve()
     })
 }
@@ -269,7 +409,7 @@ async function getArtistAlbums(artistURI, offset = 0, returnTracks = false) {
 
         }, async function (err) {
             console.error('getArtistAlbums() err: ', err);
-            if(err.statusCode==429){
+            if (err.statusCode == 429) {
                 await handle429Err(useThisSessionName, 'getArtistAlbums()')
                 //rerun function
                 return await getArtistAlbums(artistURI, offset, returnTracks);
@@ -292,7 +432,7 @@ async function getAlbums(albums) {
                 resolve(data.body.albums)
             }, async function (err) {
                 console.error('getAlbums() err: ', err);
-                if(err.statusCode==429){
+                if (err.statusCode == 429) {
                     await handle429Err(useThisSessionName, 'getAlbums()')
                     //rerun function
                     return await getAlbums(albums);
@@ -319,19 +459,19 @@ async function getAlbum(album, offset = 0) {
     })
 }
 
-async function getAlbumTracks(album, offset=0, limit=50) {
+async function getAlbumTracks(album, offset = 0, limit = 50) {
     return new Promise(async function (resolve, reject) {
         //get session
         let useThisSessionRsp = await getSession()
         let useThisSession = useThisSessionRsp.session
         let useThisSessionName = useThisSessionRsp.name
         //run query 
-        useThisSession.getAlbumTracks(album, { offset: offset, limit:limit })
+        useThisSession.getAlbumTracks(album, { offset: offset, limit: limit })
             .then(function (data) {
                 resolve(data.body)
             }, async function (err) {
                 console.error('getAlbumTracks() err: ', err);
-                if(err.statusCode==429){
+                if (err.statusCode == 429) {
                     await handle429Err(useThisSessionName, 'getAlbumTracks()')
                     //rerun function
                     return await getAlbumTracks(album, offset, limit);
@@ -341,30 +481,32 @@ async function getAlbumTracks(album, offset=0, limit=50) {
     })
 }
 
-async function getTracks(tracks){
+async function getTracks(tracks) {
     return new Promise(async function (resolve, reject) {
-    //get session
-    let useThisSessionRsp = await getSession()
-    let useThisSession = useThisSessionRsp.session
-    let useThisSessionName = useThisSessionRsp.name
-    //run query 
-    useThisSession.getTracks(tracks)
-      .then(function(data) {
-        //console.log(data.body);
-        resolve(data.body)
-    }, async function (err) {
-        console.error('getTracks() err: ', err);
-        if(err.statusCode==429){
-            await handle429Err(useThisSessionName, 'getTracks()')
-            //rerun function
-            return await getTracks(tracks);
-        }
-        //reject(err)
-    });
+        //get session
+        let useThisSessionRsp = await getSession()
+        let useThisSession = useThisSessionRsp.session
+        let useThisSessionName = useThisSessionRsp.name
+        //run query 
+        useThisSession.getTracks(tracks)
+            .then(function (data) {
+                //console.log(data.body);
+                resolve(data.body)
+            }, async function (err) {
+                console.error('getTracks() err: ', err);
+                if (err.statusCode == 429) {
+                    await handle429Err(useThisSessionName, 'getTracks()')
+                    //rerun function
+                    return await getTracks(tracks);
+                }
+                //reject(err)
+            });
     })
-  }
+}
 
 module.exports = {
+    authCallback: authCallback,
+    createRedirectURL: createRedirectURL,
     getSession: getSession,
     searchArtists: searchArtists,
     generatePopularifyData: generatePopularifyData

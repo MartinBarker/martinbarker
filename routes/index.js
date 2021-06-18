@@ -472,23 +472,27 @@ app.get('/popularify', async function (req, res) {
 })
 
 app.get('/spotifyLogin', async function (req, res) {
-  let redirectURL = await spotifyApiLogic.createRedirectURL()
+  let redirectURL = await spotifyAuth.createRedirectURL()
   res.redirect(redirectURL);
 })
 
 app.get('/callback', async (req, res) => {
-  const error = req.query.error;
-  const code = req.query.code;
-  const state = req.query.state;
-  
-  //log user in, get access_token and refresh_code
-  let resp = await spotifyApiLogic.authenticate(error, code, state)
+  try{
+    const error = req.query.error;
+    const code = req.query.code;
+    const state = req.query.state;
+    
+    //log user in, get access_token and refresh_code
+    let resp = await spotifyAuth.authCallback(error, code, state)
 
-  res.render('popularifyBody', {
-    layout: 'popularifyLayout',
-    loggedIn: 'true',
-    access_token: resp.access_token
-  });
+    res.render('popularifyBody', {
+      layout: 'popularifyLayout',
+      loggedIn: 'true',
+      access_token: resp.access_token
+    });
+  }catch(err){
+    console.log('/callback err=',err)
+  }
 
 });
 
