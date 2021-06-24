@@ -380,9 +380,6 @@
     async function getPopularifyData(artistId) {
         return new Promise(async function (resolve, reject) {
 
-            //let artistAlbums = await getArtistAlbums(artistId, 0)
-
-
 
             let returnObj = {};
             let albumIds = [];
@@ -405,23 +402,57 @@
             //complete promises
             let finishedArtistAlbumsPromises = await Promise.all(artistAlbumsPromises);
 
+            //combine initialAlbums.items with finishedArtistAlbumsPromises
+            let allAlbums=finishedArtistAlbumsPromises
+            allAlbums.push(initialAlbums.items)
+
             //combine initial query with additional queries
-            let allAlbums = initialAlbums.items
-            for (var x = 0; x < finishedArtistAlbumsPromises.length; x++) {
-                //finishedArtistAlbumsPromises is a list of objects where each object contains a list of albums, so we need to extract and concat them into one list 
-                allAlbums = allAlbums.concat(finishedArtistAlbumsPromises[x])
+            let albumsObj = {}
+            //organize initialAlbums by album_group: album_type
+            for(var x = 0; x < allAlbums.length; x++){
+                for(var y = 0; y < allAlbums[x].length; y++){
+                    
+                    //get vars
+                    let albumGroup = allAlbums[x][y]['album_group']
+                    let albumType = allAlbums[x][y]['album_type']
+                    //if albumsObj.album_group does not exist, create it
+                    if(!albumsObj[`${albumGroup}`]){
+                        albumsObj[`${albumGroup}`] = {}
+                    }
+                    //if albumsObj.album_group.album_type does not exist, create it
+                    if(!albumsObj[`${albumGroup}`][`${albumType}`]){
+                        albumsObj[`${albumGroup}`][`${albumType}`] = []
+                    }
+                    //add album to albumsObj
+                    albumsObj[`${albumGroup}`][`${albumType}`].push(allAlbums[x][y])
+
+                    
+                }
+
             }
+            //let allAlbums = [[initialAlbums.items]]
+            //if(finishedArtistAlbumsPromises.length>=1){
+            //    allAlbums=allAlbums.concat(finishedArtistAlbumsPromises)
+            //}
+
+            //for (var x = 0; x < finishedArtistAlbumsPromises.length; x++) {
+                //finishedArtistAlbumsPromises is a list of objects where each object contains a list of albums, so we need to extract and concat them into one list 
+            //    allAlbums = allAlbums.concat(finishedArtistAlbumsPromises[x])
+            //}
 
             returnObj = {
-                initialAlbums: initialAlbums,
-                allAlbums: allAlbums
+                //initialAlbums:initialAlbums,
+                //finishedArtistAlbumsPromises:finishedArtistAlbumsPromises,
+                //albumsObj:albumsObj,
+                allAlbums:allAlbums,
+                albumsObj:albumsObj
             }
-            console.log(`generatePopularifyData() found ${allAlbums.length} albums in total`)
+            //console.log(`generatePopularifyData() found ${allAlbums.length} albums in total`)
 
 
 
 
-            console.log(returnObj)
+            //console.log(returnObj)
             resolve(returnObj)
         })
     }
