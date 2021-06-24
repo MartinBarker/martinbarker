@@ -513,6 +513,16 @@ app.post('/spotifyApi', async function (req, res) {
   res.status(200).send(artistAlbums)
 });
 
+app.post('/getAccessToken', async function (req, res) {
+  let accessToken = null;
+  try{
+    accessToken = await spotifyAuth.getAccessToken(); 
+  }catch(err){
+    accessToken = null;
+  }
+  res.status(200).send(accessToken)
+});
+
 //search spotify for artist, return results
 app.post('/spotifySearch', async function (req, res) {
   //get vars 

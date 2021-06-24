@@ -20,8 +20,8 @@
     <!-- jquery 
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script> -->
-    
-    <!-- jQuery CDN - Slim version (=without AJAX) --> 
+
+    <!-- jQuery CDN - Slim version (=without AJAX) -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
@@ -38,7 +38,8 @@
 
     <!-- bootstrap css-->
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
     <!-- jQuery  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -50,42 +51,41 @@
 
 <style>
     .border {
-        border-style:solid;
-        border-color:#000000;
+        border-style: solid;
+        border-color: #000000;
     }
 
-    .artistOption:hover{
-        background:red;
+    .artistOption:hover {
+        background: red;
         cursor: pointer;
 
     }
 
-    .artistRowText{
-        font-size:25px;
+    .artistRowText {
+        font-size: 25px;
     }
 
-    .artistCol{
+    .artistCol {
         padding-left: 0;
     }
-    
-    .artistColText{
+
+    .artistColText {
         text-align: center;
     }
 
-    .artistCol:hover{
-        background:rgb(206, 205, 205);
+    .artistCol:hover {
+        background: rgb(206, 205, 205);
         cursor: pointer;
     }
 
-    .hoverCursor{
+    .hoverCursor {
         cursor: pointer;
     }
 
-    .hidden{
-        visibility:hidden;
-        display:none;
+    .hidden {
+        visibility: hidden;
+        display: none;
     }
-
 </style>
 
 <!-- Page Content -->
@@ -100,11 +100,13 @@
         <div id='artistDisplay' class="container" style='display:flex; width:fit-content;'>
             <div class='row border'>
                 <!-- left: artist image -->
-                <div class="col" style='float: left;padding: 15px;margin: 0px;margin-left: 0px;padding-left: 0px;left: 0px;'>    
-                    <img style='width:100px; height:100px;' class='img-fluid' src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">  
+                <div class="col"
+                    style='float: left;padding: 15px;margin: 0px;margin-left: 0px;padding-left: 0px;left: 0px;'>
+                    <img style='width:100px; height:100px;' class='img-fluid'
+                        src="https://i.scdn.co/image/e69f71e2be4b67b82af90fb8e9d805715e0684fa">
                 </div>
                 <!-- right: artist name (top) / popularity (bottom) -->
-                <div class="col" >
+                <div class="col">
                     <div class="row" style="left: 0px;margin-left: 0px;padding-left: 0px;text-align: left;">
                         <div class="col">Artist Name</div>
                         <div class="w-100"></div>
@@ -127,7 +129,7 @@
     <div id='artistSearchLoading' class='hidden'>
         <div>
             <div class="spinner-border spinner-border-sm " role="status">
-                <span class="sr-only">  Loading...</span>
+                <span class="sr-only"> Loading...</span>
             </div>Loading...
         </div>
     </div>
@@ -136,7 +138,7 @@
     <div id="artistSearchResults" class="container" style='display:block;'>
         Search For A Spotify Artist
     </div>
-    
+
     <!-- Popularify data display -->
     <div id='popularifyDisplay'>
 
@@ -155,27 +157,28 @@
 
         <h3>Enter Spotify Artist URI</h3>
         <input size="22" type="text" placeholder='Spotify URI' name="url" id="uriInput">
-        <button style="cursor: pointer;" name="data" type="button" onclick="submitUri(document.getElementById('uriInput').value); ">Submit</button>
+        <button style="cursor: pointer;" name="data" type="button"
+            onclick="submitUri(document.getElementById('uriInput').value); ">Submit</button>
     </div>
 
 </div>
 
 <script type="text/javascript">
-
+    let globalAccesToken = null;
     //when uri button is submitted
-    async function submitUri(uri){
-        uri='spotify:artist:3x3jSlhyv5CiCZDZlaTq0M'
+    async function submitUri(uri) {
+        uri = 'spotify:artist:3x3jSlhyv5CiCZDZlaTq0M'
         console.log('submitUri() uri = ', uri)
-        try{
+        try {
             let artistData = await getArtistData(uri)
-            console.log('submitUri() artistData=',artistData)
-        }catch(err){
-            console.log('submitUri() err=',err)
+            console.log('submitUri() artistData=', artistData)
+        } catch (err) {
+            console.log('submitUri() err=', err)
         }
     }
 
     //get artist data sorted by popularitty
-    async function getArtistData(uri){
+    async function getArtistData(uri) {
         return new Promise(function (resolve, reject) {
             $.ajax({
                 type: 'POST',
@@ -197,7 +200,7 @@
     }
 
     //search spotify for artist, and get dropdown results
-    async function getArtistSearchResults(input){
+    async function getArtistSearchResults(input) {
         return new Promise(function (resolve, reject) {
             $.ajax({
                 type: 'POST',
@@ -213,14 +216,12 @@
         });
     }
 
-    async function getPopularifyData(artistId){
+    async function getAccessToken() {
         return new Promise(function (resolve, reject) {
             $.ajax({
                 type: 'POST',
-                url: '/generatePopularifyData',
-                data: {
-                    id: artistId,
-                },
+                url: '/getAccessToken',
+                //data: { id: artistId,},
             }).then((resp) => {
                 resolve(resp)
             }).catch((err) => {
@@ -230,7 +231,7 @@
     }
 
     //convert data obj to html element
-    async function formatArtistResultsAsHTML(artistSearchResults){
+    async function formatArtistResultsAsHTML(artistSearchResults) {
         return new Promise(function (resolve, reject) {
             //sort data via popularity
             artistSearchResults = artistSearchResults.sort((a, b) => parseFloat(b.popularity) - parseFloat(a.popularity));
@@ -240,11 +241,11 @@
             rowDiv.setAttribute('class', 'row')
 
             //create col element for each artist search result
-            for(var x = 0; x < artistSearchResults.length; x++){
+            for (var x = 0; x < artistSearchResults.length; x++) {
                 //get important data variables
                 let artistName = artistSearchResults[x].name;
                 let artistImg = "../../static/assets/img/spotifyArtistUnknown.jpg";
-                if(artistSearchResults[x].images.length >= 1){
+                if (artistSearchResults[x].images.length >= 1) {
                     artistImg = artistSearchResults[x].images[0].url
                 }
                 let artistPopularity = artistSearchResults[x].popularity;
@@ -258,9 +259,9 @@
                     artistPopularity:"${artistPopularity}",
                     artistImg:"${artistImg}",
                     artistId: "${artistId}"
-                })`)                
+                })`)
 
-                colDiv.innerHTML=`
+                colDiv.innerHTML = `
                 <div style="float:left;" >
                     <img style='width:100px; height:100px;' class='img-fluid' src="${artistImg}">  
                 </div> 
@@ -277,12 +278,12 @@
                 `
                 var dividerDiv = document.createElement('div')
                 dividerDiv.setAttribute('class', 'w-100')
-                
+
                 //add col element to row element
                 rowDiv.appendChild(colDiv)
                 //add divider element
                 rowDiv.appendChild(dividerDiv)
-                
+
             }
             //return constructed html
             //var tempReturn = document.createElement("div");
@@ -291,33 +292,8 @@
         })
     }
 
-    //when user clicks artist: begin getting Popularify data and displaying it to user
-    async function selectArtist(input){
-        console.log('selectArtist = ', input)
-
-        //display loading 
-        $("#artistSearchLoading").show();
-
-        //clear artist search results
-        document.getElementById('artistSearchResults').innerText = '';
-
-        //display info about selected artist
-        displaySelectedArtist(input)
-
-        //begin generating data 
-        let popularifyData = await getPopularifyData(input.artistId)
-
-        //once artist data has been generated, display it
-        displayPopularifyData(popularifyData)
-
-        //hide loading 
-        $("#artistSearchLoading").hide();
-
-        console.log('popularifyData compelted: ', popularifyData)
-    }
-
     //if cancel button is clicked
-    function cancel(){
+    function cancel() {
         //remove preexisting artist display element from page
         var artistDisplayObj = document.getElementById('artistDisplay')
         artistDisplayObj.remove();
@@ -326,7 +302,7 @@
     }
 
     //display popularify data to the user
-    async function displayPopularifyData(popularifyData){
+    async function displayPopularifyData(popularifyData) {
         //clear popularify data in browser localstorage
         //store popularify data in browser localstorage
         //clear popularifyDisplay
@@ -335,19 +311,19 @@
         //build and display table
 
         document.getElementById('popularifyDisplay').innerText = `${popularifyData.toString()}`;
-        
+
     }
 
     //construct html displaying the selected artist, and add it to page
-    async function displaySelectedArtist(input){
+    async function displaySelectedArtist(input) {
 
-            //construct html element (include x button top right)
+        //construct html element (include x button top right)
 
-                var artistDisplayDiv = document.createElement("div");
-                artistDisplayDiv.setAttribute('id', 'artistDisplay')
-                artistDisplayDiv.setAttribute('class', 'container')
-                artistDisplayDiv.setAttribute('style', `display:flex; width:fit-content`)
-                artistDisplayDiv.innerHTML=`
+        var artistDisplayDiv = document.createElement("div");
+        artistDisplayDiv.setAttribute('id', 'artistDisplay')
+        artistDisplayDiv.setAttribute('class', 'container')
+        artistDisplayDiv.setAttribute('style', `display:flex; width:fit-content`)
+        artistDisplayDiv.innerHTML = `
                 <div class='row border'>
                     <!-- left: artist image -->
                     <div class="col" style='float: left;padding: 15px;margin: 0px;margin-left: 0px;padding-left: 0px;left: 0px;'>    
@@ -373,45 +349,171 @@
         var element = document.getElementById("chosenArtistDisplay");
         element.classList.remove("hidden");
 
-        
+
     }
 
-    //make a query to search for artists 
-    async function searchForArtists(artistStr){
+    //when user clicks artist: begin getting Popularify data and displaying it to user
+    async function selectArtist(input) {
+        console.log('selectArtist = ', input)
+
+        //display loading 
+        $("#artistSearchLoading").show();
+
+        //clear artist search results
+        document.getElementById('artistSearchResults').innerText = '';
+
+        //display info about selected artist
+        displaySelectedArtist(input)
+
+        //begin generating data 
+        let popularifyData = await getPopularifyData(input.artistId)
+
+        //once artist data has been generated, display it
+        displayPopularifyData(popularifyData)
+
+        //hide loading 
+        $("#artistSearchLoading").hide();
+
+        console.log('popularifyData compelted: ', popularifyData)
+    }
+
+    async function getPopularifyData(artistId) {
         return new Promise(async function (resolve, reject) {
-            console.log(`searchForArtists(${artistStr})`)
-            //make spotify api query for artists
-            let artistSearchResults = await getArtistSearchResults(artistStr)
-            //format artist results as html
-            let artistResultsHTML = await formatArtistResultsAsHTML(artistSearchResults)
-            //clear pre-existing artists search results display
-            document.getElementById('artistSearchResults').innerHTML = '';
-            //add to artists search results display
-            document.getElementById('artistSearchResults').appendChild(artistResultsHTML)
-        });
 
+            //let artistAlbums = await getArtistAlbums(artistId, 0)
+
+
+
+            let returnObj = {};
+            let albumIds = [];
+            ////////////////////////////////////////////////////
+            // Get all artist albums 
+            ////////////////////////////////////////////////////
+
+            //make initial request for albums
+            let initialAlbums = await getArtistAlbums(artistId, 0, false)
+            total = initialAlbums.total;
+            albumIds.push(initialAlbums.items)
+
+            //make additional queries if needed
+            console.log(`generatePopularifyData() Artist has ${total} albums. We have ${initialAlbums.items.length} so far and need to get ${total - (initialAlbums.items.length)} more`);
+            let artistAlbumsPromises = [];
+            for (var x = 20; x < total; x += 20) {
+                artistAlbumsPromises.push(getArtistAlbums(artistId, x, true))
+            }
+
+            //complete promises
+            let finishedArtistAlbumsPromises = await Promise.all(artistAlbumsPromises);
+
+            //combine initial query with additional queries
+            let allAlbums = initialAlbums.items
+            for (var x = 0; x < finishedArtistAlbumsPromises.length; x++) {
+                //finishedArtistAlbumsPromises is a list of objects where each object contains a list of albums, so we need to extract and concat them into one list 
+                allAlbums = allAlbums.concat(finishedArtistAlbumsPromises[x])
+            }
+
+            returnObj = {
+                initialAlbums: initialAlbums,
+                allAlbums: allAlbums
+            }
+            console.log(`generatePopularifyData() found ${allAlbums.length} albums in total`)
+
+
+
+
+            console.log(returnObj)
+            resolve(returnObj)
+        })
     }
+
+    async function getArtistAlbums(artistId, offset = 0, onlyReturnTracks=false) {
+        return new Promise(async function (resolve, reject) {
+            $.ajax({
+                url: `https://api.spotify.com/v1/artists/${artistId}/albums`,
+                type: 'GET',
+                contentType: 'application/json',
+                headers: {
+                    'Authorization': 'Bearer ' + globalAccesToken,
+                },
+                data: {
+                    offset: offset
+                }
+            }).done(function callback(response) {
+                if(onlyReturnTracks){
+                    resolve(response.items)
+                }else{
+                    resolve(response)
+                }
+            }).fail(function (error) {
+                resolve(response)
+            });
+
+        })
+    }
+
 
     $(document).ready(function () {
+        setAccessToken()
+        async function setAccessToken() {
+            let accessToken = await getAccessToken()
+            globalAccesToken = accessToken
+        }
+
+        async function spotifySearch(searchStr) {
+            return new Promise(async function (resolve, reject) {
+                $.ajax({
+                    url: `https://api.spotify.com/v1/search`,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    headers: {
+                        'Authorization': 'Bearer ' + globalAccesToken,
+                    },
+                    data: {
+                        q: `${searchStr}`,
+                        type: 'artist'
+                    }
+                }).done(function callback(response) {
+                    resolve(response.artists.items)
+
+                }).fail(function (error) {
+                    console.log("spotifySearch(): err=", error);
+                    reject(err)
+                });
+            })
+        }
+
+        //make a query to search for artists 
+        async function searchForArtists(artistStr) {
+            return new Promise(async function (resolve, reject) {
+                console.log(`searchForArtists(${artistStr})`)
+                //make spotify api query for artists
+                let artistSearchResults = await spotifySearch(artistStr)
+                //format artist results as html
+                let artistResultsHTML = await formatArtistResultsAsHTML(artistSearchResults)
+                //clear pre-existing artists search results display
+                document.getElementById('artistSearchResults').innerHTML = '';
+                //add to artists search results display
+                document.getElementById('artistSearchResults').appendChild(artistResultsHTML)
+            });
+        }
 
         let artistSearchInProgress = false;
-
         //when artist search text input field changes
-        $("#artistSearch").on("input", async function() {
+        $("#artistSearch").on("input", async function () {
             let searchVal = $(this).val();
-            searchVal=searchVal.trim();
+            searchVal = searchVal.trim();
             //verify search value is not blank
-            if(searchVal != "" && searchVal != " " && searchVal != null){
+            if (searchVal != "" && searchVal != " " && searchVal != null) {
                 $('#artistSearchResults').show();
                 //display loading 
                 $("#artistSearchLoading").show();
                 //begin search for artist
-                artistSearchInProgress=true;
+                artistSearchInProgress = true;
                 let result = await searchForArtists(searchVal)
                 //once query is done, hide loading and set artistSearchInProgress = false
                 $("artistSearchLoading").hide();
-                artistSearchInProgress=false;
-            }else{
+                artistSearchInProgress = false;
+            } else {
                 console.log('empty?')
                 //search box is empty so hide search results
                 $('#artistSearchResults').hide();
@@ -419,8 +521,8 @@
         });
 
         //artist search button is clicked
-        $( "#artistSearchButton" ).click(async function() {
-            
+        $("#artistSearchButton").click(async function () {
+
             //get input text
             let textInputField = document.getElementById('artistSearch').value;
             console.log('searching for artists with name:', textInputField);
@@ -428,10 +530,10 @@
             //make spotify api query for artists
             let artistSearchResults = await getArtistSearchResults(textInputField)
             console.log('artistSearchResults = ', artistSearchResults)
-            
+
             //format artist results as html
             let artistResultsHTML = await formatArtistResultsAsHTML(artistSearchResults)
-            console.log('artistResultsHTML=',artistResultsHTML)
+            console.log('artistResultsHTML=', artistResultsHTML)
             //display html on page
             document.getElementById('artistSearchResults').innerHTML = '';
             document.getElementById('artistSearchResults').appendChild(artistResultsHTML)

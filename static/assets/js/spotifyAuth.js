@@ -82,6 +82,15 @@ async function authSession(spotifyAppName, refreshToken, sessionCredsName) {
     })
 }
 
+async function getAccessToken(){
+    return new Promise(async function (resolve, reject) {
+        let accessToken = sessions['Popularify-app1']['_credentials']['accessToken']
+        console.log('getAccessToken() accessToken=',accessToken)
+        
+        resolve(accessToken)
+    })
+}
+
 //retrieve a session for making queries with 
 async function getSession(dontUseTheseCreds = []) {
     return new Promise(async function (resolve, reject) {
@@ -538,6 +547,7 @@ async function getTracks(tracks) {
 }
 
 module.exports = {
+    getAccessToken: getAccessToken,
     authCallback: authCallback,
     createRedirectURL: createRedirectURL,
     getSession: getSession,
