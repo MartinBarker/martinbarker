@@ -380,6 +380,7 @@
     async function getPopularifyData(artistId) {
         return new Promise(async function (resolve, reject) {
 
+            var startDate = new Date();
 
             let returnObj = {};
             let albumIds = [];
@@ -433,13 +434,13 @@
             let albumTypes=['album','single','compilation','appears_on']
             for(var x = 0; x<albumTypes.length; x++){
                 for(var y=0; y<albumTypes.length; y++){
-                    console.log(`${albumTypes[x]} - ${albumTypes[y]}`)
+                    //console.log(`${albumTypes[x]} - ${albumTypes[y]}`)
                     try{ 
                         allAlbumsOrder = allAlbumsOrder.concat(albumsObj[`${albumTypes[x]}`][`${albumTypes[y]}`] ? albumsObj[`${albumTypes[x]}`][`${albumTypes[y]}`] : [])
                     }catch(err){}
                 }
             }
-
+            console.log(`albumsObj sorted by priority into allAlbumsOrder`)
             ////////////////////////////////////
             // Get tracklist data for each album 20 albumIds at a time
             // Priority List: album_group:'album','single','compilation','appears_on':album_type:'album','single','compilation'
@@ -458,8 +459,8 @@
                     return i.id;
                 });
 
-                //console.log(` getAllArtistAlbums() get data for ${albumsSliced.length} albums: ${start} to ${end}`)
-                albumTracklistPromises.push(await getAlbums(albumsSliced, 0, `start:${start}, end:${end}`));
+                console.log(` getAllArtistAlbums() get data from albums from ${start} to ${end} `)
+                albumTracklistPromises.push(getAlbums(albumsSliced, 0, `start:${start}, end:${end}`));
             }
             console.log('created list of promises for getting tracklist data for each album')
             //run promises to get album info
@@ -474,26 +475,30 @@
             let allAlbumTracks = []
             //for each response containing at max 20 albums
             for (var x = 0; x < albumTracklistPromisesFinished.length; x++) {
+                //console.log('x=',x)
                 //for each album
                 for (var y = 0; y < albumTracklistPromisesFinished[x].albums.length; y++) {
+                    //console.log('   y=',y)
+
                     //get vars from album
                     let currentAlbumId = albumTracklistPromisesFinished[x].albums[y].id;
                     let currentAlbumTracks = albumTracklistPromisesFinished[x].albums[y].tracks.items;
                     let tracksTotal = albumTracklistPromisesFinished[x].albums[y].tracks.total;
-                
-                    console.log(`album total tracks:${albumTracklistPromisesFinished[x].albums[y].tracks.total}, current number of tracks:`,albumTracklistPromisesFinished[x].albums[y].tracks.items) 
+                    //console.log(`for album, we have ${currentAlbumTracks.length} tracks out of ${tracksTotal}`)
+                    //console.log(`album total tracks:${albumTracklistPromisesFinished[x].albums[y].tracks.total}, current number of tracks:`,albumTracklistPromisesFinished[x].albums[y].tracks.items) 
                     //if there are more tracks then get them
                     while (currentAlbumTracks.length < tracksTotal) {
-                        console.log(`   get more tracks starting from `, currentAlbumTracks.length)
-                        
-                                                                    //(albumId, offset=0, limit=50, retry=0)
+                        console.log(`   need to get more tracks, we have ${currentAlbumTracks.length} and need ${tracksTotal}`)
                         let additionalAlbumInfo = await getAlbumTracks(currentAlbumId, currentAlbumTracks.length)
+                        //console.log('   additionalAlbumInfo=',additionalAlbumInfo)
+                        let additionalAlbumTracks = additionalAlbumInfo.items
+                        //console.log('found these new tracks:', additionalAlbumInfo.items)
 
-                        console.log('found these new tracks:', additionalAlbumInfo.items)
-
-                        currentAlbumTracks = currentAlbumTracks.concat(additionalAlbumInfo.items)
+                        currentAlbumTracks = currentAlbumTracks.concat(additionalAlbumTracks)
+                        //console.log('   currentAlbumTracks.length is now ', currentAlbumTracks.length)
                         //console.log('   got more tracks, length now at:', additionalAlbumInfo.items)
                     }
+                    //console.log('now we have all tracks: ',currentAlbumTracks)
                     //concatenate all tracks to list
                     allAlbumTracks = allAlbumTracks.concat(currentAlbumTracks)
                 }
@@ -506,11 +511,10 @@
             // Fetch additional data (popularity) for each track (50 at a time)
             ////////////////////////////////////
             let tempSlices = []
-
             const trackInfoPromises = [];
             let multipleTracksQueryLimit = 50;
             var tracks = [];
-            /*
+            retryIn=1;
             try{
                 for (var x = 0; x < allAlbumTracks.length; x += multipleTracksQueryLimit) {
                     let start = x;
@@ -519,7 +523,7 @@
                         end = allAlbumTracks.length;
                     }
                     //slice list of albums we want to get info about
-                    console.log(`slice tracks from ${start} to ${end} out of allAlbumTracks=`,allAlbumTracks)
+                    console.log(`slice tracks from ${start} to ${end} out of ${allAlbumTracks.length} in total`)
                     var tracksSliced = allAlbumTracks.slice(start, end).map(i => {
                         return i.id;
                     });
@@ -528,8 +532,10 @@
                     //returnObj.tracksSliced = returnObj.tracksSliced.push(tracksSliced)
                     trackInfoPromises.push(getTracks(tracksSliced));
                 }
+                console.log('begin completing track data promises')
                 //run promises to get album info
                 var trackInfoPromisesFinished = await Promise.all(trackInfoPromises);
+                console.log('finished completing track data promises, no sort by popularity')
                 //concatenate results into single list since getTracks() returns 50 at a time
                 for (var i = 0; i < trackInfoPromisesFinished.length; i++) {
                     tracks = tracks.concat(trackInfoPromisesFinished[i].tracks)
@@ -537,12 +543,17 @@
             }catch(err){
                 console.log('err=',err)
             }
-            */
+            
+
             console.log('tracks=',tracks)
             //sort by popularity
             tracks=tracks.sort((a, b) => (a.popularity > b.popularity) ? 1 : -1)
             console.log('sorted tracks=',tracks)
 
+            // Do your operations
+            var endDate   = new Date();
+            var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
+            console.log('took this many seconds: ', seconds)
 
             //
             //  Return final data
@@ -572,47 +583,68 @@
 
     async function getTracks(tracks) {
         return new Promise(async function (resolve, reject) {
-            
-            $.ajax({
-                url: '	https://api.spotify.com/v1/tracks',//`https://api.spotify.com/v1/albums/{${albumId}}/tracks`,
-                type: 'GET',
-                contentType: 'application/json',
-                headers: {
-                    'Authorization': 'Bearer ' + globalAccesToken,
-                },
-                data: {
-                    ids:encodeURI(tracks),
-                }
-            }).done(function callback(response) {
-                resolve(response)
-            }).fail(async function (err) {
-                await delay(retryIn*1000)
-                retryIn=retryIn+1;
-                resolve(await getTracks(tracks))
-            });
-         
-        })
-    }
-
-    //get additional tracks from an album
-    async function getAlbumTracks(albumId, offset=0, limit=50, retry=0) {
-        console.log(`getAlbumTracks() albumId=${albumId}, offset=${offset}, limit=${limit}, retry=${retry}`)
-        return new Promise(async function (resolve, reject) {
             try{
                 $.ajax({
-                    url: 'https://api.spotify.com/v1/albums/',//`https://api.spotify.com/v1/albums/{${albumId}}/tracks`,
+                    url: '	https://api.spotify.com/v1/tracks',//`https://api.spotify.com/v1/albums/{${albumId}}/tracks`,
                     type: 'GET',
                     contentType: 'application/json',
                     headers: {
                         'Authorization': 'Bearer ' + globalAccesToken,
                     },
                     data: {
-                        ids:encodeURI(albumId),
+                        ids:encodeURI(tracks),
+                    },
+
+                    success: function(response){
+                        resolve(response)
+                    },
+                    error: async function(XMLHttpRequest, textStatus, errorThrown) {
+                        console.log('getTracks() caught err')
+                        await delay(retryIn*1000)
+                        retryIn=retryIn+1;
+                        resolve(await getTracks(tracks))
+                    }
+                });
+                /*
+                }).done(function callback(response) {
+                    
+                    
+
+                }).fail(async function (err) {
+                    
+                });
+                */
+            }catch(err){
+                console.log('getTracks() try/catch caught err')
+                await delay(retryIn*1000)
+                retryIn=retryIn+1;
+                resolve(await getTracks(tracks))
+            }
+
+        })
+    }
+
+
+
+    //get multiple
+    async function getAlbumTracks(albumId, offset=0, limit=50, retry=0) {
+        //console.log(`getAlbumTracks() albumId=${albumId}, offset=${offset}, limit=${limit}, retry=${retry}`)
+        return new Promise(async function (resolve, reject) {
+            try{
+                $.ajax({
+                    url: `https://api.spotify.com/v1/albums/${albumId}/tracks`,//`https://api.spotify.com/v1/albums/{${albumId}}/tracks`,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    headers: {
+                        'Authorization': 'Bearer ' + globalAccesToken,
+                    },
+                    data: {
+                        id:encodeURI(albumId),
                         offset:encodeURI(offset),
                         limit:encodeURI(limit),
                     }
                 }).done(function callback(response) {
-                    console.log('getAlbumTracks() rsp')
+                    //console.log('getAlbumTracks() rsp')
                     resolve(response)
                 }).fail(async function (err) {
                     console.log('getAlbumTracks() err')
@@ -631,7 +663,7 @@
     //get more info for an album or multiple albums at once (20 at a time)
     async function getAlbums(ids, retry=0, status) {
         return new Promise(async function (resolve, reject) {
-            console.log(`getAlbums() status=${status}, retry=${retry}`)
+            //console.log(`getAlbums() status=${status}, retry=${retry}`)
             $.ajax({
                 url: `https://api.spotify.com/v1/albums`,
                 type: 'GET',
@@ -643,14 +675,12 @@
                     ids: encodeURI(ids),
                 }
             }).done(function callback(response) {
-                console.log(`getAlbums() response=`,response)
+                //console.log(`getAlbums() response=`,response)
                 resolve(response)
                 //}
             }).fail(async function (err) {
                 console.log(`getAlbums() err=`, err);
-                let waitThisLong=retryIn*1000;
-                console.log('err=',err, 'waiting this long: ', waitThisLong)
-                await delay(waitThisLong*1000)
+                await delay(retryIn*1000)
                 console.log('done waiting')
                 retryIn=retryIn+1;
                 resolve(await getAlbums(ids, status, ++retry))
@@ -676,8 +706,11 @@
                 } else {
                     resolve(response)
                 }
-            }).fail(function (error) {
-                resolve(response)
+            }).fail(async function (error) {
+                console.log(`getArtistAlbums() retryIn=${retryIn}, err=`,error)
+                await delay(retryIn*1000)
+                retryIn=retryIn+1;
+                resolve(await getArtistAlbums(artistId, offset, onlyReturnTracks))
             });
         })
     }
