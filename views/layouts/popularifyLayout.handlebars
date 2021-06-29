@@ -591,16 +591,21 @@
                     headers: {
                         'Authorization': 'Bearer ' + globalAccesToken,
                     },
+                    dataType: 'json',
                     data: {
                         ids:encodeURI(tracks),
                     },
-
-                    success: function(response){
-                        resolve(response)
+                    success: function(data, textStatus, jqXHR) {
+                        if(data.error){
+                            console.log('getTracks() error=',error)
+                        }else{
+                            resolve(data)
+                        }
                     },
-                    error: async function(XMLHttpRequest, textStatus, errorThrown) {
-                        console.log('getTracks() caught err')
-                        await delay(retryIn*1000)
+                    error: async function(jqXHR, textStatus, errorThrown) {
+                       console.log(textStatus, errorThrown);
+                       console.log('err caugth')
+                       await delay(retryIn*1000)
                         retryIn=retryIn+1;
                         resolve(await getTracks(tracks))
                     }
