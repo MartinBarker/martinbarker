@@ -588,10 +588,14 @@
 
     async function getTracks(tracks) {
         return new Promise(async function (resolve, reject) {
+            let didRequestErr = false;
+            console.log('getTracks() tracks[0]=',tracks[0], ', didRequestErr=',didRequestErr)
             try{
                 $.ajax({
                     url: '	https://api.spotify.com/v1/tracks',
                     type: 'GET',
+                    dataType: "json",
+                    async:false,
                     contentType: 'application/json',
                     headers: {
                         'Authorization': 'Bearer ' + globalAccesToken,
@@ -600,7 +604,8 @@
                         ids:encodeURI(tracks),
                     },
                     success: function(data, textStatus, jqXHR) {
-                            //console.log('getTracks() data=',data)
+                        
+                        console.log('getTracks() tracks[0]=',tracks[0], 'success, data=',data,', didRequestErr=',didRequestErr)
                         if(data.error){
                             console.log('getTracks() err =',error)
                         }else{
@@ -611,34 +616,43 @@
                         var xhr = new window.XMLHttpRequest();
                         xhr.addEventListener("error", function(evt){
                             console.log("getTracks() an error occured");
+                            
+                            //didRequestErr=true;
                         }, false);
                         xhr.addEventListener("abort", function(){
-                            console.log("getTracks() cancelled");
+                            //console.log("getTracks() cancelled");
+                            
+                            didRequestErr=true;
                         }, false);
-
                         return xhr;
                     },
                     error: function (err) {
-                        console.log("getTracks() AJAX error in request: " + JSON.stringify(err, null, 2));
-                        reject()
+                        didRequestErr=true
+                        console.log("getTracks() AJAX error in request. tracks[0]=",tracks[0],", err=" + JSON.stringify(err, null, 2), '\n didRequestErr=',didRequestErr);
+                        throw 'woah'
                     },
                     statusCode: {
-                        429: function() {
+                        429: async function() {
                             console.log('getTracks() 429 hit ')
-                            reject()
+                            didRequestErr=true
                         }
                     }
                     
                 }).fail(async function(err){
                     console.log('getTracks() .fail, retryIn=',retryIn, ', err =',err)
-                    await delay(retryIn*1000)
-                    retryIn=retryIn+1;
-                    resolve(await getTracks(tracks))
+                    
+                        didRequestErr=true;
                 })
                 
             }catch(err){
                 console.log('getTracks() err try/catch caught. retryIn=',retryIn, ', err=',err)
-                await delay(retryIn*1000)
+               
+                didRequestErr=true;
+            }
+            console.log('getTracks() tracks[0]=',tracks[0],'. call finished. didRequestErr=',didRequestErr)
+            if(didRequestErr){
+                console.log('getTracks() tracks[0]=',tracks[0],'. didRequestErr=true, so retry. waiting for 7 ms')
+                await delay(7*1000)
                 retryIn=retryIn+1;
                 resolve(await getTracks(tracks))
             }
@@ -686,10 +700,13 @@
     async function getAlbums(ids, retry=0, status) {
         return new Promise(async function (resolve, reject) {
             console.log(`getAlbums() ids=`,ids,` retry=${retry}, status=${status}`)
+            let didRequestErrAlbums = false;
             try{
                 $.ajax({
                     url: `https://api.spotify.com/v1/albums`,
                     type: 'GET',
+                    dataType: "json",
+                    async:false,
                     contentType: 'application/json',
                     headers: {
                         'Authorization': 'Bearer ' + globalAccesToken,
@@ -710,7 +727,9 @@
                     },
                     error: function (err) {
                         console.log("getAlbums() AJAX error in request: " + JSON.stringify(err, null, 2));
-                        reject(err)
+                        didRequestErrAlbums=true
+                        console.log("getAlbums() AJAX didRequestErrAlbums=",didRequestErrAlbums)
+                        throw 'ajax err'
                     }
                 }).done(function callback(response) {
                     console.log(`getAlbums() response=`,response)
@@ -719,7 +738,12 @@
                 });
             }catch(err){
                 console.log('getAlbums() err caught: ',err)
-                await delay(retryIn*1000)
+                didRequestErrAlbums=true
+            }
+
+            if(didRequestErrAlbums){
+                console.log('getAlbums() didRequestErrAlbums==true')
+                await delay(7*1000)
                 retryIn=retryIn+1;
                 resolve(await getAlbums(ids, ++retry, status))
             }
