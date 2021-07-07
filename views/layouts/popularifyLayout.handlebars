@@ -448,6 +448,7 @@
                     console.log(`getArtistAlbums() offset=${offset} DONE. `)
                     return(response)
                 },
+                timeout: 5000, // sets timeout to 5 seconds
 
             }).fail(async function (error) {
                 console.log(`getArtistAlbums() offset=${offset} FAIL. err=`,error)
@@ -557,6 +558,7 @@
                     data: {
                         ids: encodeURI(ids),
                     },
+                    timeout: 5000, // sets timeout to 5 seconds
                     xhr: function(){
                         var xhr = new window.XMLHttpRequest();
                         xhr.addEventListener("error", function(evt){
@@ -889,6 +891,7 @@
                     data: {
                         ids:encodeURI(tracks),
                     },
+                    timeout: 5000, // sets timeout to 5 seconds
                     success: function(data, textStatus, jqXHR) {
                         
                         //console.log('getTracks() tracks[0]=',tracks[0], 'success, data=',data,', didRequestErr=',didRequestErr)
@@ -962,7 +965,8 @@
                         id:encodeURI(albumId),
                         offset:encodeURI(offset),
                         limit:encodeURI(50),
-                    }
+                    },
+                    timeout: 5000, // sets timeout to 5 seconds
                 }).done(function callback(response) {
                     console.log(`getAlbumTracks() albumId=${albumId}, offset=${offset}. done`)
                     return(response)
@@ -972,7 +976,7 @@
                     console.log(`getAlbumTracks() ERR waiting for ${retryIn*1000} seconds`)
                     await delay(retryIn*1000)
                     retryIn=retryIn+1;
-                    resolve(await getAlbumTracks(albumId, offset, limit, ++retry))
+                    resolve(await getAlbumTracks(albumId, offset, previousTracks))
                 });
 
                 
@@ -993,6 +997,8 @@
 
             }catch(err){
                     console.log(`getAlbumTracks() albumId=${albumId}, offset=${offset}. caught err:`,err)
+                    await delay(5*1000)
+                    resolve(await getAlbumTracks(albumId, offset, previousTracks))
             }
         })
     }
@@ -1018,7 +1024,8 @@
                     data: {
                         q: `${searchStr}`,
                         type: 'artist'
-                    }
+                    },
+                    timeout: 5000, // sets timeout to 5 seconds
                 }).done(function callback(response) {
                     resolve(response.artists.items)
 
